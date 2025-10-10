@@ -51,7 +51,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       persistence:
         enabled: true
-        storageClassName: &storageClassName ceph-block
+        storageClassName: &storageClassName piraeus-storage
         size: 2Gi
     vmsingle:
       enabled: true
