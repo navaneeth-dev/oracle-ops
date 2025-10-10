@@ -36,7 +36,6 @@ tasks:
 
   bastion_k8s:
     cmd: ssh -M -S bastion_session_k8s_api -fNL 6443:10.0.60.200:6443 $(terraform output -raw bastion_session_k8s_api)
-    silent: true
 
   cancelportfwd:
     cmds:
