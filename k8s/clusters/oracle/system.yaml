@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infra-controllers
+  name: system-controllers
   namespace: flux-system
 spec:
   interval: 1h
@@ -11,12 +11,10 @@ spec:
   timeout: 5m
   dependsOn:
     - name: crds
-    - name: system-controllers
-    - name: system-configs
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/infrastructure/controllers
+  path: ./k8s/infrastructure/system-controllers
   prune: true
   wait: true
   postBuild:
@@ -31,18 +29,18 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: infra-configs
+  name: system-configs
   namespace: flux-system
 spec:
   dependsOn:
-    - name: infra-controllers
+    - name: system-controllers
   interval: 1h
   retryInterval: 1m
   timeout: 5m
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/infrastructure/configs
+  path: ./k8s/infrastructure/system-configs
   postBuild:
     substituteFrom:
       - kind: ConfigMap
