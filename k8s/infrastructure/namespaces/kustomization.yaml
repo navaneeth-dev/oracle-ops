@@ -7,4 +7,3 @@ resources:
   - envoy-gateway-system.yaml
   - homepage.yaml
   - observability.yaml
-  - rook-ceph.yaml
