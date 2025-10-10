@@ -12,7 +12,6 @@ tasks:
           --from-literal=age.agekey="$(infisical secrets get TF_VAR_SOPS_AGEKEY --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 --plain)"
       - |
         infisical run --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 -- flux bootstrap github \
-          --context=admin@home-cluster \
           --owner=navaneeth-dev \
           --repository=oracle-ops \
           --branch=main \
