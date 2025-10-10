@@ -7,9 +7,6 @@ metadata:
 spec:
   interval: 30m
   timeout: 10m
-  dependsOn:
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
   chartRef:
     kind: OCIRepository
     name: victoria-metrics-k8s-stack
