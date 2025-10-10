@@ -19,24 +19,13 @@ data "talos_machine_configuration" "this" {
         time = {
           servers = ["169.254.169.254"]
         }
-        sysctls = {
-          "vm.nr_hugepages" = 1024
-        }
         kernel = {
-          modules = [{ name = "nvme-tcp" }, { name = "vfio_pci" }]
+          modules = [{ name = "drdb", parameters = ["usermode_helper=disabled"] }, { name = "drbd_transport_tcp" }, { name = "dm-thin-pool" }]
         }
         kubelet = {
           extraArgs = {
             "rotate-server-certificates" = true
           }
-          extraMounts = [
-            {
-              destination = "/var/lib/longhorn"
-              type        = "bind"
-              source      = "/var/lib/longhorn"
-              options     = ["bind", "rshared", "rw"]
-            }
-          ]
         }
       }
       cluster = {
