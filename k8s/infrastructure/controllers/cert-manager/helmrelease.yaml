@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name cert-manager
+  namespace: cert-manager
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: cert-manager
+    namespace: flux-system
+  install:
+    createNamespace: true
+    crds: CreateReplace
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+      strategy: rollback
+    cleanupOnFail: true
+    crds: CreateReplace
+    force: true
+  test:
+    enable: true
+  rollback:
+    recreate: true
+    force: true
+    cleanupOnFail: true
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
+  timeout: 5m
+  values:
+    crds:
+      enabled: true
+    dns01RecursiveNameserversOnly: true
+    dns01RecursiveNameservers: "1.1.1.1:53,1.0.0.1:53"

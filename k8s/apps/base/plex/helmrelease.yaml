@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name plex
+  namespace: homelab
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 4.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      *name:
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/plex
+              tag: 1.42
+            env:
+              TZ: "${TZ}"
+              PLEX_ADVERTISE_URL: https://plex.fossindia.ovh
+              PLEX_NO_AUTH_NETWORKS: 192.168.2.0/24
+            securityContext:
+              privileged: true
+#              allowPrivilegeEscalation: false
+#              readOnlyRootFilesystem: true
+#              capabilities: { drop: ["ALL"] }
+            resources:
+              limits:
+                gpu.intel.com/i915: "1"
+                memory: 8Gi
+                cpu: 2000m
+              requests:
+                cpu: 1000m
+                memory: 4Gi
+    service:
+      app:
+        type: LoadBalancer
+        primary: true
+        controller: *name
+        ports:
+          http:
+            port: 32400
+
+    route:
+      main:
+        enabled: true
+        kind: HTTPRoute
+        parentRefs:
+          - kind: Gateway
+            name: reverse-proxy
+            namespace: envoy-gateway-system
+        hostnames:
+          - 'plex.${DOMAIN}'
+
+    persistence:
+      config:
+        enabled: true
+        type: nfs
+        server: "nas2.home.arpa"
+        path: "/config/plex"
+        globalMounts:
+          - path: /config
+      data:
+        enabled: true
+        type: nfs
+        server: "nas.home.arpa"
+        path: "/srv/nfs4/data"
+        globalMounts:
+          - path: /data
+            readOnly: true

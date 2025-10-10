@@ -1,0 +1,110 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: audiobookshelf
+  namespace: homelab
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 4.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      audiobookshelf:
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        containers:
+          app:
+            image:
+              repository: ghcr.io/advplyr/audiobookshelf
+              tag: 2.28.0@sha256:b854ec08b1a7bee67c3274f1df5dce2143f48e05cbce5ada356c38662694f7fe
+            env:
+              TZ: "${TZ}"
+              AUDIOBOOKSHELF_UID: 1000
+              AUDIOBOOKSHELF_GID: 1000
+              CONFIG_PATH: /config
+              METADATA_PATH: /config/metadata
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthcheck
+                    port: &port 80
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 50m
+                memory: 100Mi
+              limits:
+                memory: 500Mi
+    route:
+      main:
+        enabled: true
+        kind: HTTPRoute
+        parentRefs:
+          - kind: Gateway
+            name: reverse-proxy
+            namespace: envoy-gateway-system
+        hostnames:
+          - 'audiobookshelf.${DOMAIN}'
+
+    service:
+      app:
+        primary: true
+        controller: audiobookshelf
+        ports:
+          http:
+            port: *port
+
+    persistence:
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 200Mi
+        globalMounts:
+          - path: /config
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /.npm
+      media:
+        enabled: true
+        type: nfs
+        server: "nas.home.arpa"
+        path: "/srv/nfs4/data"
+        globalMounts:
+          - path: /media
+            readOnly: true
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

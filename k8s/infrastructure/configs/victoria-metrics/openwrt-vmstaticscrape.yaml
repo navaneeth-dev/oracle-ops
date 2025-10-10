@@ -1,0 +1,14 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: openwrt-scrape
+  namespace: observability
+spec:
+  targetEndpoints:
+    - scheme: http
+      path: /metrics
+      interval: 30s
+      targets:
+        - "openwrt.home.arpa:9100"
+        - "ap.home.arpa:9100"
+  jobName: "OpenWrt"

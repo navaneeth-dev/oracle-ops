@@ -1,0 +1,36 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: envoy-gateway-controller
+  namespace: envoy-gateway-system
+spec:
+  selector:
+    matchLabels:
+      control-plane: envoy-gateway
+      app.kubernetes.io/instance: eg
+  podMetricsEndpoints:
+    - portNumber: 19001
+      scheme: http
+      path: /metrics
+      interval: 30s
+  namespaceSelector:
+    matchNames:
+      - envoy-gateway-system
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: envoy-gateway-reverse-proxy
+  namespace: envoy-gateway-system
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: envoy
+  podMetricsEndpoints:
+    - portNumber: 19001
+      scheme: http
+      path: /stats/prometheus
+      interval: 30s
+  namespaceSelector:
+    matchNames:
+      - envoy-gateway-system

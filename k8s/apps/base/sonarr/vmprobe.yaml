@@ -1,0 +1,21 @@
+kind: VMProbe
+apiVersion: operator.victoriametrics.com/v1beta1
+metadata:
+  name: sonarr
+  namespace: homelab
+spec:
+  interval: "30s"
+  module: http_2xx
+  jobName: sonarr
+  vmProberSpec:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      targets:
+        - http://sonarr.homelab.svc.cluster.local:8989
+      labels:
+        name: Sonarr
+        category: Arr Suite
+

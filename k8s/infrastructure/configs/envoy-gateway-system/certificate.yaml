@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: homelab
+  namespace: envoy-gateway-system
+spec:
+  secretName: homelab-cert-private-keys
+  dnsNames:
+    - '${DOMAIN}'
+    - '*.${DOMAIN}'
+  issuerRef:
+    name: homelab
+    kind: ClusterIssuer
