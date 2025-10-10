@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-config
+  namespace: homepage
+data:
+  docker.yaml: ""
+
+  kubernetes.yaml: |
+    mode: disabled
+    gateway: false
+    ingress: false
+    traefik: false
+
+  settings.yaml: |
+    title: Homelab
+    theme: dark
+    color: slate
+    headerStyle: clean
+    statusStyle: dot
+    useEqualHeights: false
+    fiveColumns: true
+    quicklaunch:
+      searchDescriptions: true
+      hideInternetSearch: true
+      showSearchSuggestions: true
+      hideVisitURL: true
+    layout:
+      Public:
+        style: row
+        columns: 4
+      Media:
+        style: row
+        columns: 4
+      Monitoring:
+        style: row
+        columns: 2
+
+  widgets.yaml: ""
+
+  bookmarks.yaml: ""
+
+  services.yaml: |
+    - Public:
+        - Jellyfin:
+            href: 'https://jellyfin.${DOMAIN}'
+            icon: jellyfin
+            description: Watch Movies/TV
+        - Jellyseerr:
+            href: 'https://requests.${DOMAIN}'
+            icon: jellyseerr
+            description: Download Movies/TV
+        - Audiobookshelf:
+            href: 'https://audiobookshelf.${DOMAIN}'
+            icon: audiobookshelf
+            description: Stream Audiobooks
+    
+    - 'Arr Stack':
+        - Radarr:
+            href: 'https://radarr.${DOMAIN}'
+            icon: radarr
+        - Sonarr:
+            href: 'https://sonarr.${DOMAIN}'
+            icon: sonarr
+        - qBittorrent:
+            href: 'https://qbittorrent.${DOMAIN}'
+            icon: qbittorrent
+    - Monitoring:
+        - Grafana:
+            href: 'https://grafana.${DOMAIN}'
+            icon: grafana

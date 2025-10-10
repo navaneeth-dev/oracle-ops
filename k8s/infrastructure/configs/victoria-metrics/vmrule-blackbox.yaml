@@ -1,0 +1,17 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: blackbox-probe-failed
+  namespace: observability
+spec:
+  groups:
+    - name: blackbox-probes
+      rules:
+        - alert: BlackboxProbeFailed
+          expr: probe_success == 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Blackbox probe failed (instance {{ $labels.name }})"
+            description: "Probe failed {{ $labels.name }} is down"

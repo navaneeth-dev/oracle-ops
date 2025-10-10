@@ -1,0 +1,15 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: smartctl-scrape
+  namespace: observability
+spec:
+  targetEndpoints:
+    - scheme: http
+      path: /metrics
+      interval: 30s
+      targets:
+        - "pve.home.arpa:9633"
+        - "pve-minipc.home.arpa:9633"
+        - "pve-thinkcentre.home.arpa:9633"
+  jobName: "Proxmox"

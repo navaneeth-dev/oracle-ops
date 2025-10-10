@@ -1,0 +1,9 @@
+[env]
+KUBECONFIG = "{{config_root}}/terraform/kubeconfig"
+TALOSCONFIG = "{{config_root}}/terraform/talosconfig"
+SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
+
+[tools]
+helmfile = "1.1.4"
+sops = "3.10.2"
+talhelper = "3.0.36"

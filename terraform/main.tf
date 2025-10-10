@@ -1,0 +1,545 @@
+data "oci_identity_availability_domain" "ad" {
+  compartment_id = var.compartment_ocid
+  ad_number      = 1
+}
+
+// Create VCN, subnets and sec lists
+resource "oci_core_virtual_network" "talos_vcn" {
+  cidr_block     = "10.0.0.0/16"
+  compartment_id = var.compartment_ocid
+  display_name   = "talos"
+  dns_label      = "talos"
+  is_ipv6enabled = true
+}
+
+resource "oci_core_internet_gateway" "talos_internet_gateway" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+
+  display_name = "Internet Gateway"
+}
+
+resource "oci_core_nat_gateway" "talos_nodes" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+
+  display_name = "NAT Gateway"
+}
+
+resource "oci_core_subnet" "nodes" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  cidr_block     = "10.0.10.0/24"
+
+  display_name = "nodes"
+  dns_label    = "nodes"
+
+  prohibit_internet_ingress = true
+  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
+}
+
+resource "oci_core_subnet" "loadbalancers" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  cidr_block     = "10.0.60.0/24"
+
+  display_name = "loadbalancers"
+  dns_label    = "loadbalancers"
+
+  prohibit_internet_ingress = true
+  route_table_id            = oci_core_route_table.internet_routing.id
+  security_list_ids         = [oci_core_security_list.loadbalancers_sec_list.id]
+  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
+}
+
+resource "oci_core_subnet" "public_lbs" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  cidr_block     = "10.0.70.0/24"
+  ipv6cidr_block = cidrsubnet(oci_core_virtual_network.talos_vcn.ipv6cidr_blocks[0], 8, 0)
+
+  display_name = "publiclbs"
+  dns_label    = "publiclbs"
+
+  prohibit_internet_ingress = false
+  route_table_id            = oci_core_route_table.internet_routing.id
+  security_list_ids         = [oci_core_security_list.public_lbs_sec_list.id]
+  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
+}
+
+resource "oci_core_subnet" "bastion" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  cidr_block     = "10.0.30.0/24"
+
+  display_name = "bastion"
+  dns_label    = "bastion"
+
+  prohibit_internet_ingress = true
+  route_table_id            = oci_core_route_table.internet_routing.id
+  security_list_ids         = [oci_core_security_list.bastion_sec_list.id]
+  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
+}
+
+resource "oci_core_default_route_table" "nat_routing" {
+  manage_default_resource_id = oci_core_virtual_network.talos_vcn.default_route_table_id
+
+  route_rules {
+    destination       = "0.0.0.0/0"
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = oci_core_nat_gateway.talos_nodes.id
+  }
+}
+
+resource "oci_core_route_table" "internet_routing" {
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  compartment_id = var.compartment_ocid
+
+  display_name = "Public Internet Routing"
+
+  route_rules {
+    destination       = "0.0.0.0/0"
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = oci_core_internet_gateway.talos_internet_gateway.id
+  }
+
+  route_rules {
+    destination       = "::/0"
+    destination_type  = "CIDR_BLOCK"
+    network_entity_id = oci_core_internet_gateway.talos_internet_gateway.id
+  }
+}
+
+resource "oci_core_security_list" "loadbalancers_sec_list" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  display_name   = "Private Load Balancer security list"
+
+  # IPv4: Allow all egress traffic
+  egress_security_rules {
+    protocol    = "all"
+    destination = "0.0.0.0/0"
+  }
+
+  # IPv4: Allow Talos from Bastion
+  ingress_security_rules {
+    protocol = "6"
+    source   = "10.0.30.0/24"
+
+    tcp_options {
+      max = "50000"
+      min = "50000"
+    }
+  }
+
+  # IPv4: Allow K8S from Bastion
+  ingress_security_rules {
+    protocol = "6"
+    source   = "10.0.30.0/24"
+
+    tcp_options {
+      max = "6443"
+      min = "6443"
+    }
+  }
+}
+
+resource "oci_core_security_list" "public_lbs_sec_list" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  display_name   = "Public Load Balancer security list"
+
+  # IPv4: Allow all egress traffic
+  egress_security_rules {
+    protocol    = "all"
+    destination = "0.0.0.0/0"
+  }
+
+  # IPv6: Allow all egress traffic
+  egress_security_rules {
+    protocol    = "all"
+    destination = "::/0"
+  }
+
+  # IPv4: Allow SSH from Bastion
+  ingress_security_rules {
+    protocol = "6"
+    source   = "10.0.30.0/24"
+
+    tcp_options {
+      max = "22"
+      min = "22"
+    }
+  }
+
+  # IPv4: Allow HTTPS
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+
+    tcp_options {
+      max = "443"
+      min = "443"
+    }
+  }
+
+  # IPv4: Allow HTTP
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+
+    tcp_options {
+      max = "80"
+      min = "80"
+    }
+  }
+
+  # IPv6: Allow HTTPS
+  ingress_security_rules {
+    protocol = "6"
+    source   = "::/0"
+
+    tcp_options {
+      max = "443"
+      min = "443"
+    }
+  }
+
+  # IPv6: Allow HTTP
+  ingress_security_rules {
+    protocol = "6"
+    source   = "::/0"
+
+    tcp_options {
+      max = "80"
+      min = "80"
+    }
+  }
+}
+
+resource "oci_core_security_list" "bastion_sec_list" {
+  compartment_id = var.compartment_ocid
+  vcn_id         = oci_core_virtual_network.talos_vcn.id
+  display_name   = "Bastion security list"
+
+  # IPv4: Allow all egress traffic
+  egress_security_rules {
+    protocol    = "all"
+    destination = "0.0.0.0/0"
+  }
+
+  # IPv4: Allow Talos traffic
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+
+    tcp_options {
+      max = "50000"
+      min = "50000"
+    }
+  }
+
+  # IPv4: Allow K8S traffic
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+
+    tcp_options {
+      max = "6443"
+      min = "6443"
+    }
+  }
+
+  # IPv4: Allow SSH traffic
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+
+    tcp_options {
+      max = "22"
+      min = "22"
+    }
+  }
+}
+
+resource "oci_core_default_security_list" "default_sec_list" {
+  manage_default_resource_id = oci_core_virtual_network.talos_vcn.default_security_list_id
+
+  # IPv4: Allow all egress traffic
+  egress_security_rules {
+    protocol    = "all"
+    destination = "0.0.0.0/0"
+  }
+
+  # IPv4: Allow all internal communication in the subnet for Kubernetes
+  ingress_security_rules {
+    protocol = "all"
+    source   = "10.0.10.0/24"
+  }
+
+  # IPv4: Allow Healthchecks for Talos from Private LBs
+  ingress_security_rules {
+    protocol = "6"
+    source   = "10.0.60.0/24"
+
+    tcp_options {
+      max = "50000"
+      min = "50000"
+    }
+  }
+
+  # IPv4: Allow Healthchecks for K8S Api from Private LBs
+  ingress_security_rules {
+    protocol = "6"
+    source   = "10.0.60.0/24"
+
+    tcp_options {
+      max = "6443"
+      min = "6443"
+    }
+  }
+
+  # IPv4: Allow Internet to talk to NodePort HTTP
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+
+    tcp_options {
+      max = "32579"
+      min = "32579"
+    }
+  }
+
+  # IPv4: Allow Internet to talk to NodePort HTTPS
+  ingress_security_rules {
+    protocol = "6"
+    source   = "0.0.0.0/0"
+
+    tcp_options {
+      max = "31258"
+      min = "31258"
+    }
+  }
+
+  # IPv4: Allow Bastion to talk to Kubenetes API server via NLB
+  ingress_security_rules {
+    protocol = "6"
+    source   = "10.0.30.0/24"
+
+    tcp_options {
+      max = "6443"
+      min = "6443"
+    }
+  }
+
+  # IPv4: Allow Bastion to talk to Talos API server via NLB
+  ingress_security_rules {
+    protocol = "6"
+    source   = "10.0.30.0/24"
+
+    tcp_options {
+      max = "50000"
+      min = "50000"
+    }
+  }
+}
+
+resource "oci_network_load_balancer_network_load_balancer" "talos" {
+  compartment_id = var.compartment_ocid
+  display_name   = "talos"
+  subnet_id      = oci_core_subnet.loadbalancers.id
+  is_private     = true # Make the load balancer private
+
+  assigned_private_ipv4 = "10.0.60.200"
+}
+
+resource "oci_network_load_balancer_network_load_balancer" "traefik_nlb" {
+  compartment_id = var.compartment_ocid
+  display_name   = "traefik_ingress_nlb"
+  subnet_id      = oci_core_subnet.public_lbs.id
+  is_private     = false # Make the load balancer private
+  nlb_ip_version = "IPV4_AND_IPV6"
+
+  assigned_ipv6 = cidrhost(oci_core_subnet.public_lbs.ipv6cidr_block, 200)
+  # subnet_ipv6cidr = oci_core_subnet.public_lbs.ipv6cidr_block
+}
+
+// K8S load balance
+resource "oci_network_load_balancer_backend_set" "k8s_api" {
+  name                     = "${var.cluster_name}-k8s-api-backend"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
+  policy                   = "FIVE_TUPLE"
+
+  health_checker {
+    port               = 6443
+    interval_in_millis = 10000
+    protocol           = "HTTPS"
+    return_code        = 401
+    url_path           = "/readyz"
+  }
+}
+
+// nlb -> HTTP Traefik load balancer
+resource "oci_network_load_balancer_backend_set" "https_traefik_nlb" {
+  name                     = "${var.cluster_name}-traefik_https_nlb"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
+  policy                   = "FIVE_TUPLE"
+
+  health_checker {
+    port               = 31258
+    interval_in_millis = 10000
+    protocol           = "HTTPS"
+    return_code        = 404
+    url_path           = "/"
+  }
+}
+
+// nlb -> HTTP Traefik load balancer
+resource "oci_network_load_balancer_backend_set" "http_traefik_nlb" {
+  name                     = "${var.cluster_name}-traefik_http_nlb"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
+  policy                   = "FIVE_TUPLE"
+
+  health_checker {
+    port               = 32579
+    interval_in_millis = 10000
+    protocol           = "HTTP"
+    return_code        = 404
+    url_path           = "/"
+  }
+}
+
+
+
+resource "oci_network_load_balancer_backend" "k8s_api" {
+  count = var.control_plane_count
+
+  backend_set_name         = oci_network_load_balancer_backend_set.k8s_api.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
+  port                     = 6443
+  ip_address               = oci_core_instance.controlplane[count.index].private_ip
+}
+
+resource "oci_network_load_balancer_backend" "http" {
+  count = var.control_plane_count
+
+  backend_set_name         = oci_network_load_balancer_backend_set.http_traefik_nlb.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
+  port                     = 32579
+  ip_address               = oci_core_instance.controlplane[count.index].private_ip
+}
+
+resource "oci_network_load_balancer_backend" "https" {
+  count = var.control_plane_count
+
+  backend_set_name         = oci_network_load_balancer_backend_set.https_traefik_nlb.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
+  port                     = 31258
+  ip_address               = oci_core_instance.controlplane[count.index].private_ip
+}
+
+// Talos load balancer
+resource "oci_network_load_balancer_backend_set" "talos" {
+  name                     = "${var.cluster_name}-talos-backend"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
+  policy                   = "FIVE_TUPLE"
+
+  health_checker {
+    protocol           = "TCP"
+    port               = 50000
+    interval_in_millis = 10000
+  }
+}
+
+resource "oci_network_load_balancer_backend" "talos" {
+  count = var.control_plane_count
+
+  backend_set_name         = oci_network_load_balancer_backend_set.talos.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
+  port                     = 50000
+  ip_address               = oci_core_instance.controlplane[count.index].private_ip
+}
+
+resource "oci_network_load_balancer_listener" "talos" {
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
+  name                     = "${var.cluster_name}-talos-listener"
+  default_backend_set_name = oci_network_load_balancer_backend_set.talos.name
+  port                     = 50000
+  protocol                 = "TCP"
+}
+
+resource "oci_bastion_bastion" "talos" {
+  bastion_type     = "STANDARD"
+  compartment_id   = var.compartment_ocid
+  target_subnet_id = oci_core_subnet.bastion.id
+  name             = "Talos"
+
+  client_cidr_block_allow_list = ["0.0.0.0/0"]
+}
+
+# Talos API Load Balancer Access Bastion
+resource "oci_bastion_session" "talos_session" {
+  bastion_id             = oci_bastion_bastion.talos.id
+  display_name           = "Port_Forward_Talos"
+  session_ttl_in_seconds = 60 * 60 * 3
+
+  key_details {
+    public_key_content = var.ssh_public_key
+  }
+
+  target_resource_details {
+    session_type                       = "PORT_FORWARDING"
+    target_resource_private_ip_address = oci_network_load_balancer_network_load_balancer.talos.assigned_private_ipv4
+    target_resource_port               = 50000
+  }
+}
+
+# Kubernetes API Access
+resource "oci_bastion_session" "k8s_api_session" {
+  bastion_id             = oci_bastion_bastion.talos.id
+  display_name           = "Port_Forward_K8S_API"
+  session_ttl_in_seconds = 60 * 60 * 3
+
+  key_details {
+    public_key_content = var.ssh_public_key
+  }
+  target_resource_details {
+    session_type                       = "PORT_FORWARDING"
+    target_resource_private_ip_address = oci_network_load_balancer_network_load_balancer.talos.assigned_private_ipv4
+    target_resource_port               = 6443
+  }
+}
+
+/* Instances */
+resource "oci_core_instance" "controlplane" {
+  count = var.control_plane_count
+
+  availability_domain = data.oci_identity_availability_domain.ad.name
+  compartment_id      = var.compartment_ocid
+  display_name        = "bom-talos-${count.index + 1}"
+  shape               = var.instance_shape
+  fault_domain        = "FAULT-DOMAIN-${count.index + 1}"
+
+  shape_config {
+    ocpus         = count.index + 1 == var.control_plane_count ? 2 : var.instance_ocpus
+    memory_in_gbs = var.instance_shape_config_memory_in_gbs
+  }
+
+  create_vnic_details {
+    subnet_id        = oci_core_subnet.nodes.id
+    display_name     = "primaryvnic"
+    assign_public_ip = false
+    hostname_label   = "talos-hyd-${count.index + 1}"
+    private_ip       = "10.0.10.${count.index + 2}"
+  }
+
+  source_details {
+    source_type = "image"
+    source_id   = oci_core_image.talos_image.id
+    boot_volume_size_in_gbs = "50"
+  }
+
+  metadata = {
+    user_data = base64encode(data.talos_machine_configuration.this.machine_configuration)
+  }
+}

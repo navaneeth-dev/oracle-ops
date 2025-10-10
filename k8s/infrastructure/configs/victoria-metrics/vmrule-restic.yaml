@@ -1,0 +1,17 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: restic-rules
+  namespace: observability
+spec:
+  groups:
+    - name: restic
+      rules:
+        - alert: ResticOutdatedBackup
+          expr: time() - restic_last_snapshot_ts / 1000 > 90000
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: "A Restic backup is outdated"
+            description: "Restic backup is outdated"
