@@ -5,6 +5,6 @@ resources:
   - envoy-gateway
   - victoria-metrics
   - bjw-s-helmrepository.yaml
-  - rook-ceph
+  - piraeus
   - cert-manager
   - fluent-bit
