@@ -1,0 +1,21 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  bootstrap-flux:
+    cmds:
+      - kubectl get ns flux-system || kubectl create ns flux-system
+      - |
+        kubectl -n flux-system get secret sops-age || kubectl create secret generic sops-age \
+          --namespace=flux-system \
+          --from-literal=age.agekey="$(infisical secrets get TF_VAR_SOPS_AGEKEY --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 --plain)"
+      - |
+        infisical run --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 -- flux bootstrap github \
+          --context=admin@home-cluster \
+          --owner=navaneeth-dev \
+          --repository=oracle-ops \
+          --branch=main \
+          --personal \
+          --path=k8s/clusters/oracle
+
