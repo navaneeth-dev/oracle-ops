@@ -5,3 +5,20 @@ metadata:
   namespace: envoy-gateway-system
 spec:
   ipFamily: IPv4
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        type: NodePort
+        allocateLoadBalancerNodePorts: false
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              ports:
+                - name: http-80
+                  port: 80
+                  nodePort: 32579
+                - name: https-443
+                  port: 443
+                  nodePort: 31258
