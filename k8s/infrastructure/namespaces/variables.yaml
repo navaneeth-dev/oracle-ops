@@ -4,5 +4,5 @@ metadata:
   name: variables
   namespace: flux-system
 data:
-  DOMAIN: "fossindia.ovh"
+  DOMAIN: "oci.fossindia.ovh"
   TZ: "Asia/Kolkata"
