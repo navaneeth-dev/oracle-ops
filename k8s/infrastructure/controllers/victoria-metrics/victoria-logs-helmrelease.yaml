@@ -28,6 +28,6 @@ spec:
       persistentVolume:
         enabled: true
         storageClassName: piraeus-storage
-        size: 32Gi
+        size: 5Gi
       serviceMonitor:
         enabled: false
