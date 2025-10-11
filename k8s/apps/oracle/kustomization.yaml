@@ -5,7 +5,7 @@ resources:
   - ../base/jellyseerr
   - ../base/audiobookshelf
 #  - ../base/qbittorrent
-  - ../base/jellyfin
+#  - ../base/jellyfin
 #  - ../base/plex
 #  - ../base/radarr
 #  - ../base/sonarr
