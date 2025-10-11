@@ -48,7 +48,7 @@ resource "oci_core_subnet" "loadbalancers" {
 
   prohibit_internet_ingress = true
   route_table_id            = oci_core_route_table.internet_routing.id
-  security_list_ids         = [oci_core_security_list.loadbalancers_sec_list.id]
+  security_list_ids = [oci_core_security_list.loadbalancers_sec_list.id]
   dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
 }
 
@@ -63,7 +63,7 @@ resource "oci_core_subnet" "public_lbs" {
 
   prohibit_internet_ingress = false
   route_table_id            = oci_core_route_table.internet_routing.id
-  security_list_ids         = [oci_core_security_list.public_lbs_sec_list.id]
+  security_list_ids = [oci_core_security_list.public_lbs_sec_list.id]
   dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
 }
 
@@ -77,7 +77,7 @@ resource "oci_core_subnet" "bastion" {
 
   prohibit_internet_ingress = true
   route_table_id            = oci_core_route_table.internet_routing.id
-  security_list_ids         = [oci_core_security_list.bastion_sec_list.id]
+  security_list_ids = [oci_core_security_list.bastion_sec_list.id]
   dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
 }
 
@@ -348,7 +348,7 @@ resource "oci_network_load_balancer_network_load_balancer" "talos" {
   compartment_id = var.compartment_ocid
   display_name   = "talos"
   subnet_id      = oci_core_subnet.loadbalancers.id
-  is_private     = true # Make the load balancer private
+  is_private = true # Make the load balancer private
 
   assigned_private_ipv4 = "10.0.60.200"
 }
@@ -357,7 +357,7 @@ resource "oci_network_load_balancer_network_load_balancer" "traefik_nlb" {
   compartment_id = var.compartment_ocid
   display_name   = "traefik_ingress_nlb"
   subnet_id      = oci_core_subnet.public_lbs.id
-  is_private     = false # Make the load balancer private
+  is_private = false # Make the load balancer private
   nlb_ip_version = "IPV4_AND_IPV6"
 
   assigned_ipv6 = cidrhost(oci_core_subnet.public_lbs.ipv6cidr_block, 200)
@@ -408,7 +408,6 @@ resource "oci_network_load_balancer_backend_set" "http_traefik_nlb" {
     url_path           = "/"
   }
 }
-
 
 
 resource "oci_network_load_balancer_backend" "k8s_api" {
@@ -516,7 +515,7 @@ resource "oci_core_instance" "controlplane" {
 
   availability_domain = data.oci_identity_availability_domain.ad.name
   compartment_id      = var.compartment_ocid
-  display_name        = "bom-talos-${count.index + 1}"
+  display_name        = "talos-hyd-${count.index + 1}"
   shape               = var.instance_shape
   fault_domain        = "FAULT-DOMAIN-${count.index + 1}"
 
@@ -534,12 +533,16 @@ resource "oci_core_instance" "controlplane" {
   }
 
   source_details {
-    source_type = "image"
-    source_id   = oci_core_image.talos_image.id
+    source_type             = "image"
+    source_id               = oci_core_image.talos_image.id
     boot_volume_size_in_gbs = "50"
   }
 
   metadata = {
     user_data = base64encode(data.talos_machine_configuration.this.machine_configuration)
+  }
+
+  lifecycle {
+    ignore_changes = [metadata]
   }
 }
