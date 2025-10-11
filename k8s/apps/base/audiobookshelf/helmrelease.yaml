@@ -98,9 +98,9 @@ spec:
           - path: /.npm
       media:
         enabled: true
-        type: nfs
-        server: "nas.home.arpa"
-        path: "/srv/nfs4/data"
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 5Gi
         globalMounts:
           - path: /media
             readOnly: true
