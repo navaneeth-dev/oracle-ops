@@ -10,7 +10,6 @@ spec:
     kubernetes:
       envoyService:
         type: NodePort
-        allocateLoadBalancerNodePorts: false
         patch:
           type: StrategicMerge
           value:
