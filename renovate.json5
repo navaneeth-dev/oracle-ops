@@ -4,9 +4,6 @@
     "config:recommended"
   ],
   "timezone": "Asia/Kolkata",
-  "schedule": [
-    "* 0-3 1 * *"
-  ],
   "kubernetes": {
     "managerFilePatterns": [
       "/\\.yaml$/"
