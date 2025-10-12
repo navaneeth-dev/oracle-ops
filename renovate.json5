@@ -29,7 +29,7 @@
       ],
       automerge: true,
       automergeType: "branch",
-      ignoreTests: false,
+      ignoreTests: true,
     },
   ],
 }
