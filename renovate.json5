@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "timezone": "Asia/Kolkata",
+  "schedule": [
+    "* 0-3 1 * *"
+  ],
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/\\.yaml$/"
+    ]
+  },
+  "helmv3": {
+    "managerFilePatterns": [
+      "/\\.yaml$/"
+    ]
+  },
+}
