@@ -28,7 +28,7 @@
         "terraform-provider"
       ],
       automerge: true,
-      automergeType: "pr",
+      automergeType: "branch",
       ignoreTests: false,
     },
   ],
