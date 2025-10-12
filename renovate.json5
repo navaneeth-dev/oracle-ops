@@ -16,6 +16,10 @@
       "/\\.yaml$/"
     ]
   },
+  suppressNotifications: [
+    "prEditedNotification",
+    "prIgnoreNotification",
+  ],
   packageRules: [
     {
       description: "Auto-merge terraform",
