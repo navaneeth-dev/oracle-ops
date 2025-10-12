@@ -24,7 +24,8 @@
     {
       description: "Auto-merge terraform",
       matchDatasources: [
-        "terraform"
+        "terraform-module",
+        "terraform-provider"
       ],
       automerge: true,
       automergeType: "pr",
