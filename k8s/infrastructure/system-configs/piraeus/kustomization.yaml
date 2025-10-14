@@ -5,4 +5,5 @@ resources:
   - linstor-satellite-configuration.yaml
   - storage-class.yaml
   - storage-pool.yaml
+  - storage-class-replicated.yaml
 
