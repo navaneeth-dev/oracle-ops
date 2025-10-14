@@ -2,6 +2,11 @@
 
 version: '3'
 
+includes:
+  terraform:
+    taskfile: ./terraform
+    dir: ./terraform
+
 tasks:
   bootstrap-flux:
     cmds:
