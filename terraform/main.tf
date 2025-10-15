@@ -536,7 +536,7 @@ resource "oci_core_instance" "controlplane" {
   source_details {
     source_type             = "image"
     source_id               = oci_core_image.talos_image.id
-    boot_volume_size_in_gbs = "50"
+    boot_volume_size_in_gbs = "200"
   }
 
   metadata = {
