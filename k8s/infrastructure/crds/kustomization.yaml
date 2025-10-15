@@ -2,5 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/experimental-install.yaml
-  - https://github.com/piraeusdatastore/piraeus-operator//config/extras/monitoring?ref=v2
+  # - https://github.com/piraeusdatastore/piraeus-operator//config/extras/monitoring?ref=v2
 
