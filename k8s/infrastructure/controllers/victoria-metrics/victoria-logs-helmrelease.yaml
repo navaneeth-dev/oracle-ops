@@ -27,7 +27,7 @@ spec:
     server:
       persistentVolume:
         enabled: true
-        storageClassName: piraeus-storage
+        storageClassName: local-path
         size: 5Gi
       serviceMonitor:
         enabled: false

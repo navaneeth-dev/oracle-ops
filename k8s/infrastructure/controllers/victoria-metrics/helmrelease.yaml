@@ -51,7 +51,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       persistence:
         enabled: true
-        storageClassName: &storageClassName piraeus-storage
+        storageClassName: &storageClassName local-path
         size: 2Gi
     vmsingle:
       enabled: true
