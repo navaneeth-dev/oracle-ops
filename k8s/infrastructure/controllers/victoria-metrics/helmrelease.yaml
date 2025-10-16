@@ -183,6 +183,6 @@ spec:
       targetPath: alertmanager.config.receivers[0].discord_configs[0].webhook_url
     - kind: Secret
       name: discord-webhook
-      valuesKey: oci
+      valuesKey: info
       targetPath: alertmanager.config.receivers[2].discord_configs[0].webhook_url
 
