@@ -114,7 +114,7 @@ spec:
           group_interval: 5m
           repeat_interval: 4h
           routes:
-            - receiver: 'null'
+            - receiver: 'discord-info'
               matchers:
                 - alertname =~ "InfoInhibitor|Watchdog"
 
@@ -148,8 +148,41 @@ spec:
                   {{- end }}
                   {{- end }}
           - name: "null"
+          - name: "discord-info"
+            discord_configs:
+              - webhook_url: 'replacedfromvalues'
+                username: '${DOMAIN}'
+                title: |-
+                  [{{ .Status | toUpper -}}
+                   {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
+                  ]
+                  {{ if ne .Status "firing" -}}
+                  :white_check_mark: 
+                  {{- else if eq .CommonLabels.severity "critical" -}}
+                  :x:
+                  {{- else if eq .CommonLabels.severity "warning" -}}
+                  :warning:
+                  {{- else if eq .CommonLabels.severity "info" -}}
+                  :information_source:
+                  {{- else -}}
+                  :question:
+                  {{- end }}
+                message: |
+                  {{ range .Alerts }}
+                  {{- if .Annotations.summary }}
+                  Summary:  {{ .Annotations.summary }}
+                  {{- end }}
+                  {{- if .Annotations.description }}
+                  Description: {{ .Annotations.description }}
+                  {{- end }}
+                  {{- end }}
   valuesFrom:
     - kind: Secret
       name: discord-webhook
       valuesKey: token
       targetPath: alertmanager.config.receivers[0].discord_configs[0].webhook_url
+    - kind: Secret
+      name: discord-webhook
+      valuesKey: oci
+      targetPath: alertmanager.config.receivers[2].discord_configs[0].webhook_url
+
