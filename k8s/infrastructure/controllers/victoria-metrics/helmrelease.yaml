@@ -24,6 +24,11 @@ spec:
   releaseName: stack
   values:
     fullnameOverride: stack
+
+    defaultDashboards:
+      grafanaOperator:
+        enabled: true
+
     grafana:
       initChownData:
         enabled: false
@@ -117,7 +122,7 @@ spec:
           - name: "discord-infra"
             discord_configs:
               - webhook_url: 'replacedfromvalues'
-                username: 'Homelab'
+                username: '${DOMAIN}'
                 title: |-
                   [{{ .Status | toUpper -}}
                    {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
