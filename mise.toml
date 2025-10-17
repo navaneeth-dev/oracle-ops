@@ -4,4 +4,4 @@ TALOSCONFIG = "{{config_root}}/terraform/talosconfig"
 SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 
 [tools]
-sops = "3.10.2"
+sops = "3.11.0"
