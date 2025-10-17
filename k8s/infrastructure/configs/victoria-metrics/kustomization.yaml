@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - vmrule-blackbox.yaml
   - vmrule-restic.yaml
-  - vmprobe-arrstack.yaml
+

@@ -1,0 +1,21 @@
+kind: VMProbe
+apiVersion: operator.victoriametrics.com/v1beta1
+metadata:
+  name: sabnzbd
+  namespace: homelab
+spec:
+  interval: "30s"
+  module: http_2xx
+  jobName: sabnzbd
+  vmProberSpec:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      targets:
+        - http://arr-stack.homelab.svc.cluster.local:8080
+      labels:
+        name: SABnzbd
+        category: Download
+
