@@ -26,6 +26,7 @@ spec:
     fullnameOverride: stack
 
     defaultDashboards:
+      defaultTimezone: ist
       grafanaOperator:
         enabled: true
 
