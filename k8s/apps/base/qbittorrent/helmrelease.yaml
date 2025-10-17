@@ -127,9 +127,8 @@ spec:
           - path: /config
       data:
         enabled: true
-        type: nfs
-        server: "nas.home.arpa"
-        path: "/srv/nfs4/data"
+        type: persistentVolumeClaim
+        existingClaim: data
         globalMounts:
           - path: /data
       tmp:
