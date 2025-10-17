@@ -1,6 +1,6 @@
 # Oracle Ops
 
-Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
+Highly available Kubernetes setup on Oracle Cloud Always Free Tier. 
 
 ## Security
 
