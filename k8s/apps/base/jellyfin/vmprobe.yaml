@@ -1,0 +1,21 @@
+kind: VMProbe
+apiVersion: operator.victoriametrics.com/v1beta1
+metadata:
+  name: jellyfin
+  namespace: homelab
+spec:
+  interval: "30s"
+  module: http_2xx
+  jobName: jellyfin
+  vmProberSpec:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      targets:
+        - http://jellyfin.homelab.svc.cluster.local:8096
+      labels:
+        name: Jellyfin
+        category: Media
+

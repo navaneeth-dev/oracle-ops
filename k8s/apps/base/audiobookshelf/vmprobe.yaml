@@ -1,0 +1,21 @@
+kind: VMProbe
+apiVersion: operator.victoriametrics.com/v1beta1
+metadata:
+  name: audiobookshelf
+  namespace: homelab
+spec:
+  interval: "30s"
+  module: http_2xx
+  jobName: audiobookshelf
+  vmProberSpec:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      targets:
+        - http://audiobookshelf.homelab.svc.cluster.local:80
+      labels:
+        name: Audiobookshelf
+        category: Media
+
