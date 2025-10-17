@@ -11,8 +11,8 @@ spec:
     - 'grafana.${DOMAIN}'
   rules:
     - backendRefs:
-        - name: stack-grafana
-          port: 80
+        - name: grafana-service
+          port: 3000
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
