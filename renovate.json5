@@ -16,10 +16,8 @@
       "/\\.yaml$/"
     ]
   },
-  {
-      "flux": {
-          "managerFilePatterns": ["/k8s/infrastructure/.+\\.yaml$/"]
-      }
+  "flux": {
+      "managerFilePatterns": ["/k8s/infrastructure/.+\\.yaml$/"]
   },
   suppressNotifications: [
     "prEditedNotification",
