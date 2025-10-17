@@ -46,28 +46,6 @@ spec:
 kind: VMProbe
 apiVersion: operator.victoriametrics.com/v1beta1
 metadata:
-  name: qbittorrent
-  namespace: homelab
-spec:
-  interval: "30s"
-  module: http_2xx
-  jobName: qbittorrent
-  vmProberSpec:
-    url: blackbox-exporter.observability.svc.cluster.local:9115
-    path: /probe
-    scheme: http
-  targets:
-    staticConfig:
-      targets:
-        - http://qbittorrent-app.homelab.svc.cluster.local:80
-      labels:
-        name: qBittorrent
-        category: Download
-
----
-kind: VMProbe
-apiVersion: operator.victoriametrics.com/v1beta1
-metadata:
   name: jellyfin
   namespace: homelab
 spec:
