@@ -6,11 +6,11 @@ resources:
   - ../base/jellyseerr
   - ../base/audiobookshelf
 #  - ../base/qbittorrent
-#  - ../base/jellyfin
-#  - ../base/plex
-#  - ../base/radarr
-#  - ../base/sonarr
-#  - ../base/recyclarr
+  - ../base/jellyfin
+  - ../base/radarr
+  - ../base/sonarr
+  - ../base/recyclarr
   - ../base/homepage
-#  - ../base/prowlarr
-#  - ../base/sabnzbd
+  - ../base/prowlarr
+  - ../base/sabnzbd
+
