@@ -14,7 +14,7 @@ spec:
   targets:
     staticConfig:
       targets:
-        - http://arr-stack.homelab.svc.cluster.local:8080
+        - http://sabnzbd.homelab.svc.cluster.local:8080
       labels:
         name: SABnzbd
         category: Download
