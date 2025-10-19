@@ -7,9 +7,7 @@
   ],
   "timezone": "Asia/Kolkata",
   "helm-values": {
-    "managerFilePatterns": [
-      "managerFilePatterns": ["/k8s/apps/.+\\.yaml$/"]
-    ]
+    "managerFilePatterns": ["/k8s/apps/.+\\.yaml$/"]
   },
   "kubernetes": {
     "managerFilePatterns": [
@@ -22,7 +20,7 @@
     ]
   },
   "flux": {
-      "managerFilePatterns": ["/k8s/infrastructure/.+\\.yaml$/"]
+    "managerFilePatterns": ["/k8s/infrastructure/.+\\.yaml$/"]
   },
   suppressNotifications: [
     "prEditedNotification",
