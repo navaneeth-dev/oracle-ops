@@ -55,6 +55,10 @@ data:
             href: 'https://audiobookshelf.${DOMAIN}'
             icon: audiobookshelf
             description: Stream Audiobooks
+        - Speedtest:
+            href: 'https://speed.${DOMAIN}'
+            icon: librespeed
+            description: Speedtest
     
     - 'Arr Stack':
         - Radarr:
