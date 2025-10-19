@@ -6,6 +6,11 @@
     ":semanticCommits"
   ],
   "timezone": "Asia/Kolkata",
+  "helm-values": {
+    "managerFilePatterns": [
+      "managerFilePatterns": ["/k8s/apps/.+\\.yaml$/"]
+    ]
+  },
   "kubernetes": {
     "managerFilePatterns": [
       "/\\.yaml$/"
