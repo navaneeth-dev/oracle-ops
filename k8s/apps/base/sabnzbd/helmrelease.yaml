@@ -30,7 +30,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      *name:
+      sabnzbd:
         containers:
           app:
             image:

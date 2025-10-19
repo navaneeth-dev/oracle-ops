@@ -23,7 +23,7 @@ spec:
       retries: 3
   values:
     controllers:
-      *name:
+      librespeed:
         containers:
           app:
             image:
