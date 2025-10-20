@@ -520,8 +520,8 @@ resource "oci_core_instance" "controlplane" {
   fault_domain        = "FAULT-DOMAIN-${count.index + 1}"
 
   shape_config {
-    #ocpus         = count.index + 1 == var.control_plane_count ? 2 : var.instance_ocpus
-    ocpus         = var.instance_ocpus
+    ocpus         = count.index + 1 == var.control_plane_count ? 2 : var.instance_ocpus
+    # ocpus         = var.instance_ocpus
     memory_in_gbs = var.instance_shape_config_memory_in_gbs
   }
 
@@ -536,7 +536,8 @@ resource "oci_core_instance" "controlplane" {
   source_details {
     source_type             = "image"
     source_id               = oci_core_image.talos_image.id
-    boot_volume_size_in_gbs = "200"
+    boot_volume_size_in_gbs = "66"
+    boot_volume_vpus_per_gb = 120
   }
 
   metadata = {
