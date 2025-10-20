@@ -5,10 +5,6 @@ resource "oci_identity_dynamic_group" "all_vms" {
     name = "all-vms"
 }
 
-data "oci_identity_compartment" "k8s_compartment" {
-    id = var.compartment_ocid
-}
-
 resource "oci_identity_policy" "csi_policy" {
     compartment_id = var.compartment_ocid
     description = "Grant permission to create Block Storage via CSI Kubernetes"
@@ -19,4 +15,3 @@ resource "oci_identity_policy" "csi_policy" {
       "allow dynamic-group ${oci_identity_dynamic_group.all_vms.name} to manage volume-family in compartment id ${var.compartment_ocid}"
     ]
 }
-
