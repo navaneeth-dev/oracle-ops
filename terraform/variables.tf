@@ -6,12 +6,12 @@ variable "instance_shape" {
 }
 
 variable "instance_ocpus" {
-  default = 4
+  default = 1
 }
 
 variable "instance_shape_config_memory_in_gbs" {
   description = "RAM for instances"
-  default = 24
+  default = 8
 }
 
 variable "control_plane_count" {
