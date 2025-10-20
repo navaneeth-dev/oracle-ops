@@ -7,5 +7,5 @@ resources:
   - envoy-gateway-system.yaml
   - homepage.yaml
   - observability.yaml
-  - velero.yaml
+  - volsync.yaml
 
