@@ -22,16 +22,20 @@ resource "oci_core_instance" "controlplane" {
 
   source_details {
     source_type             = "image"
-    source_id               = data.oci_core_images.oracle_linux.images[0].id
+    source_id               = data.oci_core_images.ubuntu.images[0].id
     boot_volume_size_in_gbs = "200"
     boot_volume_vpus_per_gb = 120
   }
+
+  metadata = {
+    ssh_authorized_keys = var.ssh_public_key
+  }
 }
 
-data "oci_core_images" "oracle_linux" {
+data "oci_core_images" "ubuntu" {
   compartment_id = var.compartment_ocid
 
-  operating_system = "Oracle Linux"
-  operating_system_version = "9"
+  operating_system = "Canonical Ubuntu"
+  operating_system_version = "24.04 Minimal aarch64"
   sort_by = "TIMECREATED"
 }
