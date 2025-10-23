@@ -15,7 +15,7 @@ resource "oci_core_instance" "controlplane" {
   create_vnic_details {
     subnet_id        = oci_core_subnet.nodes.id
     display_name     = "primaryvnic"
-    assign_public_ip = false
+    assign_public_ip = true
     hostname_label   = "talos-hyd-${count.index + 1}"
     private_ip       = "10.0.10.${count.index + 2}"
   }
@@ -25,21 +25,6 @@ resource "oci_core_instance" "controlplane" {
     source_id               = data.oci_core_images.oracle_linux.images[0].id
     boot_volume_size_in_gbs = "200"
     boot_volume_vpus_per_gb = 120
-  }
-
-  # metadata = {
-  #   user_data = base64encode(data.talos_machine_configuration.this.machine_configuration)
-  # }
-
-  agent_config {
-    plugins_config {
-      desired_state = "ENABLED"
-      name          = "Bastion"
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [metadata]
   }
 }
 

@@ -1,86 +1,3 @@
-data "oci_identity_availability_domain" "ad" {
-  compartment_id = var.compartment_ocid
-  ad_number      = 1
-}
-
-// Create VCN, subnets and sec lists
-resource "oci_core_virtual_network" "talos_vcn" {
-  cidr_block     = "10.0.0.0/16"
-  compartment_id = var.compartment_ocid
-  display_name   = "talos"
-  dns_label      = "talos"
-  is_ipv6enabled = true
-}
-
-resource "oci_core_internet_gateway" "talos_internet_gateway" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_virtual_network.talos_vcn.id
-
-  display_name = "Internet Gateway"
-}
-
-resource "oci_core_nat_gateway" "talos_nodes" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_virtual_network.talos_vcn.id
-
-  display_name = "NAT Gateway"
-}
-
-resource "oci_core_subnet" "nodes" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_virtual_network.talos_vcn.id
-  cidr_block     = "10.0.10.0/24"
-
-  display_name = "nodes"
-  dns_label    = "nodes"
-
-  prohibit_internet_ingress = true
-  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
-}
-
-resource "oci_core_subnet" "loadbalancers" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_virtual_network.talos_vcn.id
-  cidr_block     = "10.0.60.0/24"
-
-  display_name = "loadbalancers"
-  dns_label    = "loadbalancers"
-
-  prohibit_internet_ingress = true
-  route_table_id            = oci_core_route_table.internet_routing.id
-  security_list_ids = [oci_core_security_list.loadbalancers_sec_list.id]
-  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
-}
-
-resource "oci_core_subnet" "public_lbs" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_virtual_network.talos_vcn.id
-  cidr_block     = "10.0.70.0/24"
-  ipv6cidr_block = cidrsubnet(oci_core_virtual_network.talos_vcn.ipv6cidr_blocks[0], 8, 0)
-
-  display_name = "publiclbs"
-  dns_label    = "publiclbs"
-
-  prohibit_internet_ingress = false
-  route_table_id            = oci_core_route_table.internet_routing.id
-  security_list_ids = [oci_core_security_list.public_lbs_sec_list.id]
-  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
-}
-
-resource "oci_core_subnet" "bastion" {
-  compartment_id = var.compartment_ocid
-  vcn_id         = oci_core_virtual_network.talos_vcn.id
-  cidr_block     = "10.0.30.0/24"
-
-  display_name = "bastion"
-  dns_label    = "bastion"
-
-  prohibit_internet_ingress = true
-  route_table_id            = oci_core_route_table.internet_routing.id
-  security_list_ids = [oci_core_security_list.bastion_sec_list.id]
-  dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
-}
-
 resource "oci_core_default_route_table" "nat_routing" {
   manage_default_resource_id = oci_core_virtual_network.talos_vcn.default_route_table_id
 
@@ -364,22 +281,7 @@ resource "oci_network_load_balancer_network_load_balancer" "traefik_nlb" {
   # subnet_ipv6cidr = oci_core_subnet.public_lbs.ipv6cidr_block
 }
 
-// K8S load balance
-resource "oci_network_load_balancer_backend_set" "k8s_api" {
-  name                     = "${var.cluster_name}-k8s-api-backend"
-  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
-  policy                   = "FIVE_TUPLE"
-
-  health_checker {
-    port               = 6443
-    interval_in_millis = 10000
-    protocol           = "HTTPS"
-    return_code        = 401
-    url_path           = "/readyz"
-  }
-}
-
-// nlb -> HTTP Traefik load balancer
+// nlb -> HTTPs load balancer
 resource "oci_network_load_balancer_backend_set" "https_traefik_nlb" {
   name                     = "${var.cluster_name}-traefik_https_nlb"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
@@ -394,7 +296,7 @@ resource "oci_network_load_balancer_backend_set" "https_traefik_nlb" {
   }
 }
 
-// nlb -> HTTP Traefik load balancer
+// nlb -> HTTP load balancer
 resource "oci_network_load_balancer_backend_set" "http_traefik_nlb" {
   name                     = "${var.cluster_name}-traefik_http_nlb"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
@@ -435,34 +337,4 @@ resource "oci_network_load_balancer_backend" "https" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
   port                     = 31258
   ip_address               = oci_core_instance.controlplane[count.index].private_ip
-}
-
-// Talos load balancer
-resource "oci_network_load_balancer_backend_set" "talos" {
-  name                     = "${var.cluster_name}-talos-backend"
-  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
-  policy                   = "FIVE_TUPLE"
-
-  health_checker {
-    protocol           = "TCP"
-    port               = 50000
-    interval_in_millis = 10000
-  }
-}
-
-resource "oci_network_load_balancer_backend" "talos" {
-  count = var.control_plane_count
-
-  backend_set_name         = oci_network_load_balancer_backend_set.talos.name
-  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
-  port                     = 50000
-  ip_address               = oci_core_instance.controlplane[count.index].private_ip
-}
-
-resource "oci_network_load_balancer_listener" "talos" {
-  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos.id
-  name                     = "${var.cluster_name}-talos-listener"
-  default_backend_set_name = oci_network_load_balancer_backend_set.talos.name
-  port                     = 50000
-  protocol                 = "TCP"
 }
