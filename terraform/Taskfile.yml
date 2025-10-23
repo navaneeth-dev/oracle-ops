@@ -23,10 +23,10 @@ tasks:
   bootstrap:
     cmds:
       - task: portfwd
-      - talosctl --talosconfig ./talosconfig dashboard
-      - talosctl --talosconfig ./talosconfig bootstrap -n 10.0.10.2
-      - talosctl --talosconfig ./talosconfig health -n 10.0.10.2
-      - defer: cancelportfwd
+      - talosctl dashboard -n 10.0.10.2
+      - talosctl bootstrap -n 10.0.10.2
+      - talosctl health -n 10.0.10.2
+      - defer: { task: cancelportfwd }
     silent: true
 
   portfwd:
@@ -46,3 +46,7 @@ tasks:
     cmds:
       - terraform output -raw talosconfig > ./talosconfig
       - terraform output -raw kubeconfig > ./kubeconfig
+
+  replace-vms:
+    cmds:
+      - terraform apply -replace='oci_core_instance.controlplane[0]'
