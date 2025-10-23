@@ -9,7 +9,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: cert-manager
-    namespace: flux-system
+    namespace: cert-manager
   install:
     createNamespace: true
     crds: CreateReplace
