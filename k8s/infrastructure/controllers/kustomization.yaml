@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - envoy-gateway
   - bjw-s-helmrepository.yaml
-  - cert-manager
   - victoria-metrics
   - fluent-bit
 
