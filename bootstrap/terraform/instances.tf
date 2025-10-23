@@ -1,11 +1,9 @@
 resource "oci_core_instance" "controlplane" {
-  count = var.control_plane_count
-
   availability_domain = data.oci_identity_availability_domain.ad.name
   compartment_id      = var.compartment_ocid
-  display_name        = "talos-hyd-${count.index + 1}"
+  display_name        = "k3s-hyd-1"
   shape               = var.instance_shape
-  fault_domain        = "FAULT-DOMAIN-${count.index + 1}"
+  fault_domain        = "FAULT-DOMAIN-1"
 
   shape_config {
     ocpus         = var.instance_ocpus
@@ -16,14 +14,14 @@ resource "oci_core_instance" "controlplane" {
     subnet_id        = oci_core_subnet.nodes.id
     display_name     = "primaryvnic"
     assign_public_ip = true
-    hostname_label   = "talos-hyd-${count.index + 1}"
-    private_ip       = "10.0.10.${count.index + 2}"
+    hostname_label   = "k3s-hyd-1"
+    private_ip       = "10.0.10.2"
   }
 
   source_details {
     source_type             = "image"
     source_id               = data.oci_core_images.ubuntu.images[0].id
-    boot_volume_size_in_gbs = "200"
+    boot_volume_size_in_gbs = "50"
     boot_volume_vpus_per_gb = 120
   }
 
@@ -31,6 +29,22 @@ resource "oci_core_instance" "controlplane" {
     ssh_authorized_keys = var.ssh_public_key
   }
 }
+
+resource "oci_core_volume" "topolvm_volume" {
+  availability_domain = data.oci_identity_availability_domain.ad.name
+  compartment_id      = var.compartment_ocid
+  display_name        = "topolvm-storage"
+  size_in_gbs         = 140
+  vpus_per_gb = 120
+}
+
+resource "oci_core_volume_attachment" "topolvm_volume_attachment" {
+  attachment_type = "paravirtualized"
+  instance_id     = oci_core_instance.controlplane.id
+  volume_id       = oci_core_volume.topolvm_volume.id
+  display_name    = "topolvm-attachment"
+}
+
 
 data "oci_core_images" "ubuntu" {
   compartment_id = var.compartment_ocid

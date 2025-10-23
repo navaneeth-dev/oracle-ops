@@ -54,7 +54,7 @@ resource "oci_network_load_balancer_backend" "http" {
   backend_set_name         = oci_network_load_balancer_backend_set.http_traefik_nlb.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
   port                     = 32579
-  ip_address               = oci_core_instance.controlplane[count.index].private_ip
+  ip_address               = oci_core_instance.controlplane.private_ip
 }
 
 resource "oci_network_load_balancer_backend" "https" {
@@ -63,5 +63,5 @@ resource "oci_network_load_balancer_backend" "https" {
   backend_set_name         = oci_network_load_balancer_backend_set.https_traefik_nlb.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.traefik_nlb.id
   port                     = 31258
-  ip_address               = oci_core_instance.controlplane[count.index].private_ip
+  ip_address               = oci_core_instance.controlplane.private_ip
 }
