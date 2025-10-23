@@ -1,5 +1,5 @@
 [env]
-KUBECONFIG = "{{config_root}}/terraform/kubeconfig"
+#KUBECONFIG = "{{config_root}}/terraform/kubeconfig"
 TALOSCONFIG = "{{config_root}}/terraform/talosconfig"
 SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 
