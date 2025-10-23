@@ -35,6 +35,7 @@ resource "oci_core_subnet" "nodes" {
 
   prohibit_internet_ingress = false
   dhcp_options_id           = oci_core_virtual_network.talos_vcn.default_dhcp_options_id
+  route_table_id            = oci_core_route_table.internet_routing.id
 }
 
 resource "oci_core_subnet" "loadbalancers" {

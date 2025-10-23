@@ -4,8 +4,8 @@ version: '3'
 
 includes:
   terraform:
-    taskfile: ./terraform
-    dir: ./terraform
+    taskfile: ./bootstrap/terraform
+    dir: ./bootstrap/terraform
 
 tasks:
   bootstrap-flux:
