@@ -520,8 +520,7 @@ resource "oci_core_instance" "controlplane" {
   fault_domain        = "FAULT-DOMAIN-${count.index + 1}"
 
   shape_config {
-    ocpus         = count.index + 1 == var.control_plane_count ? 2 : var.instance_ocpus
-    # ocpus         = var.instance_ocpus
+    ocpus         = var.instance_ocpus
     memory_in_gbs = var.instance_shape_config_memory_in_gbs
   }
 
@@ -535,16 +534,24 @@ resource "oci_core_instance" "controlplane" {
 
   source_details {
     source_type             = "image"
-    source_id               = oci_core_image.talos_image.id
-    boot_volume_size_in_gbs = "66"
+    source_id               = data.oci_core_images.ubuntu.images[0].id
+    boot_volume_size_in_gbs = "200"
     boot_volume_vpus_per_gb = 120
   }
 
-  metadata = {
-    user_data = base64encode(data.talos_machine_configuration.this.machine_configuration)
-  }
+  # metadata = {
+  #   user_data = base64encode(data.talos_machine_configuration.this.machine_configuration)
+  # }
 
   lifecycle {
     ignore_changes = [metadata]
   }
+}
+
+data "oci_core_images" "ubuntu" {
+  compartment_id = var.compartment_ocid
+
+  operating_system = "Canonical Ubuntu"
+  operating_system_version = "24.04 Minimal aarch64"
+  sort_by = "TIMECREATED"
 }
