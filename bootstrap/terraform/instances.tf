@@ -34,8 +34,8 @@ resource "oci_core_volume" "topolvm_volume" {
   availability_domain = data.oci_identity_availability_domain.ad.name
   compartment_id      = var.compartment_ocid
   display_name        = "topolvm-storage"
-  size_in_gbs         = 140
-  vpus_per_gb = 120
+  size_in_gbs         = 150
+  vpus_per_gb         = 120
 }
 
 resource "oci_core_volume_attachment" "topolvm_volume_attachment" {
@@ -49,7 +49,7 @@ resource "oci_core_volume_attachment" "topolvm_volume_attachment" {
 data "oci_core_images" "ubuntu" {
   compartment_id = var.compartment_ocid
 
-  operating_system = "Canonical Ubuntu"
+  operating_system         = "Canonical Ubuntu"
   operating_system_version = "24.04 Minimal aarch64"
-  sort_by = "TIMECREATED"
+  sort_by                  = "TIMECREATED"
 }
