@@ -1,0 +1,3 @@
+# DISABLE SWAP
+# Delete iptable rules
+# Create lvm volume group
