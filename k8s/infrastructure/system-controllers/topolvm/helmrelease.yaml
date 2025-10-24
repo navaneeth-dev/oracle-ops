@@ -28,3 +28,11 @@ spec:
   values:
     controller:
       replicaCount: 1
+
+    storageClasses:
+      - name: topolvm-provisioner
+        storageClass:
+          fsType: xfs
+          isDefaultClass: true
+          volumeBindingMode: WaitForFirstConsumer
+          allowVolumeExpansion: true
