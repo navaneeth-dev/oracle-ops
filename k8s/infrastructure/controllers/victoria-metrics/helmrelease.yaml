@@ -59,6 +59,8 @@ spec:
             memory: 500Mi
 
     kubeControllerManager:
+      endpoints: # required for k3s because kube services are not run as pods
+        - 10.0.10.2
       vmScrape:
         spec:
           endpoints:
@@ -74,6 +76,8 @@ spec:
       enabled: false
 
     kubeScheduler:
+      endpoints: # required for k3s because kube services are not run as pods
+        - 10.0.10.2
       vmScrape:
         spec:
           endpoints:
