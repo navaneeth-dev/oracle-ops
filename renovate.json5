@@ -40,7 +40,7 @@
     {
       "matchManagers": ["ansible"],
       "matchPackageNames": ["https://github.com/k3s-io/k3s-ansible.git"],
-      "enabled": false
+      packageName: "k3s-io/k3s-ansible"
     }
   ],
 }
