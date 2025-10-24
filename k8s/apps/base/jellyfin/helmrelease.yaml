@@ -93,7 +93,7 @@ spec:
         enabled: true
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
-        size: 300Mi
+        size: 3Gi # 2 Gi minimum
         globalMounts:
           - path: /config
       data:
