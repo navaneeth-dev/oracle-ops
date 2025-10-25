@@ -5,4 +5,5 @@ resources:
   - bjw-s-helmrepository.yaml
   - victoria-metrics
   - fluent-bit
+  - cnpg
 
