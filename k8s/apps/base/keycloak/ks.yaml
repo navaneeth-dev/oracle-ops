@@ -6,7 +6,7 @@ metadata:
   namespace: keycloak
 spec:
   interval: 1h
-  targetNamespace: default
+  targetNamespace: keycloak
   sourceRef:
     kind: GitRepository
     name: flux-system
