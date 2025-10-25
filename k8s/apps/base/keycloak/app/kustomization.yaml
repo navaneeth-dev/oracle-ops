@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: keycloak
 resources:
   - cluster.yaml
+  - https://raw.githubusercontent.com/keycloak/keycloak-quickstarts/refs/heads/main/kubernetes/keycloak.yaml
