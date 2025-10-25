@@ -13,4 +13,4 @@ resources:
   - ../base/homepage
   - ../base/prowlarr
   - ../base/sabnzbd
-  - ../base/keycloak
+  - ../base/keycloak/ks.yaml
