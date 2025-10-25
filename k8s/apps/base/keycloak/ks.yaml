@@ -14,3 +14,7 @@ spec:
   path: "./k8s/apps/base/keycloak/app"
   prune: true
   timeout: 10m
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: variables
