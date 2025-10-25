@@ -3,5 +3,5 @@ kind: Kustomization
 resources:
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/experimental-install.yaml
   - grafana-operator
-  # - https://github.com/piraeusdatastore/piraeus-operator//config/extras/monitoring?ref=v2
+  - keycloak
 
