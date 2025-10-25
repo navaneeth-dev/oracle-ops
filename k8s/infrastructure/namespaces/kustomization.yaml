@@ -10,4 +10,4 @@ resources:
   - homepage.yaml
   - observability.yaml
   - volsync.yaml
-
+  - keycloak.yaml
