@@ -11,6 +11,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: "./k8s/apps/base/keycloak"
+  path: "./k8s/apps/base/keycloak/app"
   prune: true
   timeout: 10m
