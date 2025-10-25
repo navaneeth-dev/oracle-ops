@@ -7,15 +7,17 @@ spec:
   db:
     vendor: postgres
     host: keycloak-rw.keycloak.svc.cluster.local
+    database: app
     usernameSecret:
       name: keycloak-app
       key: username
     passwordSecret:
       name: keycloak-app
       key: password
-#  http:
+  http:
+    httpEnabled: true
 #    tlsSecret: example-tls-secret
-#  hostname:
-#    hostname: test.keycloak.org
+  hostname:
+    hostname: 'keycloak.${DOMAIN}'
   proxy:
     headers: xforwarded # double check your reverse proxy sets and overwrites the X-Forwarded-* headers
