@@ -96,13 +96,12 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /.npm
-      media:
+      data:
         enabled: true
         type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 5Gi
+        existingClaim: data
         globalMounts:
-          - path: /media
+          - path: /data
             readOnly: true
       tmpfs:
         type: emptyDir
