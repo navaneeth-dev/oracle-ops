@@ -10,11 +10,11 @@ spec:
     kubernetes:
       envoyService:
         type: NodePort
-        externalTrafficPolicy: Local
         patch:
           type: StrategicMerge
           value:
             spec:
+              externalTrafficPolicy: Local
               ports:
                 - name: http-80
                   port: 80
