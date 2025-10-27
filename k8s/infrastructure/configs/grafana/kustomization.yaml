@@ -4,4 +4,4 @@ resources:
   - secret.yaml
   - grafana.yaml
   - vmprobe.yaml
-
+  - etcd-grafanadashboard.yaml
