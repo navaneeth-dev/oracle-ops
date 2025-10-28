@@ -4,3 +4,4 @@ resources:
   - secret.yaml
   - grafana.yaml
   - vmprobe.yaml
+  - grafana-dashboard-pvc.yaml
