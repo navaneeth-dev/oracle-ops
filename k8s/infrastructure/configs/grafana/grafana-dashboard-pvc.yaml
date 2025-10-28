@@ -11,4 +11,4 @@ spec:
   contentCacheDuration: 48h
   datasources:
     - inputName: "DS_PROMETHEUS"
-      datasourceName: "Prometheus"
+      datasourceName: "VictoriaMetrics"
