@@ -7,5 +7,5 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
-  url: "https://grafana.com/api/dashboards/22236/revisions/4/download"
+  url: "https://etcd.io/docs/v3.1/op-guide/grafana.json"
   contentCacheDuration: 48h
