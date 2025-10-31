@@ -14,3 +14,4 @@ resources:
   - ../base/prowlarr
   - ../base/sabnzbd
   - ../base/keycloak/ks.yaml
+  - ../base/mealie
