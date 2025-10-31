@@ -63,7 +63,7 @@ jobs:
         env:
           LOG_LEVEL: ${{ inputs.logLevel || 'debug' }}
           RENOVATE_AUTODISCOVER: true
-          RENOVATE_AUTODISCOVER_FILTER: ${{ github.repository }}
+          RENOVATE_AUTODISCOVER_FILTER: "${{ github.repository }},fluxcd-homelab"
           RENOVATE_DRY_RUN: ${{ inputs.dryRun }}
           RENOVATE_INTERNAL_CHECKS_FILTER: strict
           RENOVATE_PLATFORM: github
