@@ -13,7 +13,7 @@ spec:
   chart:
     spec:
       chart: *name
-      version: 15.7.0
+      version: 15.7.1
       interval: 30m
       sourceRef:
         kind: HelmRepository
