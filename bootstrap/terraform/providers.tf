@@ -13,7 +13,7 @@ terraform {
 
     oci = {
       source  = "oracle/oci"
-      version = "7.25.0"
+      version = "7.26.1"
     }
 
     local = {
