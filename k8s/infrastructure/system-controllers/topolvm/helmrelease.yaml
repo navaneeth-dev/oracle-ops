@@ -29,6 +29,10 @@ spec:
     controller:
       replicaCount: 1
 
+    scheduler:
+      podDisruptionBudget:
+        enabled: false
+
     storageClasses:
       - name: topolvm-provisioner
         storageClass:
