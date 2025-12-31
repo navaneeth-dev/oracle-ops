@@ -2,13 +2,14 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: eg
-  namespace: envoy-gateway-system
+  name: grafana-operator
+  namespace: observability
 spec:
   interval: 30m
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 1.6.1
-  url: oci://docker.io/envoyproxy/gateway-helm
+    tag: v5.20.0
+  url: oci://ghcr.io/grafana/helm-charts/grafana-operator
+
