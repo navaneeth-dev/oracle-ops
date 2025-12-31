@@ -39,6 +39,7 @@ spec:
       deviceClasses:
         - name: "thin"
           volume-group: "myvg1"
+          default: true
           type: thin
           thin-pool:
             name: "pool0"
