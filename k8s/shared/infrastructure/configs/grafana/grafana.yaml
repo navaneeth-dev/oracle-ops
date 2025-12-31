@@ -1,0 +1,51 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  namespace: observability
+  labels:
+    dashboards: grafana
+spec:
+  persistentVolumeClaim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+  config:
+    log:
+      mode: "console"
+  disableDefaultAdminSecret: true
+  deployment:
+    spec:
+      strategy:
+        type: Recreate
+      template:
+        spec:
+          securityContext:
+            fsGroup: 1001
+          containers:
+            - name: grafana
+              securityContext:
+                runAsUser: 1001
+                runAsGroup: 1001
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: [ "ALL" ]
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: GF_SECURITY_ADMIN_USER
+                      name: credentials
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: GF_SECURITY_ADMIN_PASSWORD
+                      name: credentials
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: grafana-pvc

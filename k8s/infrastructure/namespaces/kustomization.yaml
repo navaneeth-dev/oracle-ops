@@ -5,9 +5,5 @@ resources:
   - topolvm.yaml
   - variables.yaml
   - homelab.yaml
-  - cert-manager.yaml
-  - envoy-gateway-system.yaml
   - homepage.yaml
-  - observability.yaml
-  - volsync.yaml
   - keycloak.yaml

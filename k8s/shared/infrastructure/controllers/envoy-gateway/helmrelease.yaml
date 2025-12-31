@@ -10,17 +10,14 @@ spec:
     kind: OCIRepository
     name: eg
   install:
-    crds: CreateReplace
-  dependsOn:
-    - namespace: observability
-      name: victoria-metrics
+    crds: Skip
   upgrade:
     remediation:
       remediateLastFailure: true
       retries: 3
       strategy: rollback
     cleanupOnFail: true
-    crds: CreateReplace
+    crds: Skip
     force: true
   test:
     enable: true
@@ -34,7 +31,7 @@ spec:
     mode: enabled
   maxHistory: 3
   timeout: 30m
-  values:
-    crds:
-      envoyGateway:
-        enabled: true
+#  values:
+#    crds:
+#      envoyGateway:
+#        enabled: true
