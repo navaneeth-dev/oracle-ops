@@ -7,3 +7,4 @@ resources:
   - homelab.yaml
   - homepage.yaml
   - keycloak.yaml
+  - snapshot-controller.yaml
