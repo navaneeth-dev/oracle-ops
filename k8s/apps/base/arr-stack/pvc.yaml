@@ -9,4 +9,3 @@ spec:
       storage: 100Gi
   accessModes:
     - ReadWriteOnce
-
