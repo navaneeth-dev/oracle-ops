@@ -48,7 +48,7 @@ spec:
       - name: topolvm-provisioner-thin
         storageClass:
           fsType: xfs
-          isDefaultClass: false
+          isDefaultClass: true
           volumeBindingMode: WaitForFirstConsumer
           allowVolumeExpansion: true
           additionalParameters:
@@ -56,6 +56,6 @@ spec:
       - name: topolvm-provisioner
         storageClass:
           fsType: xfs
-          isDefaultClass: true
+          isDefaultClass: false
           volumeBindingMode: WaitForFirstConsumer
           allowVolumeExpansion: true
