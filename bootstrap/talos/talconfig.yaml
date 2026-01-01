@@ -63,6 +63,12 @@ patches:
           resolveMemberNames: true
           forwardKubeDNSToHost: false
 
+  - &topolvm |-
+    machine:
+      kernel:
+        modules:
+          - name: dm-thin-pool
+
 #  - |-
 #    apiVersion: v1alpha1
 #    kind: VolumeConfig
