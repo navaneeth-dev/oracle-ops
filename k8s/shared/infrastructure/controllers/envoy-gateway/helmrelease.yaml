@@ -10,14 +10,14 @@ spec:
     kind: OCIRepository
     name: eg
   install:
-    crds: Skip
+    crds: CreateReplace
   upgrade:
     remediation:
       remediateLastFailure: true
       retries: 3
       strategy: rollback
     cleanupOnFail: true
-    crds: Skip
+    crds: CreateReplace
     force: true
   test:
     enable: true
