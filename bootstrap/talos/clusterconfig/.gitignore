@@ -5,3 +5,4 @@ talosconfig
 home-cluster-controlplane-deepcool.yaml
 home-cluster-controlplane-dell.yaml
 home-cluster-controlplane-thinkcentre.yaml
+oracle-hyd-cluster-controlplane-hyd-1.yaml

@@ -38,6 +38,12 @@ controlPlane:
         officialExtensions: []
 
 patches:
+  - |-
+    machine:
+      time:
+        servers:
+          - 169.254.169.254
+
   - |
     machine:
       kubelet:
