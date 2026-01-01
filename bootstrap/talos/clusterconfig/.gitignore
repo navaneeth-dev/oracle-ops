@@ -1,0 +1,7 @@
+home-cluster-controlplane-pve.yaml
+home-cluster-controlplane-pve-minipc.yaml
+home-cluster-controlplane-pve-thinkcentre.yaml
+talosconfig
+home-cluster-controlplane-deepcool.yaml
+home-cluster-controlplane-dell.yaml
+home-cluster-controlplane-thinkcentre.yaml

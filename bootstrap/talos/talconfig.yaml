@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+---
+clusterName: oracle-hyd-cluster
+talosVersion: "${talosVersion}"
+kubernetesVersion: "${kubernetesVersion}"
+endpoint: https://10.0.10.2:6443
+allowSchedulingOnControlPlanes: true
+additionalMachineCertSans:
+  - 10.0.10.2
+additionalApiServerCertSans:
+  - 10.0.10.2
+clusterPodNets:
+  - 10.244.0.0/16
+clusterSvcNets:
+  - 10.96.0.0/12
+
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: controlplane-hyd-1
+    ipAddress: 10.0.10.2
+    controlPlane: true
+    installDiskSelector:
+      type: "nvme"
+    networkInterfaces:
+      - interface: eth0
+        dhcp: true
+
+controlPlane:
+  machineSpec:
+    mode: oracle
+    arch: arm64
+
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions: []
+
+patches:
+  - |
+    machine:
+      kubelet:
+        extraArgs:
+          rotate-server-certificates: true
+    cluster:
+      extraManifests:
+        - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
+        - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+  - |-
+    cluster:
+      proxy:
+        disabled: true
+
+  - &hostDNS |
+    machine:
+      features:
+        hostDNS:
+          enabled: true
+          resolveMemberNames: true
+          forwardKubeDNSToHost: false
+
+#  - |-
+#    apiVersion: v1alpha1
+#    kind: VolumeConfig
+#    name: EPHEMERAL
+#    provisioning:
+#      maxSize: 100GiB
+#      grow: false
+#
+#  - |-
+#    apiVersion: v1alpha1
+#    kind: RawVolumeConfig
+#    name: csi-data
+#    provisioning:
+#      diskSelector:
+#        match: system_disk
+#      minSize: 300GiB
