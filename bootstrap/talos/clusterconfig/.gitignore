@@ -1,8 +1,3 @@
-home-cluster-controlplane-pve.yaml
-home-cluster-controlplane-pve-minipc.yaml
-home-cluster-controlplane-pve-thinkcentre.yaml
+kubeconfig
 talosconfig
-home-cluster-controlplane-deepcool.yaml
-home-cluster-controlplane-dell.yaml
-home-cluster-controlplane-thinkcentre.yaml
 oracle-hyd-cluster-controlplane-hyd-1.yaml

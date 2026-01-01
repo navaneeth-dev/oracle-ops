@@ -19,7 +19,7 @@ cniConfig:
 
 nodes:
   - hostname: controlplane-hyd-1
-    ipAddress: 10.0.10.2
+    ipAddress: 10.0.0.11
     controlPlane: true
     installDisk: /dev/sda
 
