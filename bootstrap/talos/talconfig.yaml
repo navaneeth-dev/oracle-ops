@@ -3,7 +3,7 @@
 clusterName: oracle-hyd-cluster
 talosVersion: "${talosVersion}"
 kubernetesVersion: "${kubernetesVersion}"
-endpoint: https://10.0.10.2:6443
+endpoint: https://144.24.145.84:6443
 allowSchedulingOnControlPlanes: true
 additionalMachineCertSans:
   - 10.0.10.2
@@ -21,11 +21,7 @@ nodes:
   - hostname: controlplane-hyd-1
     ipAddress: 10.0.10.2
     controlPlane: true
-    installDiskSelector:
-      type: "nvme"
-    networkInterfaces:
-      - interface: eth0
-        dhcp: true
+    installDisk: /dev/sda
 
 controlPlane:
   machineSpec:
@@ -75,11 +71,11 @@ patches:
 #      maxSize: 100GiB
 #      grow: false
 #
-#  - |-
-#    apiVersion: v1alpha1
-#    kind: RawVolumeConfig
-#    name: csi-data
-#    provisioning:
-#      diskSelector:
-#        match: system_disk
-#      minSize: 300GiB
+  - |-
+    apiVersion: v1alpha1
+    kind: RawVolumeConfig
+    name: csi-data
+    provisioning:
+      diskSelector:
+        match: disk.dev_path == '/dev/sdb'
+      minSize: 100GiB
