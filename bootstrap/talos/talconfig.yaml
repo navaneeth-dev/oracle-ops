@@ -3,12 +3,12 @@
 clusterName: oracle-hyd-cluster
 talosVersion: "${talosVersion}"
 kubernetesVersion: "${kubernetesVersion}"
-endpoint: https://144.24.145.84:6443
+endpoint: https://140.245.250.113:6443
 allowSchedulingOnControlPlanes: true
 additionalMachineCertSans:
-  - 10.0.10.2
+  - 140.245.250.113
 additionalApiServerCertSans:
-  - 10.0.10.2
+  - 140.245.250.113
 clusterPodNets:
   - 10.244.0.0/16
 clusterSvcNets:
