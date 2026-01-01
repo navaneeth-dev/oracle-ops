@@ -1,17 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../base/arr-stack
+#  - ../base/arr-stack
   - ../base/librespeed
-  - ../base/jellyseerr
-  - ../base/audiobookshelf
-#  - ../base/qbittorrent
-  - ../base/jellyfin
-  - ../base/radarr
-  - ../base/sonarr
-  - ../base/recyclarr
   - ../base/homepage
-  - ../base/prowlarr
-  - ../base/sabnzbd
+#  - ../base/jellyseerr
+#  - ../base/audiobookshelf
+#  - ../base/qbittorrent
+#  - ../base/jellyfin
+#  - ../base/radarr
+#  - ../base/sonarr
+#  - ../base/recyclarr
+#  - ../base/prowlarr
+#  - ../base/sabnzbd
   - ../base/keycloak/ks.yaml
-  - ../base/mealie
+#  - ../base/mealie
