@@ -5,3 +5,4 @@ SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 
 [tools]
 sops = "3.11.0"
+talhelper = "3.0.44"
