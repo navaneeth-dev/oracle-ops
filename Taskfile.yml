@@ -2,11 +2,6 @@
 
 version: '3'
 
-includes:
-  terraform:
-    taskfile: ./bootstrap/terraform
-    dir: ./bootstrap/terraform
-
 tasks:
   bootstrap-flux:
     cmds:
@@ -22,4 +17,3 @@ tasks:
           --branch=main \
           --personal \
           --path=k8s/clusters/oracle
-
