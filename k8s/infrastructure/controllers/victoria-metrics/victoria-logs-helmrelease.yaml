@@ -27,7 +27,6 @@ spec:
     server:
       persistentVolume:
         enabled: true
-        storageClassName: topolvm-provisioner
         size: 5Gi
       serviceMonitor:
         enabled: false
