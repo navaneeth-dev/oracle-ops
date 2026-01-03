@@ -54,5 +54,8 @@ spec:
     persistence:
       config:
         existingClaim: "{{ .Release.Name }}"
+      recyclarr:
+        type: configMap
+        name: recyclarr-config
       tmp:
         type: emptyDir
