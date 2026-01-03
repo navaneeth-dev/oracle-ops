@@ -57,5 +57,8 @@ spec:
       recyclarr:
         type: configMap
         name: recyclarr-config
+        globalMounts:
+          - path: /config/recyclarr.yml
+            subPath: recyclarr.yml
       tmp:
         type: emptyDir
