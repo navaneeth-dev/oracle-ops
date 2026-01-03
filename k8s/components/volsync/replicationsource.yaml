@@ -11,7 +11,7 @@ spec:
   restic:
     pruneIntervalDays: 14
     repository: ${APP}-volsync-secret
-    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:=500Mi}"
+    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:=300Mi}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:=ReadWriteOnce}"]
 #    volumeSnapshotClassName:
     retain:
