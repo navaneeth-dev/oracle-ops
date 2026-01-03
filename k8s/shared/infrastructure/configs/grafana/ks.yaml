@@ -9,7 +9,7 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./k8s/apps/base/arr-stack/grafana/app
+  path: ./k8s/shared/infrastructure/configs/grafana/app
   postBuild:
     substitute:
       APP: grafana
