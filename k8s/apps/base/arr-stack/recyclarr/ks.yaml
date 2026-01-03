@@ -13,7 +13,7 @@ spec:
   postBuild:
     substitute:
       APP: recyclarr
-      VOLSYNC_CAPACITY: 300Mi
+      VOLSYNC_CAPACITY: 600Mi
   prune: true
   sourceRef:
     kind: GitRepository
