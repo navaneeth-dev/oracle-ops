@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: homelab
 resources:
   - pvc.yaml
-
+  - radarr

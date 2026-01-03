@@ -96,12 +96,13 @@ spec:
 
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 150Mi
-        globalMounts:
-          - path: /config
+        existingClaim: "{{ .Release.Name }}"
+#        enabled: true
+#        type: persistentVolumeClaim
+#        accessMode: ReadWriteOnce
+#        size: 150Mi
+#        globalMounts:
+#          - path: /config
       data:
         enabled: true
         type: persistentVolumeClaim
