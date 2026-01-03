@@ -13,6 +13,8 @@ data:
     # Instance Definition: https://recyclarr.dev/reference/configuration/basic/
     radarr:
       radarr:
+        base_url: !secret radarr_url
+        api_key: !secret radarr_apikey
         include:
           # Comment out any of the following includes to disable them
           - template: radarr-quality-definition-movie
@@ -70,6 +72,8 @@ data:
     # Instance Definition: https://recyclarr.dev/reference/configuration/basic/
     sonarr:
       sonarr:
+        base_url: !secret sonarr_url
+        api_key: !secret sonarr_apikey
         include:
           # Comment out any of the following includes to disable them
           - template: sonarr-quality-definition-series
