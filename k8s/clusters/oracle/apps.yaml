@@ -14,6 +14,22 @@ spec:
   prune: true
   wait: true
   timeout: 5m0s
+  patches:
+    - # Add Kustomization defaults for all child Kustomizations
+      patch: |-
+        apiVersion: kustomize.toolkit.fluxcd.io/v1
+        kind: Kustomization
+        metadata:
+          name: _
+        spec:
+          decryption:
+            provider: sops
+            secretRef:
+              name: sops-age
+          deletionPolicy: WaitForTermination
+      target:
+        group: kustomize.toolkit.fluxcd.io
+        kind: Kustomization
   postBuild:
     substituteFrom:
       - kind: ConfigMap
