@@ -28,6 +28,10 @@ spec:
             secretRef:
               name: sops-age
           deletionPolicy: WaitForTermination
+          postBuild:
+            substituteFrom:
+              - kind: ConfigMap
+                name: variables
       target:
         group: kustomize.toolkit.fluxcd.io
         kind: Kustomization
