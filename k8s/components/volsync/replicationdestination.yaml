@@ -15,7 +15,7 @@ spec:
     cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:=1Gi}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:=ReadWriteOnce}"]
     accessModes: ["${VOLSYNC_ACCESSMODES:=ReadWriteOnce}"]
-    capacity: "${VOLSYNC_CAPACITY:=5Gi}"
+    capacity: "${VOLSYNC_CAPACITY:=150Mi}"
     moverSecurityContext:
       runAsUser: ${VOLSYNC_PUID:=1000}
       runAsGroup: ${VOLSYNC_PGID:=1000}
