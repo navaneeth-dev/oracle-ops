@@ -17,6 +17,7 @@ spec:
     substitute:
       APP: grafana
       VOLSYNC_CAPACITY: 2Gi
+      VOLSYNC_CACHE_CAPACITY: 2Gi
   prune: true
   sourceRef:
     kind: GitRepository
