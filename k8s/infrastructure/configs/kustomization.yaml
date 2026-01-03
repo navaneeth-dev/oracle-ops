@@ -5,5 +5,4 @@ resources:
   - cert-manager
   - envoy-gateway-system
   - flux
-  - grafana
 
