@@ -12,10 +12,10 @@ spec:
   restic:
     repository: "${APP}-volsync"
     copyMethod: "${VOLSYNC_COPYMETHOD:=Snapshot}"
-    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:=1Gi}"
+    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:=300Mi}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:=ReadWriteOnce}"]
     accessModes: ["${VOLSYNC_ACCESSMODES:=ReadWriteOnce}"]
-    capacity: "${VOLSYNC_CAPACITY:=150Mi}"
+    capacity: "${VOLSYNC_CAPACITY:=300Mi}"
     moverSecurityContext:
       runAsUser: ${VOLSYNC_PUID:=1000}
       runAsGroup: ${VOLSYNC_PGID:=1000}
