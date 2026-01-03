@@ -12,7 +12,8 @@ spec:
     name: flux-system
   path: ./k8s/apps/oracle
   prune: true
-  wait: true
+  # disable wait because of pvc WaitForConsumer
+  wait: false
   timeout: 5m0s
   patches:
     - # Add Kustomization defaults for all child Kustomizations
