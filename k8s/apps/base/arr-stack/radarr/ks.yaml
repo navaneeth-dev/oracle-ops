@@ -6,7 +6,7 @@ metadata:
   name: radarr
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../../components/volsync
   interval: 1h
   path: ./k8s/apps/base/arr-stack/radarr/app
   postBuild:
