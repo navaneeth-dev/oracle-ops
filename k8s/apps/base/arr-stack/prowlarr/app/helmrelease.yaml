@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name qbittorrent
+  name: &name prowlarr
   namespace: homelab
 spec:
   interval: 1h
@@ -30,27 +30,26 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      qbittorrent:
+      prowlarr:
         containers:
           app:
             image:
-              repository: ghcr.io/home-operations/qbittorrent
-              tag: 5.1.4@sha256:25fc7caf22101f85276ede9b1f76a46b7a93971bb6b70b6c58d14d6ab7f51415
+              repository: ghcr.io/home-operations/prowlarr
+              tag: 2.3.1.5238@sha256:4394dff2311238bf5c31e006872122ed4e5f6bf042d33528d80acd44a09c57f7
             env:
+              PROWLARR__UPDATE__BRANCH: develop
               TZ: "${TZ}"
-              QBT_TORRENTING_PORT: &bittorrent_port 52525
-              QBT_WEBUI_PORT: &port 80
             probes:
               liveness: &probes
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /api/v2/app/version
-                    port: *port
-                  initialDelaySeconds: 0
+                    path: /ping
+                    port: &port 9696
+                  initialDelaySeconds: 80
                   periodSeconds: 10
-                  timeoutSeconds: 6
+                  timeoutSeconds: 15
                   failureThreshold: 3
               readiness: *probes
               startup:
@@ -58,16 +57,17 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
+                  initialDelaySeconds: 60
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities: { drop: [ "ALL" ] }
             resources:
-              requests:
-                cpu: 100m
-                memory: 1Gi
               limits:
-                memory: 4Gi
+                memory: 200Mi
+              requests:
+                cpu: 50m
+
     service:
       app:
         primary: true
@@ -75,25 +75,6 @@ spec:
         ports:
           http:
             port: *port
-      bittorrent:
-        type: LoadBalancer
-        controller: *name
-#        loadBalancerClass: "io.cilium/node"
-#        allocateLoadBalancerNodePorts: false
-#        externalTrafficPolicy: Cluster
-#        ipFamilyPolicy: PreferDualStack
-#        ipFamilies:
-#          - IPv4
-#          - IPv6
-        ports:
-          tcp:
-            enabled: true
-            port: *bittorrent_port
-            protocol: TCP
-          udp:
-             enabled: true
-             protocol: UDP
-             port: *bittorrent_port
 
     route:
       main:
@@ -104,32 +85,10 @@ spec:
             name: reverse-proxy
             namespace: envoy-gateway-system
         hostnames:
-          - 'qbittorrent.${DOMAIN}'
-        rules:
-          - matches:
-              - path:
-                  type: PathPrefix
-                  value: /
-            backendRefs:
-              - kind: Service
-                port: *port
-                name: qbittorrent-app
-                namespace: homelab
-                weight: 1
+          - 'prowlarr.${DOMAIN}'
 
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 100Mi
-        globalMounts:
-          - path: /config
-      data:
-        enabled: true
-        type: persistentVolumeClaim
-        existingClaim: data
-        globalMounts:
-          - path: /data
+        existingClaim: prowlarr
       tmp:
         type: emptyDir

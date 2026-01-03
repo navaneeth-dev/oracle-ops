@@ -1,0 +1,130 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name qbittorrent
+  namespace: homelab
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: app-template
+      version: 4.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-helm-charts
+        namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      qbittorrent:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/qbittorrent
+              tag: 5.1.4@sha256:25fc7caf22101f85276ede9b1f76a46b7a93971bb6b70b6c58d14d6ab7f51415
+            env:
+              TZ: "${TZ}"
+              QBT_TORRENTING_PORT: &bittorrent_port 52525
+              QBT_WEBUI_PORT: &port 80
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v2/app/version
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 6
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 1Gi
+              limits:
+                memory: 4Gi
+    service:
+      app:
+        primary: true
+        controller: *name
+        ports:
+          http:
+            port: *port
+      bittorrent:
+        type: LoadBalancer
+        controller: *name
+#        loadBalancerClass: "io.cilium/node"
+#        allocateLoadBalancerNodePorts: false
+#        externalTrafficPolicy: Cluster
+#        ipFamilyPolicy: PreferDualStack
+#        ipFamilies:
+#          - IPv4
+#          - IPv6
+        ports:
+          tcp:
+            enabled: true
+            port: *bittorrent_port
+            protocol: TCP
+          udp:
+             enabled: true
+             protocol: UDP
+             port: *bittorrent_port
+
+    route:
+      main:
+        enabled: true
+        kind: HTTPRoute
+        parentRefs:
+          - kind: Gateway
+            name: reverse-proxy
+            namespace: envoy-gateway-system
+        hostnames:
+          - 'qbittorrent.${DOMAIN}'
+        rules:
+          - matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            backendRefs:
+              - kind: Service
+                port: *port
+                name: qbittorrent-app
+                namespace: homelab
+                weight: 1
+
+    persistence:
+      config:
+        existingClaim: qbittorrent
+      data:
+        enabled: true
+        type: persistentVolumeClaim
+        existingClaim: data
+        globalMounts:
+          - path: /data
+      tmp:
+        type: emptyDir

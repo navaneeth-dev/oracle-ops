@@ -1,8 +1,7 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/helmrelease-helm-v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name jellyfin
+  name: audiobookshelf
   namespace: homelab
 spec:
   interval: 1h
@@ -23,7 +22,7 @@ spec:
       retries: 3
   values:
     controllers:
-      jellyfin:
+      audiobookshelf:
         pod:
           securityContext:
             runAsNonRoot: true
@@ -31,52 +30,41 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
         containers:
           app:
             image:
-              repository: ghcr.io/jellyfin/jellyfin
-              tag: 10.11.5@sha256:cd7e4cb71812dd76988a725da615e37c6d0d24c200be904ad5d183e51f1dc6ed
+              repository: ghcr.io/advplyr/audiobookshelf
+              tag: 2.32.1@sha256:a52dc5db694a5bf041ce38f285dd6c6a660a4b1b21e37ad6b6746433263b2ae5
             env:
-              JELLYFIN_PublishedServerUrl: "https://jellyfin.${DOMAIN}"
               TZ: "${TZ}"
+              AUDIOBOOKSHELF_UID: 1000
+              AUDIOBOOKSHELF_GID: 1000
+              CONFIG_PATH: /config
+              METADATA_PATH: /config/metadata
             probes:
               liveness: &probes
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /health
-                    port: &port 8096
+                    path: /healthcheck
+                    port: &port 80
                   initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 3
+                  timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *probes
-              startup:
-                enabled: true
-                spec:
-                  failureThreshold: 30
-                  periodSeconds: 10
             securityContext:
-#              privileged: true
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
             resources:
-              limits:
-                memory: 3Gi
-                cpu: 1000m
               requests:
-                cpu: 500m
-                memory: 2Gi
-    service:
-      app:
-        primary: true
-        controller: *name
-        ports:
-          http:
-            port: 8096
-
+                cpu: 50m
+                memory: 100Mi
+              limits:
+                memory: 500Mi
     route:
       main:
         enabled: true
@@ -86,31 +74,31 @@ spec:
             name: reverse-proxy
             namespace: envoy-gateway-system
         hostnames:
-          - 'jellyfin.${DOMAIN}'
+          - 'audiobookshelf.${DOMAIN}'
+
+    service:
+      app:
+        primary: true
+        controller: audiobookshelf
+        ports:
+          http:
+            port: *port
 
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 3Gi # 2 Gi minimum
+        existingClaim: audiobookshelf
+      cache:
+        type: emptyDir
         globalMounts:
-          - path: /config
+          - path: /.npm
       data:
         enabled: true
         type: persistentVolumeClaim
         existingClaim: data
         globalMounts:
           - path: /data
-
+            readOnly: true
       tmpfs:
         type: emptyDir
-        advancedMounts:
-          jellyfin:
-            app:
-              - path: /cache
-                subPath: cache
-              - path: /config/log
-                subPath: log
-              - path: /tmp
-                subPath: tmp
+        globalMounts:
+          - path: /tmp
