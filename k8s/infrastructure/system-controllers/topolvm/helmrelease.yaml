@@ -54,9 +54,3 @@ spec:
           allowVolumeExpansion: true
           additionalParameters:
             '{{ include "topolvm.pluginName" . }}/device-class': "thin"
-      - name: topolvm-provisioner
-        storageClass:
-          fsType: xfs
-          isDefaultClass: false
-          volumeBindingMode: WaitForFirstConsumer
-          allowVolumeExpansion: true
