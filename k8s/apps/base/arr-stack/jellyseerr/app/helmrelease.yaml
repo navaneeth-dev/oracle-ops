@@ -85,6 +85,8 @@ spec:
     persistence:
       config:
         existingClaim: jellyseerr
+        globalMounts:
+          - path: /app/config
       tmpfs:
         type: emptyDir
         advancedMounts:
