@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name sonarr
+  name: &name jellyfin
   namespace: homelab
 spec:
   interval: 1h
@@ -22,22 +22,22 @@ spec:
     remediation:
       retries: 3
   values:
-    defaultPodOptions:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
     controllers:
-      sonarr:
+      jellyfin:
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
         containers:
           app:
             image:
-              repository: ghcr.io/home-operations/sonarr
-              tag: 4.0.16.2946@sha256:3597fd572f4599c67abbeb8afd3cb85bce8a9e389f0779b7ea1273781544d15c
+              repository: ghcr.io/jellyfin/jellyfin
+              tag: 10.11.5@sha256:cd7e4cb71812dd76988a725da615e37c6d0d24c200be904ad5d183e51f1dc6ed
             env:
-              SONARR__UPDATE__BRANCH: develop
+              JELLYFIN_PublishedServerUrl: "https://jellyfin.${DOMAIN}"
               TZ: "${TZ}"
             probes:
               liveness: &probes
@@ -45,31 +45,37 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /ping
-                    port: &port 8989
-                  initialDelaySeconds: 80
+                    path: /health
+                    port: &port 8096
+                  initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 15
+                  timeoutSeconds: 3
                   failureThreshold: 3
               readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
             securityContext:
+#              privileged: true
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: [ "ALL" ] }
+              capabilities: { drop: ["ALL"] }
             resources:
               limits:
-                memory: 2Gi
+                memory: 3Gi
+                cpu: 1000m
               requests:
-                cpu: 100m
-                memory: 100Mi
-
+                cpu: 500m
+                memory: 2Gi
     service:
       app:
         primary: true
         controller: *name
         ports:
           http:
-            port: *port
+            port: 8096
 
     route:
       main:
@@ -80,34 +86,26 @@ spec:
             name: reverse-proxy
             namespace: envoy-gateway-system
         hostnames:
-          - 'sonarr.${DOMAIN}'
-        rules:
-          - backendRefs:
-              - group: ""
-                kind: Service
-                name: sonarr
-                port: *port
-                weight: 1
-            matches:
-              - path:
-                  type: PathPrefix
-                  value: /
-            timeouts:
-              request:  "180s"
+          - 'jellyfin.${DOMAIN}'
 
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 200Mi
-        globalMounts:
-          - path: /config
+        existingClaim: jellyfin
       data:
         enabled: true
         type: persistentVolumeClaim
         existingClaim: data
         globalMounts:
           - path: /data
-      tmp:
+
+      tmpfs:
         type: emptyDir
+        advancedMounts:
+          jellyfin:
+            app:
+              - path: /cache
+                subPath: cache
+              - path: /config/log
+                subPath: log
+              - path: /tmp
+                subPath: tmp

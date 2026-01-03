@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name prowlarr
+  name: &name sonarr
   namespace: homelab
 spec:
   interval: 1h
@@ -30,14 +30,14 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      prowlarr:
+      sonarr:
         containers:
           app:
             image:
-              repository: ghcr.io/home-operations/prowlarr
-              tag: 2.3.1.5238@sha256:4394dff2311238bf5c31e006872122ed4e5f6bf042d33528d80acd44a09c57f7
+              repository: ghcr.io/home-operations/sonarr
+              tag: 4.0.16.2946@sha256:3597fd572f4599c67abbeb8afd3cb85bce8a9e389f0779b7ea1273781544d15c
             env:
-              PROWLARR__UPDATE__BRANCH: develop
+              SONARR__UPDATE__BRANCH: develop
               TZ: "${TZ}"
             probes:
               liveness: &probes
@@ -46,27 +46,22 @@ spec:
                 spec:
                   httpGet:
                     path: /ping
-                    port: &port 9696
+                    port: &port 8989
                   initialDelaySeconds: 80
                   periodSeconds: 10
                   timeoutSeconds: 15
                   failureThreshold: 3
               readiness: *probes
-              startup:
-                enabled: true
-                spec:
-                  failureThreshold: 30
-                  periodSeconds: 10
-                  initialDelaySeconds: 60
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: [ "ALL" ] }
             resources:
               limits:
-                memory: 200Mi
+                memory: 2Gi
               requests:
-                cpu: 50m
+                cpu: 100m
+                memory: 100Mi
 
     service:
       app:
@@ -85,15 +80,29 @@ spec:
             name: reverse-proxy
             namespace: envoy-gateway-system
         hostnames:
-          - 'prowlarr.${DOMAIN}'
+          - 'sonarr.${DOMAIN}'
+        rules:
+          - backendRefs:
+              - group: ""
+                kind: Service
+                name: sonarr
+                port: *port
+                weight: 1
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            timeouts:
+              request:  "180s"
 
     persistence:
       config:
+        existingClaim: "{{ .Release.Name }}"
+      data:
         enabled: true
         type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 100Mi
+        existingClaim: data
         globalMounts:
-          - path: /config
+          - path: /data
       tmp:
         type: emptyDir
