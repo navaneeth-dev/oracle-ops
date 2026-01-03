@@ -11,6 +11,9 @@ spec:
   interval: 1h
   path: ./k8s/shared/infrastructure/configs/grafana/app
   postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: variables
     substitute:
       APP: grafana
       VOLSYNC_CAPACITY: 2Gi
@@ -21,3 +24,7 @@ spec:
     namespace: flux-system
   wait: false
   targetNamespace: observability
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
