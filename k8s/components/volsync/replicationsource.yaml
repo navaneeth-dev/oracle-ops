@@ -13,6 +13,7 @@ spec:
     repository: ${APP}-volsync-secret
     cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:=1Gi}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:=ReadWriteOnce}"]
+#    volumeSnapshotClassName:
     retain:
       daily: 12
       weekly: 1
