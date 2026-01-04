@@ -5,3 +5,4 @@ resources:
   - local-path-provisioner
   - envoy-gateway
   - volsync
+  - authentik
