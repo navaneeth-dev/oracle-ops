@@ -8,3 +8,4 @@ resources:
   - homepage.yaml
   - keycloak.yaml
   - snapshot-controller.yaml
+  - authentik.yaml
