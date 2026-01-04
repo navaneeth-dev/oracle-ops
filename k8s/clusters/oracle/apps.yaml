@@ -15,6 +15,10 @@ spec:
   # disable wait because of pvc WaitForConsumer
   wait: false
   timeout: 5m0s
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   patches:
     - # Add Kustomization defaults for all child Kustomizations
       patch: |-
