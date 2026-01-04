@@ -33,5 +33,10 @@ spec:
     server:
       route:
         main:
+          enabled: true
           hostnames:
             - 'authentik.${DOMAIN}'
+          parentRefs:
+            - kind: Gateway
+              name: reverse-proxy
+              namespace: envoy-gateway-system
