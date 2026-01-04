@@ -1,7 +1,8 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: keycloak
+  name: authentik
+  namespace: authentik
 spec:
   instances: 1
   storage:
