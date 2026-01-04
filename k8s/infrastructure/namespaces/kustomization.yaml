@@ -6,6 +6,5 @@ resources:
   - variables.yaml
   - homelab.yaml
   - homepage.yaml
-  - keycloak.yaml
   - snapshot-controller.yaml
   - authentik.yaml
