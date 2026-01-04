@@ -1,0 +1,33 @@
+# prettier-ignore
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  chart:
+    spec:
+      chart: authentik
+      version: 2025.10.3
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+        namespace: flux-system
+  timeout: 10m0s
+  interval: 1h0m0s
+
+  values:
+    fullnameOverride: authentik
+
+    global:
+      envFrom:
+        - secretRef:
+            name: authentik-secrets
+        - secretRef:
+            name: authentik-rw
+
+    server:
+      route:
+        main:
+          hostnames:
+            - 'authentik.${DOMAIN}'
