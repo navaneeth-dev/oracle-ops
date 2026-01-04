@@ -20,11 +20,15 @@ spec:
     fullnameOverride: authentik
 
     global:
+      env:
+       - name: AUTHENTIK_POSTGRESQL__PASSWORD
+         valueFrom:
+           secretKeyRef:
+             name: authentik-app
+             key: password
       envFrom:
         - secretRef:
             name: authentik-secrets
-        - secretRef:
-            name: authentik-rw
 
     server:
       route:
