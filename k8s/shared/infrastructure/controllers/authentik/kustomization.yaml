@@ -6,3 +6,5 @@ resources:
   - cluster.yaml
   - helmrepository.yaml
   - helmrelease.yaml
+  - clusterrole.yaml
+  - clusterrolebinding.yaml
