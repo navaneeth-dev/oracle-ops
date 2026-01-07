@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: authentik-outpost-mgmt-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: authentik-outpost-mgmt
+subjects:
+  - kind: ServiceAccount
+    # This must match serviceAccount.fullnameOverride from your values
+    name: authentik
+    namespace: authentik
