@@ -70,29 +70,29 @@ spec:
           http:
             port: *port
 
-    route:
-      main:
-        enabled: true
-        kind: HTTPRoute
-        parentRefs:
-          - kind: Gateway
-            name: reverse-proxy
-            namespace: envoy-gateway-system
-        hostnames:
-          - 'radarr.${DOMAIN}'
-        rules:
-          - backendRefs:
-              - group: ""
-                kind: Service
-                name: radarr
-                port: 7878
-                weight: 1
-            matches:
-              - path:
-                  type: PathPrefix
-                  value: /
-            timeouts:
-              request:  "180s"
+#    route:
+#      main:
+#        enabled: true
+#        kind: HTTPRoute
+#        parentRefs:
+#          - kind: Gateway
+#            name: reverse-proxy
+#            namespace: envoy-gateway-system
+#        hostnames:
+#          - 'radarr.${DOMAIN}'
+#        rules:
+#          - backendRefs:
+#              - group: ""
+#                kind: Service
+#                name: radarr
+#                port: 7878
+#                weight: 1
+#            matches:
+#              - path:
+#                  type: PathPrefix
+#                  value: /
+#            timeouts:
+#              request:  "180s"
 
     persistence:
       config:
