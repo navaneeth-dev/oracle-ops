@@ -40,12 +40,12 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: grafana-oauth
-                      key: client-id
+                      key: client_id
                 - name: AUTH_CLIENT_SECRET
                   valueFrom:
                     secretKeyRef:
                       name: grafana-oauth
-                      key: client-secret
+                      key: client_secret
                 - name: GF_SECURITY_ADMIN_USER
                   valueFrom:
                     secretKeyRef:
