@@ -26,12 +26,15 @@ spec:
     remediation:
       retries: 3
   values:
+
     controller:
       replicaCount: 1
       podDisruptionBudget:
         enabled: false
 
     scheduler:
+      # disable affinity for single node
+      affinity: {}
       podDisruptionBudget:
         enabled: false
 
