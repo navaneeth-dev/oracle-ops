@@ -11,6 +11,21 @@ spec:
       mode: "console"
     auth:
       disable_login_form: "false"
+      signout_redirect_url: "https://authentik.${DOMAIN}/application/o/grafana/end-session/"
+      oauth_auto_login: true
+    server:
+      root_url: "https://grafana.${DOMAIN}"
+    auth.generic_oauth:
+      name: authentik
+      enabled: true
+      client_id: "${AUTH_CLIENT_ID}"
+      client_secret: "${AUTH_CLIENT_SECRET}"
+      scopes: "openid profile email"
+      auth_url: "https://authentik.${DOMAIN}/application/o/authorize/"
+      token_url: "https://authentik.${DOMAIN}/application/o/token/"
+      api_url: "https://authentik.${DOMAIN}/application/o/userinfo/"
+      # Optionally map user groups to Grafana roles
+      # role_attribute_path: contains(groups, 'Grafana Admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'
   disableDefaultAdminSecret: true
   deployment:
     spec:
@@ -21,6 +36,16 @@ spec:
               readinessProbe:
                 failureThreshold: 3
               env:
+                - name: AUTH_CLIENT_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oauth
+                      key: client-id
+                - name: AUTH_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-oauth
+                      key: client-secret
                 - name: GF_SECURITY_ADMIN_USER
                   valueFrom:
                     secretKeyRef:
