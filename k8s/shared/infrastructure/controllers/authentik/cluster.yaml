@@ -5,6 +5,8 @@ metadata:
   namespace: authentik
 spec:
   instances: 1
+  # disable pod disruption budget for oracle single node
+  enablePDB: false
   storage:
     size: 1Gi
   monitoring:
