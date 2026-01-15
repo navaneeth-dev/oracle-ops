@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: plugin-barman-cloud
+  namespace: flux-system
+spec:
+  interval: 1h
+  path: ./k8s/infrastructure/controllers/plugin-barman-cloud/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: observability
+  wait: true
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+#apiVersion: kustomize.toolkit.fluxcd.io/v1
+#kind: Kustomization
+#metadata:
+#  name: plugin-barman-cloud-instance
+#  namespace: flux-system
+#spec:
+#  dependsOn:
+#    - name: plugin-barman-cloud
+#  interval: 1h
+#  path: ./k8s/infrastructure/controllers/plugin-barman-cloud/instance
+#  prune: true
+#  sourceRef:
+#    kind: GitRepository
+#    name: flux-system
+#    namespace: flux-system
+#  targetNamespace: observability
+#  wait: false

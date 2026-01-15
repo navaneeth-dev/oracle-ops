@@ -5,7 +5,6 @@ resources:
   - ocirepository.yaml
   - victoria-logs-ocirepository.yaml
   - helmrelease.yaml
-  - httproute.yaml
   - blackbox-ocirepository.yaml
   - blackbox-helmrelease.yaml
   - victoria-logs-helmrelease.yaml

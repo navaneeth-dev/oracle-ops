@@ -5,4 +5,5 @@ resources:
   - victoria-metrics
   - fluent-bit
   - cnpg
+  - plugin-barman-cloud/ks.yaml
 
