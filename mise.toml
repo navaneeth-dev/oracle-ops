@@ -1,6 +1,6 @@
 [env]
 KUBECONFIG = "{{config_root}}/bootstrap/talos/clusterconfig/kubeconfig"
-TALOSCONFIG = "{{config_root}}/bootstrap/talos/clusterconfig/talosconfig"
+TALOSCONFIG = "{{config_root}}/bootstrap/talos/talosconfig"
 SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 
 [tools]
