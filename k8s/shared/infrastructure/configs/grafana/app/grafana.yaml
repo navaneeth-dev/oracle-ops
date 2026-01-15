@@ -12,12 +12,12 @@ spec:
     auth:
       disable_login_form: "false"
       signout_redirect_url: "https://authentik.${DOMAIN}/application/o/grafana/end-session/"
-      oauth_auto_login: true
+      oauth_auto_login: "true"
     server:
       root_url: "https://grafana.${DOMAIN}"
     auth.generic_oauth:
       name: authentik
-      enabled: true
+      enabled: "true"
       client_id: "${AUTH_CLIENT_ID}"
       client_secret: "${AUTH_CLIENT_SECRET}"
       scopes: "openid profile email"
