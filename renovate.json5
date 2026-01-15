@@ -38,4 +38,13 @@
       ignoreTests: true,
     }
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["/bootstrap/talos/talenv\\.yaml$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[\\w-]+?) depName=(?<depName>[^\\s]+?)\\s+\\w+: (?<currentValue>.*)\\s"
+      ]
+    }
+  ]
 }
