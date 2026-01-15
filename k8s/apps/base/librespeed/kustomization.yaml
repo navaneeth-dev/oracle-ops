@@ -4,5 +4,3 @@ namespace: homelab
 resources:
   - helmrelease.yaml
   - vmprobe.yaml
-  - client-secret.yaml
-  - security-policy.yaml
