@@ -4,3 +4,5 @@ resources:
   - httproute.yaml
   - receiver.yaml
   - secret-github-webhook.yaml
+  - grafana-dashboard-flux.yaml
+  - podmonitor.yaml

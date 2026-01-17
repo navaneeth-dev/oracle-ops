@@ -5,6 +5,5 @@ resources:
   - secret-oauth.yaml
   - vmprobe.yaml
   - grafana-dashboard-pvc.yaml
-  - grafana-dashboard-flux.yaml
   - httproute.yaml
   - ks.yaml
