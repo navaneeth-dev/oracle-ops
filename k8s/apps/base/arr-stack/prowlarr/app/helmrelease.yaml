@@ -76,17 +76,6 @@ spec:
           http:
             port: *port
 
-    route:
-      main:
-        enabled: true
-        kind: HTTPRoute
-        parentRefs:
-          - kind: Gateway
-            name: reverse-proxy
-            namespace: envoy-gateway-system
-        hostnames:
-          - 'prowlarr.${DOMAIN}'
-
     persistence:
       config:
         existingClaim: prowlarr
