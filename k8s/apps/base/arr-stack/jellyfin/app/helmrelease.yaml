@@ -85,6 +85,20 @@ spec:
           - kind: Gateway
             name: reverse-proxy
             namespace: envoy-gateway-system
+        rules:
+          - backendRefs:
+              - group: ""
+                kind: Service
+                name: jellyfin
+                namespace: homelab
+                port: 8096
+                weight: 1
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            timeouts:
+              request: 0s
         hostnames:
           - 'jellyfin.${DOMAIN}'
 
