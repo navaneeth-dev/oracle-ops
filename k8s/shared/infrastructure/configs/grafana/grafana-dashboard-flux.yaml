@@ -1,13 +1,28 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: fluxcd
+  name: fluxcd-cluster
   namespace: observability
 spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
   url: "https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/refs/heads/main/monitoring/configs/dashboards/cluster.json"
+  contentCacheDuration: 48h
+  datasources:
+    - inputName: "DS_PROMETHEUS"
+      datasourceName: "VictoriaMetrics"
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: fluxcd-control-plane
+  namespace: observability
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  url: "https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/refs/heads/main/monitoring/configs/dashboards/control-plane.json"
   contentCacheDuration: 48h
   datasources:
     - inputName: "DS_PROMETHEUS"
