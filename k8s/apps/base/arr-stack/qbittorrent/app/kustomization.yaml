@@ -4,3 +4,4 @@ namespace: homelab
 resources:
   - secret.yaml
   - helmrelease.yaml
+  - ocirepository.yaml
