@@ -113,7 +113,7 @@ spec:
     persistence:
       config:
         existingClaim: qbittorrent
-      netbird-config:
+      netbird:
         enabled: true
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
