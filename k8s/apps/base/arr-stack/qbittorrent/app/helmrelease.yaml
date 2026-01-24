@@ -89,25 +89,25 @@ spec:
         ports:
           http:
             port: *port
-      bittorrent:
-        type: LoadBalancer
-        controller: *name
-#        loadBalancerClass: "io.cilium/node"
-#        allocateLoadBalancerNodePorts: false
-#        externalTrafficPolicy: Cluster
-#        ipFamilyPolicy: PreferDualStack
-#        ipFamilies:
-#          - IPv4
-#          - IPv6
-        ports:
-          tcp:
-            enabled: true
-            port: *bittorrent_port
-            protocol: TCP
-          udp:
-             enabled: true
-             protocol: UDP
-             port: *bittorrent_port
+#      bittorrent:
+#        type: LoadBalancer
+#        controller: *name
+##        loadBalancerClass: "io.cilium/node"
+##        allocateLoadBalancerNodePorts: false
+##        externalTrafficPolicy: Cluster
+##        ipFamilyPolicy: PreferDualStack
+##        ipFamilies:
+##          - IPv4
+##          - IPv6
+#        ports:
+#          tcp:
+#            enabled: true
+#            port: *bittorrent_port
+#            protocol: TCP
+#          udp:
+#             enabled: true
+#             protocol: UDP
+#             port: *bittorrent_port
 
     route:
       main:
