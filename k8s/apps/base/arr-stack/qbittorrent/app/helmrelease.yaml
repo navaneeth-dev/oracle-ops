@@ -35,7 +35,7 @@ spec:
               VPN_SERVICE_PROVIDER: airvpn
               VPN_TYPE: wireguard
               SERVER_COUNTRIES: Singapore
-              FIREWALL_VPN_INPUT_PORTS: "45123"
+              FIREWALL_VPN_INPUT_PORTS: "41047"
 
           app:
             image:
