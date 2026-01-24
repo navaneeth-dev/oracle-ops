@@ -109,10 +109,7 @@ spec:
       config:
         existingClaim: qbittorrent
       netbird:
-        enabled: true
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 300Mi
+        existingClaim: netbird
         advancedMounts:
           qbittorrent:
             netbird:
