@@ -1,6 +1,14 @@
 # Oracle Ops
 
-Highly available Kubernetes setup on Oracle Cloud Always Free Tier. 
+Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
+
+## TODO
+
+- [ ] Remove all CPU limits
+- [ ] Migrate all helm repo app-template to oci
+- [ ] volsync pvc for netbird backup
+- [ ] Fix alerting rules to Discord
+- [ ] Scrape flux and add alerts to Discord for out of sync
 
 ## Security
 
