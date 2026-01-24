@@ -23,24 +23,19 @@ spec:
           gluetun:
             image:
               repository: qmcgaw/gluetun
-              tag: latest
+              tag: v3.41.0
             securityContext:
               capabilities:
                 add:
                   - NET_ADMIN
+            envFrom:
+              - secretRef:
+                  name: airvpn-wireguard-config
             env:
               VPN_SERVICE_PROVIDER: airvpn
               VPN_TYPE: wireguard
-
-              WIREGUARD_PRIVATE_KEY: yCbHtKAgJASnJs2S/aZsjag9Fy04csmR4qDUDkJgX2c=
-              WIREGUARD_PRESHARED_KEY: yCbHtKAgJASnJs2S/aZsjag9Fy04csmR4qDUDkJgX2c=
-              WIREGUARD_ADDRESSES: 10.99.99.99/32
-
-              SERVER_COUNTRIES: Netherlands
-
-            volumeMounts:
-              - name: tun
-                mountPath: /dev/net/tun
+              SERVER_COUNTRIES: Singapore
+              FIREWALL_VPN_INPUT_PORTS: "45123"
 
           app:
             image:
@@ -48,7 +43,7 @@ spec:
               tag: 5.1.4@sha256:56ecd30a7f5e1357daf5eea2a6935134d329b7b268a3a9b9c67041b65fb87fc6
             env:
               TZ: "${TZ}"
-              QBT_TORRENTING_PORT: &bittorrent_port 52525
+              QBT_TORRENTING_PORT: &bittorrent_port 41047
               QBT_WEBUI_PORT: &port 80
             probes:
               liveness: &probes
