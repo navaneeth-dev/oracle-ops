@@ -20,22 +20,28 @@ spec:
     controllers:
       qbittorrent:
         containers:
-          netbird:
+          gluetun:
             image:
-              repository: docker.io/netbirdio/netbird
-              tag: 0.64.1
-            envFrom:
-              - secretRef:
-                  name: netbird-setup-key
+              repository: qmcgaw/gluetun
+              tag: latest
             securityContext:
-              allowPrivilegeEscalation: true
-              runAsUser: 0      # NetBird must run as root
-              runAsNonRoot: false
-              readOnlyRootFilesystem: false
               capabilities:
                 add:
-                  - NET_ADMIN   # Required: Creates the wt0 interface
-                # REMOVED: SYS_MODULE (Blocked by Talos, caused the crash)
+                  - NET_ADMIN
+            env:
+              VPN_SERVICE_PROVIDER: airvpn
+              VPN_TYPE: wireguard
+
+              WIREGUARD_PRIVATE_KEY: yCbHtKAgJASnJs2S/aZsjag9Fy04csmR4qDUDkJgX2c=
+              WIREGUARD_PRESHARED_KEY: yCbHtKAgJASnJs2S/aZsjag9Fy04csmR4qDUDkJgX2c=
+              WIREGUARD_ADDRESSES: 10.99.99.99/32
+
+              SERVER_COUNTRIES: Netherlands
+
+            volumeMounts:
+              - name: tun
+                mountPath: /dev/net/tun
+
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
@@ -108,12 +114,6 @@ spec:
     persistence:
       config:
         existingClaim: qbittorrent
-      netbird:
-        existingClaim: netbird
-        advancedMounts:
-          qbittorrent:
-            netbird:
-              - path: /var/lib/netbird
       data:
         enabled: true
         type: persistentVolumeClaim
