@@ -118,6 +118,10 @@ spec:
         type: persistentVolumeClaim
         accessMode: ReadWriteOnce
         size: 300Mi
+        advancedMounts:
+          qbittorrent:
+            netbird:
+              - path: /var/lib/netbird
       data:
         enabled: true
         type: persistentVolumeClaim
