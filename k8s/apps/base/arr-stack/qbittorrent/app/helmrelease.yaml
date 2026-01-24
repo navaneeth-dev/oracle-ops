@@ -37,7 +37,6 @@ spec:
               capabilities:
                 add:
                   - NET_ADMIN   # Required to create the VPN interface
-                  - SYS_MODULE  # Optional: Sometimes needed for wireguard module interactions, though usually not for userspace implementation
             envFrom:
               - secretRef:
                   name: netbird-setup-key
