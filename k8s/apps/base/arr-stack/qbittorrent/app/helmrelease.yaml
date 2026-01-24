@@ -32,6 +32,13 @@ spec:
     controllers:
       qbittorrent:
         containers:
+          netbird:
+            image:
+              repository: docker.io/netbirdio/netbird
+              tag: 0.64.1
+            envFrom:
+              - secretRef:
+                  identifier: netbird-setup-key
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
@@ -120,6 +127,11 @@ spec:
     persistence:
       config:
         existingClaim: qbittorrent
+      netbird-config:
+        enabled: true
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 300Mi
       data:
         enabled: true
         type: persistentVolumeClaim
