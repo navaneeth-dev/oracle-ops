@@ -9,6 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
+      # renovate: registryUrl=https://bjw-s-labs.github.io/helm-charts/
       version: 4.2.0
       sourceRef:
         kind: HelmRepository
