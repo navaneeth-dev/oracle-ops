@@ -36,6 +36,15 @@ spec:
             image:
               repository: docker.io/netbirdio/netbird
               tag: 0.64.1
+            securityContext:
+              allowPrivilegeEscalation: true
+              runAsUser: 0      # NetBird needs to be root inside the container
+              runAsNonRoot: false
+              readOnlyRootFilesystem: false # NetBird writes logs/state to disk often
+              capabilities:
+                add:
+                  - NET_ADMIN   # Required to create the VPN interface
+                  - SYS_MODULE  # Optional: Sometimes needed for wireguard module interactions, though usually not for userspace implementation
             envFrom:
               - secretRef:
                   name: netbird-setup-key
