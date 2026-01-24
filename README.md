@@ -9,6 +9,7 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 - [ ] volsync pvc for netbird backup
 - [ ] Fix alerting rules to Discord
 - [ ] Scrape flux and add alerts to Discord for out of sync
+- [ ] Backup postgres to s3 - authentik etc
 
 ## Security
 
