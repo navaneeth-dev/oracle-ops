@@ -34,10 +34,8 @@ spec:
             env:
               VPN_SERVICE_PROVIDER: airvpn
               VPN_TYPE: wireguard
-#              SERVER_COUNTRIES: Singapore
               FIREWALL_VPN_INPUT_PORTS: "41047"
-              FIREWALL_OUTBOUND_SUBNETS: "10.0.0.0/8"
-#              WIREGUARD_ENDPOINT_PORT:
+              FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16"
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
@@ -46,6 +44,8 @@ spec:
               TZ: "${TZ}"
               QBT_TORRENTING_PORT: &bittorrent_port 41047
               QBT_WEBUI_PORT: &port 80
+            dependsOn:
+              - gluetun
             probes:
               liveness: &probes
                 enabled: true
