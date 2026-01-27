@@ -34,10 +34,10 @@ spec:
             env:
               VPN_SERVICE_PROVIDER: airvpn
               VPN_TYPE: wireguard
-              SERVER_COUNTRIES: Singapore
+#              SERVER_COUNTRIES: Singapore
               FIREWALL_VPN_INPUT_PORTS: "41047"
               FIREWALL_OUTBOUND_SUBNETS: "10.0.0.0/8"
-
+#              WIREGUARD_ENDPOINT_PORT:
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
