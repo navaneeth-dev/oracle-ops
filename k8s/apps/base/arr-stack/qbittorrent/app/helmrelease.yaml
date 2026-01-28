@@ -32,7 +32,7 @@ spec:
               - secretRef:
                   name: airvpn-wireguard-config
             env:
-#              VPN_SERVICE_PROVIDER: airvpn
+              VPN_SERVICE_PROVIDER: custom
               VPN_TYPE: wireguard
 
               WIREGUARD_ENDPOINT_IP: 92.119.178.5
