@@ -36,6 +36,7 @@ spec:
               VPN_TYPE: wireguard
               FIREWALL_VPN_INPUT_PORTS: "41047"
               FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
+              FIREWALL_INPUT_PORTS: "80"
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
