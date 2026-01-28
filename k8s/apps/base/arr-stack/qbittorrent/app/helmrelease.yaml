@@ -32,13 +32,18 @@ spec:
               - secretRef:
                   name: airvpn-wireguard-config
             env:
-              VPN_SERVICE_PROVIDER: airvpn
+#              VPN_SERVICE_PROVIDER: airvpn
               VPN_TYPE: wireguard
+
+              WIREGUARD_ENDPOINT_IP: sg3.vpn.airdns.org
+              WIREGUARD_ENDPOINT_PORT: 1637
+
               FIREWALL_VPN_INPUT_PORTS: "41047"
               FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
               FIREWALL_INPUT_PORTS: "80"
-              SERVER_COUNTRIES: "Singapore"
-              SERVER_HOSTNAMES: "sg.vpn.airdns.org"
+
+#              SERVER_COUNTRIES: "Singapore"
+#              SERVER_HOSTNAMES: "sg.vpn.airdns.org"
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
