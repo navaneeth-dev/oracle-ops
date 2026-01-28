@@ -35,7 +35,7 @@ spec:
 #              VPN_SERVICE_PROVIDER: airvpn
               VPN_TYPE: wireguard
 
-              WIREGUARD_ENDPOINT_IP: sg3.vpn.airdns.org
+              WIREGUARD_ENDPOINT_IP: 92.119.178.5
               WIREGUARD_ENDPOINT_PORT: 1637
 
               FIREWALL_VPN_INPUT_PORTS: "41047"
