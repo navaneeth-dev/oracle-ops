@@ -38,6 +38,7 @@ spec:
               FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
               FIREWALL_INPUT_PORTS: "80"
               SERVER_COUNTRIES: "Singapore"
+              SERVER_HOSTNAMES: "sg.vpn.airdns.org"
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
