@@ -7,6 +7,9 @@ spec:
   instances: 1
   # disable pod disruption budget for oracle single node
   enablePDB: false
+  nodeMaintenanceWindow:
+    inProgress: false
+    reusePVC: true
   storage:
     size: 1Gi
   monitoring:
