@@ -1,12 +1,13 @@
 # Oracle Ops
 
+[Status Page](![Status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2F[YOUR-STATUS-PAGE]%2Fsummary.json&query=%24.page.status&label=Status))
+
 Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 
 ## TODO
 
 - [ ] Remove all CPU limits
 - [ ] Migrate all helm repo app-template to oci
-- [ ] volsync pvc for netbird backup
 - [ ] Fix alerting rules to Discord
 - [ ] Scrape flux and add alerts to Discord for out of sync
 - [ ] Backup postgres to s3 - authentik etc
