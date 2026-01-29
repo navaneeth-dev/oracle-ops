@@ -3,14 +3,26 @@
 version: '3'
 
 tasks:
+  upgrade-all:
+    prompt:
+      - Are you sure?
+    cmds:
+      - task: talos:genconfig
+      - task: talos:apply-config
+      - task: talos:upgrade
+
   talos:apply-config:
     cmds:
       - talosctl apply-config --nodes 10.0.0.11 -f bootstrap/talos/clusterconfig/oracle-hyd-cluster-controlplane-hyd-1.yaml
 
+  talos:genconfig:
+    dir: ./bootstrap/talos
+    cmd: talhelper genconfig
+
   # not tested
   talos:upgrade:
     cmds:
-      - talosctl upgrade --nodes 10.0.0.11 --wait --debug
+      - talosctl upgrade --nodes 10.0.0.11 --wait --debug -m powercycle --image $(talhelper genurl installer)
 
   bootstrap-flux:
     cmds:
