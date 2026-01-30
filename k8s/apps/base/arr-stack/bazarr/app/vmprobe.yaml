@@ -1,0 +1,21 @@
+kind: VMProbe
+apiVersion: operator.victoriametrics.com/v1beta1
+metadata:
+  name: bazarr
+  namespace: homelab
+spec:
+  interval: "30s"
+  module: http_2xx
+  jobName: bazarr
+  vmProberSpec:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      targets:
+        - http://bazarr.homelab.svc.cluster.local/health
+      labels:
+        name: Bazarr
+        category: Arr Suite
+
