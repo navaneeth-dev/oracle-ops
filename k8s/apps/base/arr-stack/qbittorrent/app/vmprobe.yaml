@@ -1,0 +1,20 @@
+kind: VMProbe
+apiVersion: operator.victoriametrics.com/v1beta1
+metadata:
+  name: qbittorrent
+  namespace: homelab
+spec:
+  interval: "30s"
+  module: http_2xx
+  jobName: qbittorrent
+  vmProberSpec:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      targets:
+        - http://qbittorrent.homelab.svc.cluster.local:80/api/v2/app/version
+      labels:
+        name: qBittorrent
+        category: Arr Suite
