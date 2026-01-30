@@ -4,4 +4,4 @@ namespace: homelab
 resources:
   - helmrelease.yaml
   - ocirepository.yaml
-  - airvpn-secret.yaml
+  - secret-wireguard.yaml
