@@ -24,6 +24,8 @@ spec:
       auth_url: "https://authentik.${DOMAIN}/application/o/authorize/"
       token_url: "https://authentik.${DOMAIN}/application/o/token/"
       api_url: "https://authentik.${DOMAIN}/application/o/userinfo/"
+      allowed_groups: "Admins"
+      groups_attribute_path: "groups"
       role_attribute_path: contains(groups, 'Admins') && 'Admin'
   disableDefaultAdminSecret: true
   deployment:
