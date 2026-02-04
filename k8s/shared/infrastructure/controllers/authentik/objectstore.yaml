@@ -3,10 +3,10 @@ apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
   name: ovhcloud
-  namespace: cnpg-system
+  namespace: authentik
 spec:
   configuration:
-    destinationPath: "s3://rizexor-oracle-postgres"
+    destinationPath: "s3://rizexor-oracle-postgres/authentik"
     endpointURL: "https://s3.ap-south-mum.io.cloud.ovh.net"
     s3Credentials:
       accessKeyId:
