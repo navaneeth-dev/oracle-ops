@@ -11,6 +11,6 @@ spec:
     inProgress: false
     reusePVC: true
   storage:
-    size: 1Gi
+    size: 1.5Gi
   monitoring:
     enablePodMonitor: true
