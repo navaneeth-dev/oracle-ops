@@ -6,7 +6,7 @@ metadata:
   namespace: authentik
 spec:
   configuration:
-    destinationPath: "s3://rizexor-oracle-postgres/authentik"
+    destinationPath: "s3://rizexor-oracle-postgres"
     endpointURL: "https://s3.ap-south-mum.io.cloud.ovh.net"
     s3Credentials:
       accessKeyId:
