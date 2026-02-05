@@ -4,3 +4,4 @@ resources:
   - helmrepository.yaml
   - helmrelease.yaml
   - configmap.yaml
+  - grafanadashboard-red-metrics.yaml
