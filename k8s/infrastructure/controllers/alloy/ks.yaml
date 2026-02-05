@@ -13,7 +13,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: cnpg-system
   wait: true
   postBuild:
     substituteFrom:
@@ -38,7 +37,6 @@ spec:
 #    kind: GitRepository
 #    name: flux-system
 #    namespace: flux-system
-#  targetNamespace: cnpg-system
 #  wait: true
 #  postBuild:
 #    substituteFrom:
