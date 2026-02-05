@@ -13,11 +13,9 @@ data:
         }
     
         discovery {
-            services {
-              kubernetes {
-                  namespace = "homelab"
-                  deployment_name = "jellyfin"
-              }
+            instrument {
+                k8s_namespace = "homelab"
+                k8s_deployment_name = "jellyfin"
             }
         }
     
