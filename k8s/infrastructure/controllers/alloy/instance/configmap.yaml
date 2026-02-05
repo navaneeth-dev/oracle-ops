@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: alloy-config
+  name: alloy
 data:
   config.alloy: |
     beyla.ebpf "default" {
