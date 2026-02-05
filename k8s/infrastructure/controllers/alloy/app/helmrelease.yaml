@@ -18,6 +18,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: alloy
+        namespace: observability
   install:
     remediation:
       retries: -1
