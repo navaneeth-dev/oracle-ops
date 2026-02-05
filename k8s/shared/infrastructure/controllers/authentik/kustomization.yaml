@@ -10,3 +10,4 @@ resources:
   - helmrelease.yaml
   - clusterrole.yaml
   - clusterrolebinding.yaml
+  - scheduledbackup.yaml
