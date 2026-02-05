@@ -6,4 +6,4 @@ resources:
   - fluent-bit
   - cnpg
   - plugin-barman-cloud/ks.yaml
-  - alloy
+  - alloy/ks.yaml
