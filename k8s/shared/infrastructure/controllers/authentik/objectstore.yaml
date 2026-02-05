@@ -21,4 +21,4 @@ spec:
     data:
       compression: gzip
       jobs: 2
-  retentionPolicy: "7d"
+  retentionPolicy: "31d"
