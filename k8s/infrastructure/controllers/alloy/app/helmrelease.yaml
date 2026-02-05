@@ -28,5 +28,7 @@ spec:
       retries: 3
   values:
     alloy:
+      securityContext:
+        privileged: true
       configMap:
         create: false
