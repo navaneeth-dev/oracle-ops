@@ -24,9 +24,7 @@ spec:
   releaseName: stack
   values:
     fullnameOverride: stack
-    server:
-      extraArgs:
-        opentelemetry.usePrometheusNaming: true
+
     defaultDashboards:
       defaultTimezone: ist
       grafanaOperator:
@@ -43,6 +41,14 @@ spec:
     vmsingle:
       enabled: true
       spec:
+        server:
+          extraArgs:
+            envflag.enable: true
+            envflag.prefix: VM_
+            loggerFormat: json
+            httpListenAddr: :8428
+            opentelemetry.usePrometheusNaming: true
+
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
