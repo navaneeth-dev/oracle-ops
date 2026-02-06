@@ -29,10 +29,30 @@ spec:
   values:
     controller:
       hostPID: true
+      volumes:
+        extra:
+          - name: bpf
+            hostPath:
+              path: /sys/fs/bpf
+          - name: debugfs
+            hostPath:
+              path: /sys/kernel/debug
+          - name: cgroup
+            hostPath:
+              path: /sys/fs/cgroup
+
     alloy:
       securityContext:
         privileged: true
         appArmorProfile:
           type: Unconfined
+      mounts:
+        extra:
+          - name: bpf
+            mountPath: /sys/fs/bpf
+          - name: debugfs
+            mountPath: /sys/kernel/debug
+          - name: cgroup
+            mountPath: /sys/fs/cgroup
       configMap:
         create: false
