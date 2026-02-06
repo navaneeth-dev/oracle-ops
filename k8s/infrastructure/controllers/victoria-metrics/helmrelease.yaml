@@ -41,13 +41,8 @@ spec:
     vmsingle:
       enabled: true
       spec:
-        server:
-          extraArgs:
-            envflag.enable: true
-            envflag.prefix: VM_
-            loggerFormat: json
-            httpListenAddr: :8428
-            opentelemetry.usePrometheusNaming: true
+        extraArgs:
+          opentelemetry.usePrometheusNaming: true
 
         securityContext:
           runAsNonRoot: true
