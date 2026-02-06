@@ -32,5 +32,7 @@ spec:
     alloy:
       securityContext:
         privileged: true
+        appArmorProfile:
+          type: Unconfined
       configMap:
         create: false
