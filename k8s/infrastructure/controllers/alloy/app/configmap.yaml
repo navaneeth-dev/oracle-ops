@@ -6,7 +6,7 @@ metadata:
 data:
   config.alloy: |
     beyla.ebpf "default" {
-        debug = true
+        debug = false
         attributes {
             kubernetes {
                 enable = "true"
@@ -15,20 +15,16 @@ data:
     
         discovery {
             instrument {
-                open_ports = "8096"
                 kubernetes {
-                    namespace = "homelab"
-                    deployment_name = "jellyfin"
+                    namespace = "homepage"
+                    deployment_name = "homepage"
                 }
             }
         }
     
-        routes {
-            unmatched = "heuristic"
-        }
-    
         metrics {
             features = [
+                "application",
                 "network",
             ]
         }
