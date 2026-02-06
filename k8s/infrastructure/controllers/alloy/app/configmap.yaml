@@ -25,7 +25,6 @@ data:
     
         metrics {
             features = [
-                "application",
                 "network",
             ]
         }
