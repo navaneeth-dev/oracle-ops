@@ -18,6 +18,7 @@ spec:
     autoDirectNodeRoutes: true
     bpf:
       masquerade: true
+      filterPriority: 2
     cgroup:
       autoMount:
         enabled: false
