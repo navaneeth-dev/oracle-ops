@@ -6,6 +6,7 @@ metadata:
 data:
   config.alloy: |
     beyla.ebpf "default" {
+        debug = true
         attributes {
             kubernetes {
                 enable = "true"
