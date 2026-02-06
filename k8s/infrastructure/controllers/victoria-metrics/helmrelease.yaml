@@ -24,7 +24,9 @@ spec:
   releaseName: stack
   values:
     fullnameOverride: stack
-
+    server:
+      extraArgs:
+        opentelemetry.usePrometheusNaming: true
     defaultDashboards:
       defaultTimezone: ist
       grafanaOperator:
