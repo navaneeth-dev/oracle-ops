@@ -42,7 +42,7 @@ spec:
       enabled: true
       spec:
         extraArgs:
-          opentelemetry.usePrometheusNaming: "true"
+          opentelemetry.usePrometheusNaming: "false"
 
         securityContext:
           runAsNonRoot: true
