@@ -15,6 +15,7 @@ data:
     
         discovery {
             instrument {
+                open_ports = "8096"
                 kubernetes {
                     namespace = "homelab"
                     deployment_name = "jellyfin"
