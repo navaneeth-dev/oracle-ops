@@ -9,7 +9,7 @@ tasks:
 
   talos:upgrade:
     prompt:
-      - Are you sure?
+      - Do you want to upgrade Talos?
     cmds:
       - task: talos:genconfig
       - task: kubectl:drain
