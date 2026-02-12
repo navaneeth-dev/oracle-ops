@@ -3,13 +3,19 @@
 version: '3'
 
 tasks:
-  upgrade-all:
+  kubectl:drain:
+    prompt: Drain controlplane-hyd-1?
+    cmd: kubectl drain controlplane-hyd-1 --ignore-daemonsets --delete-emptydir-data
+
+  talos:upgrade:
     prompt:
       - Are you sure?
     cmds:
       - task: talos:genconfig
+      - task: kubectl:drain
       - task: talos:apply-config
-      - task: talos:upgrade
+      - task: talos:upgrade-image-reboot
+      - cmd: kubectl uncordon controlplane-hyd-1
 
   talos:apply-config:
     cmds:
@@ -19,8 +25,9 @@ tasks:
     dir: ./bootstrap/talos
     cmd: talhelper genconfig
 
-  # not tested
-  talos:upgrade:
+  talos:upgrade-image-reboot:
+    prompt:
+      - You are going to upgrade the talos image. Continue?
     cmds:
       - talosctl upgrade --nodes 10.0.0.11 --wait --debug -m powercycle --image $(talhelper genurl installer)
 
