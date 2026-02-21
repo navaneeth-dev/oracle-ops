@@ -9,7 +9,7 @@ spec:
   components:
     - ../../../../components/volsync
   interval: 1h
-  path: ./k8s/shared/infrastructure/configs/grafana/app
+  path: ./k8s/infrastructure/configs/grafana/app
   postBuild:
     substituteFrom:
       - kind: ConfigMap
