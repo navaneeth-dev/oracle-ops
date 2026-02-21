@@ -8,3 +8,7 @@ resources:
   - homepage.yaml
   - snapshot-controller.yaml
   - authentik.yaml
+  - cert-manager.yaml
+  - envoy-gateway-system.yaml
+  - observability.yaml
+  - volsync.yaml
