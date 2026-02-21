@@ -7,3 +7,8 @@ resources:
   - cnpg
   - plugin-barman-cloud/ks.yaml
   - cilium/ks.yaml
+  - cert-manager
+  - local-path-provisioner
+  - envoy-gateway
+  - volsync
+  - authentik
