@@ -4,5 +4,5 @@ TALOSCONFIG = "{{config_root}}/bootstrap/talos/talosconfig"
 SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 
 [tools]
-sops = "3.11.0"
+sops = "3.12.1"
 talhelper = "3.1.5"
