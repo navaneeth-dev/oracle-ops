@@ -101,8 +101,8 @@ spec:
               startup:
                 enabled: true
                 spec:
-                  failureThreshold: 30
-                  periodSeconds: 10
+                  failureThreshold: 10
+                  periodSeconds: 3
             securityContext:
               runAsNonRoot: true
               runAsUser: 1000
