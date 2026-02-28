@@ -1,12 +1,12 @@
 kind: VMProbe
 apiVersion: operator.victoriametrics.com/v1beta1
 metadata:
-  name: jellyseerr
+  name: seerr
   namespace: homelab
 spec:
   interval: "30s"
   module: http_2xx
-  jobName: jellyseerr
+  jobName: seerr
   vmProberSpec:
     url: blackbox-exporter.observability.svc.cluster.local:9115
     path: /probe
@@ -14,8 +14,7 @@ spec:
   targets:
     staticConfig:
       targets:
-        - http://jellyseerr.homelab.svc.cluster.local:5055
+        - http://seerr.homelab.svc.cluster.local:5055
       labels:
-        name: Jellyseerr
+        name: Seerr
         category: Media Request
-
