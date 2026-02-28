@@ -117,6 +117,12 @@ spec:
               limits:
                 memory: 4Gi
     service:
+      prowlarr:
+        controller: *name
+        nameOverride: prowlarr
+        ports:
+          http:
+            port: 9696
       app:
         primary: true
         controller: *name
@@ -134,6 +140,11 @@ spec:
                 readOnly: false
       config:
         existingClaim: qbittorrent
+        advancedMounts:
+          qbittorrent:
+            app:
+              - path: /config
+                readOnly: false
       data:
         enabled: true
         type: persistentVolumeClaim
