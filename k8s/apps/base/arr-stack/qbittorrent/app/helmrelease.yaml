@@ -121,6 +121,7 @@ spec:
     service:
       prowlarr:
         controller: *name
+        forceRename: prowlarr
         ports:
           http:
             port: 9696
