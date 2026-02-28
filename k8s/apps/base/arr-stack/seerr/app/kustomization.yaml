@@ -3,3 +3,5 @@ kind: Kustomization
 namespace: homelab
 resources:
   - helmrelease.yaml
+  - ocirepository.yaml
+  - vmprobe.yaml
