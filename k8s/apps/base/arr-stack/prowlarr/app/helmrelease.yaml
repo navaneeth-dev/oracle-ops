@@ -68,16 +68,16 @@ spec:
               requests:
                 cpu: 50m
 
-    service:
-      app:
-        primary: true
-        controller: *name
-        ports:
-          http:
-            port: *port
+#    service:
+#      app:
+#        primary: true
+#        controller: *name
+#        ports:
+#          http:
+#            port: *port
 
     persistence:
-      config:
-        existingClaim: prowlarr
+#      config:
+#        existingClaim: prowlarr
       tmp:
         type: emptyDir

@@ -20,6 +20,41 @@ spec:
     controllers:
       qbittorrent:
         containers:
+          prowlarr:
+            image:
+              repository: ghcr.io/home-operations/prowlarr
+              tag: 2.3.2.5245@sha256:e2459e199564ab852c6e677e951cef36c172a8e71a0e1c90665631b5a0c57438
+            env:
+              PROWLARR__UPDATE__BRANCH: develop
+              TZ: "${TZ}"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: &port 9696
+                  initialDelaySeconds: 80
+                  periodSeconds: 10
+                  timeoutSeconds: 15
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+                  initialDelaySeconds: 60
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: [ "ALL" ] }
+            resources:
+              limits:
+                memory: 200Mi
+              requests:
+                cpu: 50m
           gluetun:
             image:
               repository: qmcgaw/gluetun
@@ -37,7 +72,7 @@ spec:
 
               FIREWALL_VPN_INPUT_PORTS: "41047"
               FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
-              FIREWALL_INPUT_PORTS: "80"
+              FIREWALL_INPUT_PORTS: "80,9696"
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
@@ -88,28 +123,15 @@ spec:
         ports:
           http:
             port: *port
-#    route:
-#      main:
-#        enabled: true
-#        kind: HTTPRoute
-#        parentRefs:
-#          - kind: Gateway
-#            name: reverse-proxy
-#            namespace: envoy-gateway-system
-#        hostnames:
-#          - 'qbittorrent.${DOMAIN}'
-#        rules:
-#          - matches:
-#              - path:
-#                  type: PathPrefix
-#                  value: /
-#            backendRefs:
-#              - kind: Service
-#                port: *port
-#                name: qbittorrent-app
-#                namespace: homelab
-#                weight: 1
+
     persistence:
+      prowlarr-config:
+        existingClaim: prowlarr
+        advancedMounts:
+          qbittorrent:
+            prowlarr:
+              - path: /config
+                readOnly: false
       config:
         existingClaim: qbittorrent
       data:
