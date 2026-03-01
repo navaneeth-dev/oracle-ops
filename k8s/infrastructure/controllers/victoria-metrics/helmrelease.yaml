@@ -71,7 +71,7 @@ spec:
       enabled: true
 
     kubeProxy:
-      enabled: true
+      enabled: false
 
     coreDns:
       enabled: true
