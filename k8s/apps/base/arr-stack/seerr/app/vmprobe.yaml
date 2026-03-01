@@ -14,7 +14,7 @@ spec:
   targets:
     staticConfig:
       targets:
-        - http://seerr.homelab.svc.cluster.local:5055
+        - http://seerr-seerr-chart.homelab.svc.cluster.local:5055
       labels:
         name: Seerr
         category: Media Request
