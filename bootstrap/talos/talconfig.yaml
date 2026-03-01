@@ -33,6 +33,20 @@ controlPlane:
       systemExtensions:
         officialExtensions: []
 
+  patches:
+    # **CHANGE IP**, this will work only for single node cluster
+    - |-
+      cluster:
+        scheduler:
+          extraArgs:
+            bind-address: 10.0.0.11
+        controllerManager:
+          extraArgs:
+            bind-address: 10.0.0.11
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://10.0.0.11:2381
+
 patches:
   - |-
     machine:
