@@ -35,8 +35,8 @@ data:
             reset_unmatched_scores:
               enabled: true
             qualities:
-              - WEB 1080p
-              - Bluray-1080p
+              - name: WEB 1080p
+              - name: Bluray-1080p
           
           # WEB-2160p
           - trash_id: d1498e7d189fbe6c7110ceaabb7473e6  # WEB-2160p
