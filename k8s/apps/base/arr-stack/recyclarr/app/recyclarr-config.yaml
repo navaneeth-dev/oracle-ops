@@ -30,9 +30,9 @@ data:
           type: series
           qualities:
           - name: Bluray-1080p
-            min: 2
-            max: 6
-            preferred: 3
+            min: 45
+            max: 100
+            preferred: 55
         
         quality_profiles:
           # WEB-1080p
