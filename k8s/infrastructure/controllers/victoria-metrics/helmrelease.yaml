@@ -70,42 +70,57 @@ spec:
     kubeApiServer:
       enabled: true
 
-    kubeControllerManager:
-      enabled: true
-      service:
-        selector:
-          component: stack-kube-controller-manager
-        vmScrape:
-          spec:
-            endpoints:
-              - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-                port: http-metrics
-                scheme: https
-                tlsConfig:
-                  insecureSkipVerify: true
-
-    kubeEtcd:
-      enabled: true
-      service:
-        selector:
-          component: stack-kube-etcd
-        vmScrape:
-          spec:
-            endpoints:
-              - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-                port: http-metrics
-                scheme: https
-                tlsConfig:
-                  insecureSkipVerify: true
-
-    kubeScheduler:
-      enabled: true
-
     kubeProxy:
       enabled: true
 
     coreDns:
       enabled: true
+
+    kubeControllerManager:
+      enabled: true
+      endpoints:
+        - "10.0.0.11"
+      service:
+        selector:
+          component: kube-apiserver
+      vmScrape:
+        spec:
+          endpoints:
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: http-metrics
+              scheme: https
+              tlsConfig:
+                insecureSkipVerify: true
+
+    kubeEtcd:
+      enabled: true
+      endpoints:
+        - "10.0.0.11"
+      service:
+        selector:
+          component: etcd
+        port: 2381
+        targetPort: 2381
+      vmScrape:
+        spec:
+          endpoints:
+            - scheme: http
+
+    kubeScheduler:
+      enabled: true
+      endpoints:
+        - "10.0.0.11"
+      service:
+        selector:
+          component: kube-apiserver
+      vmScrape:
+        spec:
+          endpoints:
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: http-metrics
+              scheme: https
+              tlsConfig:
+                insecureSkipVerify: true
 
     alertmanager:
       enabled: true
