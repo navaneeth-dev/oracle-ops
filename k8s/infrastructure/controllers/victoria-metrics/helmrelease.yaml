@@ -78,8 +78,6 @@ spec:
 
     kubeControllerManager:
       enabled: true
-      endpoints:
-        - "10.0.0.11"
       service:
         selector:
           component: kube-apiserver
@@ -94,8 +92,6 @@ spec:
 
     kubeEtcd:
       enabled: true
-      endpoints:
-        - "10.0.0.11"
       service:
         selector:
           component: etcd
@@ -108,8 +104,6 @@ spec:
 
     kubeScheduler:
       enabled: true
-      endpoints:
-        - "10.0.0.11"
       service:
         selector:
           component: kube-apiserver
