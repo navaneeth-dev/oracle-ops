@@ -89,12 +89,14 @@ spec:
       service:
         selector:
           component: stack-kube-etcd
-        port: 2381
-        targetPort: 2381
         vmScrape:
           spec:
             endpoints:
-              - scheme: http
+              - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                port: http-metrics
+                scheme: https
+                tlsConfig:
+                  insecureSkipVerify: true
 
     kubeScheduler:
       enabled: true
