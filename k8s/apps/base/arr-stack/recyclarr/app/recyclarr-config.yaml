@@ -31,7 +31,7 @@ data:
           qualities:
           - name: Bluray-1080p
             min: 45
-            max: 100
+            max: 150
             preferred: 55
         
         quality_profiles:
