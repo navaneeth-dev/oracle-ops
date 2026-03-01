@@ -94,7 +94,7 @@ spec:
       enabled: true
       service:
         selector:
-          component: etcd
+          component: kube-apiserver
         port: 2381
         targetPort: 2381
       vmScrape:
