@@ -62,16 +62,16 @@ spec:
             memory: 500Mi
 
     kube-state-metrics:
-      enabled: true
+      enabled: false
 
     kubelet:
-      enabled: true
+      enabled: false
 
     kubeApiServer:
-      enabled: true
+      enabled: false
 
     kubeControllerManager:
-      enabled: true
+      enabled: false
       service:
         selector:
           component: stack-kube-controller-manager
@@ -103,7 +103,7 @@ spec:
       enabled: false
 
     coreDns:
-      enabled: true
+      enabled: false
 
     alertmanager:
       enabled: true
