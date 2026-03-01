@@ -28,6 +28,11 @@ data:
         
         quality_definition:
           type: series
+          qualities:
+          - name: Bluray-1080p
+            min: 2
+            max: 6
+            preferred: 3
         
         quality_profiles:
           # WEB-1080p
@@ -36,6 +41,9 @@ data:
               enabled: true
             qualities:
               - name: WEB 1080p
+                qualities:
+                  - WEBDL-1080p
+                  - WEBRip-1080p
               - name: Bluray-1080p
           
           # WEB-2160p
