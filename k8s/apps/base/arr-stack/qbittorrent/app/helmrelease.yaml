@@ -90,6 +90,8 @@ spec:
         ports:
           http:
             port: *port
+          proxy:
+            port: 8888
 
     persistence:
       config:
