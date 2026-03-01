@@ -61,35 +61,49 @@ spec:
             cpu: 200m
             memory: 500Mi
 
+    kube-state-metrics:
+      enabled: true
+
+    kubelet:
+      enabled: true
+
+    kubeApiServer:
+      enabled: true
+
     kubeControllerManager:
-      endpoints: # required for k3s because kube services are not run as pods
-        - 10.0.10.2
-      vmScrape:
-        spec:
-          endpoints:
-            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-              port: http-metrics
-              scheme: https
-              tlsConfig:
-                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-                serverName: kubernetes
-                insecureSkipVerify: true
+      enabled: true
+      service:
+        selector:
+          component: kube-apiserver # Selects controller node IPs
+        vmScrape:
+          spec:
+            endpoints:
+              - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+                port: http-metrics
+                scheme: https
+                tlsConfig:
+                  insecureSkipVerify: true
 
     kubeEtcd:
-      enabled: false
+      enabled: true
+      service:
+        selector:
+          component: kube-apiserver # Selects controller node IPs
+        port: 2381
+        targetPort: 2381
+        vmScrape:
+          spec:
+            endpoints:
+              - scheme: http
 
     kubeScheduler:
-      endpoints: # required for k3s because kube services are not run as pods
-        - 10.0.10.2
-      vmScrape:
-        spec:
-          endpoints:
-            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-              port: http-metrics
-              scheme: https
-              tlsConfig:
-                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-                insecureSkipVerify: true
+      enabled: false
+
+    kubeProxy:
+      enabled: false
+
+    coreDns:
+      enabled: true
 
     alertmanager:
       enabled: true
