@@ -1,50 +1,56 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":disableRateLimiting",
-    ":semanticCommits"
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    ':disableRateLimiting',
+    ':semanticCommits',
   ],
-  "timezone": "Asia/Kolkata",
-  "helm-values": {
-    "managerFilePatterns": ["/k8s/.+\\.yaml$/"]
+  timezone: 'Asia/Kolkata',
+  'helm-values': {
+    managerFilePatterns: [
+      '/k8s/.+\\.yaml$/',
+    ],
   },
-  "kubernetes": {
-    "managerFilePatterns": [
-      "/\\.yaml$/"
-    ]
+  kubernetes: {
+    managerFilePatterns: [
+      '/\\.yaml$/',
+    ],
   },
-  "helmv3": {
-    "managerFilePatterns": [
-      "/\\.yaml$/"
-    ]
+  helmv3: {
+    managerFilePatterns: [
+      '/\\.yaml$/',
+    ],
   },
-  "flux": {
-    "managerFilePatterns": ["/k8s/.+\\.yaml$/"]
+  flux: {
+    managerFilePatterns: [
+      '/k8s/.+\\.yaml$/',
+    ],
   },
   suppressNotifications: [
-    "prEditedNotification",
-    "prIgnoreNotification",
+    'prEditedNotification',
+    'prIgnoreNotification',
   ],
   packageRules: [
     {
-      description: "Auto-merge terraform",
+      description: 'Auto-merge terraform',
       matchDatasources: [
-        "terraform-module",
-        "terraform-provider"
+        'terraform-module',
+        'terraform-provider',
       ],
       automerge: true,
-      automergeType: "branch",
+      automergeType: 'branch',
       ignoreTests: true,
-    }
+    },
   ],
-  "customManagers": [
+  customManagers: [
     {
-      "customType": "regex",
-      "fileMatch": ["bootstrap/talos/talenv.yaml"],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>[\\w-]+?) depName=(?<depName>[^\\s]+?)\\s+\\w+: (?<currentValue>.*)\\s"
-      ]
-    }
-  ]
+      customType: 'regex',
+      managerFilePatterns: [
+        '/bootstrap/talos/talenv.yaml/',
+      ],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>[\\w-]+?) depName=(?<depName>[^\\s]+?)\\s+\\w+: (?<currentValue>.*)\\s',
+      ],
+    },
+  ],
 }
