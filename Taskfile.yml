@@ -16,6 +16,7 @@ tasks:
       - task: talos:apply-config
       - task: talos:upgrade-image-reboot
       - cmd: kubectl uncordon controlplane-hyd-1
+      - cmd: kubectl version
 
   talos:apply-config:
     cmds:
@@ -28,12 +29,18 @@ tasks:
   talos:upgrade-image-reboot:
     prompt:
       - You are going to upgrade the talos image. Continue?
-    cmds:
-      - talosctl upgrade --nodes 10.0.0.11 --wait --debug -m powercycle --image $(talhelper genurl installer)
+    cmd: |
+      talosctl upgrade --nodes 10.0.0.11 --wait --debug -m powercycle \ 
+      --image $(yq 'select(document_index == 0) | .machine.install.image' oracle-hyd-cluster-controlplane-hyd-1.yaml -r)
 
   talos:upgrade-k8s:
+    prompt:
+      - NOT TESTED PLEASE REVIEW CODE
     cmds:
-      - talosctl --nodes 10.0.0.11 upgrade-k8s --to 1.35.0 --dry-run
+      - kubectl version
+      - talosctl --nodes 10.0.0.11 upgrade-k8s --to xx1.35.0 --dry-run
+      - talosctl --nodes 10.0.0.11 upgrade-k8s
+      - kubectl version
 
   bootstrap-flux:
     cmds:
