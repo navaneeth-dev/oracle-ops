@@ -31,6 +31,10 @@ tasks:
     cmds:
       - talosctl upgrade --nodes 10.0.0.11 --wait --debug -m powercycle --image $(talhelper genurl installer)
 
+  talos:upgrade-k8s:
+    cmds:
+      - talosctl --nodes 10.0.0.11 upgrade-k8s --to 1.35.0 --dry-run
+
   bootstrap-flux:
     cmds:
       - kubectl get ns flux-system || kubectl create ns flux-system
