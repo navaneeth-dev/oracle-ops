@@ -15,5 +15,5 @@ spec:
     isDefault: true
   plugins:
     - name: victoriametrics-logs-datasource
-      # renovate: datasource=github-releases packageName=VictoriaMetrics/victorialogs-datasource
+      # renovate: datasource=github-releases registryUrl=VictoriaMetrics/victorialogs-datasource
       version: "0.26.2"
