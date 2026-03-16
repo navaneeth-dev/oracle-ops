@@ -6,13 +6,6 @@
     ':semanticCommits',
   ],
   timezone: 'Asia/Kolkata',
-  "hostRules": [
-    {
-      "matchHost": "docker.io",
-      "username": "<some-username>",
-      "password": "<some-password>"
-    }
-  ],
   'helm-values': {
     managerFilePatterns: [
       '/k8s/.+\\.yaml$/',
