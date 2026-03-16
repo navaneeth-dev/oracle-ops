@@ -13,3 +13,7 @@ spec:
     access: proxy
     url: http://victoria-logs-server.observability:9428
     isDefault: true
+  plugins:
+    - name: victoriametrics-logs-datasource
+      # renovate: datasource=github-releases packageName=VictoriaMetrics/victorialogs-datasource
+      version: "0.26.2"
