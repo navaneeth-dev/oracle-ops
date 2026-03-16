@@ -52,5 +52,14 @@
         '# renovate: datasource=(?<datasource>[\\w-]+?) depName=(?<depName>[^\\s]+?)\\s+\\w+: (?<currentValue>.*)\\s',
       ],
     },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/k8s/infrastructure/configs/victoria-metrics/grafanadatasource-victoria-logs.yaml/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) registryUrl=(?<registryUrl>.*?)"
+      ],
+    },
   ],
 }
