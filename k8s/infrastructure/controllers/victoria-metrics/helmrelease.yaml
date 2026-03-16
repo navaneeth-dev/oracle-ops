@@ -403,7 +403,7 @@ spec:
           group_interval: 5m
           repeat_interval: 4h
           routes:
-            - receiver: 'discord-info'
+            - receiver: 'healthchecksio'
               matchers:
                 - alertname =~ "InfoInhibitor|Watchdog"
 
@@ -465,6 +465,11 @@ spec:
                   Description: {{ .Annotations.description }}
                   {{- end }}
                   {{- end }}
+          - name: "healthchecksio"
+            webhook_configs:
+              - url: 'replacedfromvalues'
+                # dont send resolved alerts to healthchecks.io
+                send_resolved: false
   valuesFrom:
     - kind: Secret
       name: discord-webhook
@@ -474,4 +479,7 @@ spec:
       name: discord-webhook
       valuesKey: info
       targetPath: alertmanager.config.receivers[2].discord_configs[0].webhook_url
-
+    - kind: Secret
+      name: alertmanager
+      valuesKey: HEALTH_CHECKS_IO_URL
+      targetPath: alertmanager.config.receivers[3].webhook_configs[0].url
