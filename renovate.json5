@@ -58,7 +58,7 @@
         "/k8s/infrastructure/configs/victoria-metrics/grafanadatasource-victoria-logs.yaml/"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?) registryUrl=(?<registryUrl>.*?)"
+        "# renovate: datasource=(?<datasource>.*?) registryUrl=depName=(?<registryUrl>[^\\\\s]+?)\\\\s+\\\\w+: (?<currentValue>.*)\\\\s"
       ],
     },
   ],
