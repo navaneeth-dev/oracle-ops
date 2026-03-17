@@ -4,8 +4,6 @@ metadata:
   name: discord
   namespace: flux-system
 spec:
-  type: slack
-  channel: general
-  address: https://slack.com/api/chat.postMessage
+  type: discord
   secretRef:
-    name: slack-bot-token
+    name: flux-alerts-discord-webhook
