@@ -6,3 +6,5 @@ resources:
   - secret-github-webhook.yaml
   - grafana-dashboard-flux.yaml
   - podmonitor.yaml
+  - secret-flux-alerts-discord-webhook.yaml
+  - provider.yaml
