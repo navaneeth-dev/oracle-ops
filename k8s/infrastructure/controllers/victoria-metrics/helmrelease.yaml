@@ -66,6 +66,20 @@ spec:
             memory: 500Mi
 
     kube-state-metrics:
+      vmScrape:
+        enabled: true
+        spec:
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: '{{ include "kube-state-metrics.name" (index .Subcharts "kube-state-metrics") }}'
+              app.kubernetes.io/instance: '{{ include "vm.release" . }}'
+          endpoints:
+            - port: http
+              honorLabels: true
+              metricRelabelConfigs:
+                - action: labeldrop
+                  regex: (uid|container_id|image_id)
+          jobLabel: app.kubernetes.io/name
       # For kube-prometheus-stacks that are already installed and configured with
       # custom collectors, commenting out the collectors and extraArgs below will
       # retain any existing kube-state-metrics configuration.
