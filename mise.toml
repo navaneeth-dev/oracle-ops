@@ -5,7 +5,7 @@ SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 
 [tools]
 kubectl = "1.35.2"
-sops = "3.12.1"
+sops = "3.12.2"
 talhelper = "3.1.6"
 talosctl = "1.12.5"
 yq = "4.52.4"
