@@ -1,0 +1,19 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+  name: error-discord-alerts
+  namespace: flux-system
+spec:
+  summary: "Flux error"
+#  eventMetadata:
+#    env: "production"
+#    cluster: "my-cluster"
+#    region: "us-east-2"
+  providerRef:
+    name: discord
+  eventSeverity: error
+  eventSources:
+    - kind: GitRepository
+      name: '*'
+    - kind: Kustomization
+      name: '*'
