@@ -25,6 +25,10 @@ spec:
   values:
     fullnameOverride: stack
 
+    external:
+      grafana:
+        host: "grafana.${DOMAIN}"
+
     defaultDashboards:
       defaultTimezone: ist
       grafanaOperator:
