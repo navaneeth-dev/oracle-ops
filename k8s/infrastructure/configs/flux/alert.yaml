@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/notification.toolkit.fluxcd.io/alert_v1beta3.json
 apiVersion: notification.toolkit.fluxcd.io/v1beta3
 kind: Alert
 metadata:
@@ -19,3 +20,36 @@ spec:
       name: '*'
     - kind: HelmRelease
       name: '*'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'homelab'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'authentik'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'cert-manager'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'envoy-gateway-system'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'cnpg-system'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'homepage'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'kube-system'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'observability'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'snapshot-controller'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'topolvm-system'
+    - kind: HelmRelease
+      name: '*'
+      namespace: 'volsync-system'
