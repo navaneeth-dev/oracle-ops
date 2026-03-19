@@ -420,6 +420,9 @@ spec:
           group_interval: 5m
           repeat_interval: 4h
           routes:
+            - receiver: "null"
+              matchers:
+                - group="kube-scheduler.rules"
             - receiver: 'healthchecksio'
               matchers:
                 - alertname =~ "InfoInhibitor|Watchdog"
