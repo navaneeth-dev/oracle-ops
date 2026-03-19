@@ -9,8 +9,7 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 - [ ] Remove all CPU limits
 - [ ] Migrate all helm repo app-template to oci
 - [ ] Fix alerting rules to Discord
-- [ ] Scrape flux and add alerts to Discord for out of sync
-- [ ] Backup postgres to s3 - authentik etc
+- [ ] Monitor authentik uptime either VMServiceScrape or VMProbe
 
 ## Security
 
