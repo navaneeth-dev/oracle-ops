@@ -8,3 +8,4 @@ resources:
   - podmonitor.yaml
   - secret-flux-alerts-discord-webhook.yaml
   - provider.yaml
+  - alert.yaml
