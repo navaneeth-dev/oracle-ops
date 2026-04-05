@@ -52,16 +52,16 @@ resource "oci_network_load_balancer_listener" "controlplane" {
 }
 
 # Backends (associated with the compute instance)
-resource "oci_network_load_balancer_backend" "talos_api" {
-  backend_set_name         = oci_network_load_balancer_backend_set.talos_api.name
-  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
-  port                     = 50000
-  target_id                = oci_core_instance.talos_cp.id
-}
-
-resource "oci_network_load_balancer_backend" "controlplane" {
-  backend_set_name         = oci_network_load_balancer_backend_set.controlplane.name
-  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
-  port                     = 6443
-  target_id                = oci_core_instance.talos_cp.id
-}
+# resource "oci_network_load_balancer_backend" "talos_api" {
+#   backend_set_name         = oci_network_load_balancer_backend_set.talos_api.name
+#   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
+#   port                     = 50000
+#   target_id                = oci_core_instance.talos_cp.id
+# }
+#
+# resource "oci_network_load_balancer_backend" "controlplane" {
+#   backend_set_name         = oci_network_load_balancer_backend_set.controlplane.name
+#   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
+#   port                     = 6443
+#   target_id                = oci_core_instance.talos_cp.id
+# }
