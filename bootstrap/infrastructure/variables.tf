@@ -3,10 +3,16 @@ variable "compartment_id" {
   description = "OCI Compartment OCID"
 }
 
-variable "talos_image_source_uri" {
+variable "bucket_name" {
   type        = string
-  description = "OCI Object Storage URI for the talos-oracle-arm64.oci file"
-  default = "factory.talos.dev/oracle-installer/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba"
+  description = "OCI Object Storage Bucket Name"
+  default     = "talos-images"
+}
+
+variable "talos_version" {
+  type        = string
+  description = "Talos Version (used for naming)"
+  default     = "1.12.6"
 }
 
 variable "instance_shape" {
