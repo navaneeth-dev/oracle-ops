@@ -9,12 +9,6 @@ variable "bucket_name" {
   default     = "talos-images"
 }
 
-variable "talos_version" {
-  type        = string
-  description = "Talos Version (used for naming)"
-  default     = "1.12.6"
-}
-
 variable "instance_shape" {
   type    = string
   default = "VM.Standard.A1.Flex"
