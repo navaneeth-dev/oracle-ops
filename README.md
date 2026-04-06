@@ -11,6 +11,11 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 - [ ] Fix alerting rules to Discord
 - [ ] Monitor authentik uptime either VMServiceScrape or VMProbe
 
+## Upgrades
+
+- talosctl rollback
+- OCI console based rollback
+
 ## Security
 
 Only Network Load Balancers have a public IP, all Talos nodes have only Private
@@ -164,4 +169,3 @@ file1: (groupid=0, jobs=1): err= 0: pid=65: Thu Oct 16 06:56:59 2025
 Run status group 0 (all jobs):
   WRITE: bw=39.6MiB/s (41.5MB/s), 9.87MiB/s-9.90MiB/s (10.3MB/s-10.4MB/s), io=34.0GiB (36.5GB), run=881227-881236msec
 ```
-
