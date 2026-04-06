@@ -15,27 +15,19 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
-    autoDirectNodeRoutes: true
-    bpf:
-      masquerade: true
-      filterPriority: 2
     cgroup:
       autoMount:
         enabled: false
       hostRoot: /sys/fs/cgroup
-    endpointRoutes:
-      enabled: true
     envoy:
       enabled: false
     ipam:
       mode: kubernetes
-    ipv4NativeRoutingCIDR: 10.244.0.0/16
+    kubeProxyReplacement: true
     k8sServiceHost: localhost
     k8sServicePort: 7445
-    kubeProxyReplacement: true
     operator:
       replicas: 1
-    routingMode: native
     securityContext:
       capabilities:
         ciliumAgent:
