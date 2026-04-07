@@ -1,21 +1,19 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/kustomization-kustomize-v1.json
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: system-controllers
+  name: topolvm
   namespace: flux-system
 spec:
   interval: 1h
-  retryInterval: 1m
-  timeout: 5m
-  dependsOn:
-    - name: crds
+  path: ./k8s/infrastructure/controllers/topolvm/app
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/infrastructure/system-controllers
-  prune: true
+    namespace: flux-system
+  targetNamespace: topolvm-system
   wait: true
   postBuild:
     substituteFrom:
@@ -26,26 +24,28 @@ spec:
     secretRef:
       name: sops-age
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: system-configs
+  name: topolvm-instance
   namespace: flux-system
 spec:
-  dependsOn:
-    - name: system-controllers
   interval: 1h
-  retryInterval: 1m
-  timeout: 5m
+  path: ./k8s/infrastructure/controllers/topolvm/instance
+  prune: true
+  dependsOn:
+    - name: topolvm
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/infrastructure/system-configs
+    namespace: flux-system
+  targetNamespace: topolvm-system
+  wait: true
   postBuild:
     substituteFrom:
       - kind: ConfigMap
         name: variables
-  prune: true
   decryption:
     provider: sops
     secretRef:

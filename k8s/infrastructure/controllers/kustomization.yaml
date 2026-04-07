@@ -12,3 +12,6 @@ resources:
   - envoy-gateway
   - volsync
   - authentik
+  - topolvm/ks.yaml
+  - snapshot-controller/ks.yaml
+  - prometheus-operator-crds/ks.yaml
