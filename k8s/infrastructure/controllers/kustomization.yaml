@@ -11,7 +11,7 @@ resources:
   - local-path-provisioner
   - envoy-gateway
   - volsync
-  - authentik
+  - authentik/ks.yaml
   - topolvm/ks.yaml
   - snapshot-controller/ks.yaml
   - prometheus-operator-crds/ks.yaml
