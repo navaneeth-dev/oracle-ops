@@ -11,16 +11,6 @@ spec:
     kind: OCIRepository
     name: victoria-metrics-k8s-stack
     namespace: observability
-  maxHistory: 3
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
-  uninstall:
-    keepHistory: false
   releaseName: stack
   values:
     fullnameOverride: stack
