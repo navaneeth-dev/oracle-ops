@@ -34,17 +34,17 @@ controlPlane:
         officialExtensions: []
 
   patches:
-    - |-
-      cluster:
-        scheduler:
-          extraArgs:
-            bind-address: 0.0.0.0
-        controllerManager:
-          extraArgs:
-            bind-address: 0.0.0.0
-        etcd:
-          extraArgs:
-            listen-metrics-urls: http://0.0.0.0:2381
+#    - |-
+#      cluster:
+#        scheduler:
+#          extraArgs:
+#            bind-address: 0.0.0.0
+#        controllerManager:
+#          extraArgs:
+#            bind-address: 0.0.0.0
+#        etcd:
+#          extraArgs:
+#            listen-metrics-urls: http://0.0.0.0:2381
 
 patches:
   - |-
@@ -56,17 +56,17 @@ patches:
   - |
     machine:
       kubelet:
-        extraArgs:
-          rotate-server-certificates: true
+        extraConfig:
+          serverTLSBootstrap: true
     cluster:
       extraManifests:
         - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
         - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
-  - |-
-    cluster:
-      proxy:
-        disabled: true
+#  - |-
+#    cluster:
+#      proxy:
+#        disabled: true
 
   - &hostDNS |
     machine:
