@@ -1,0 +1,7 @@
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: csi-data
+provisioning:
+  diskSelector:
+    match: disk.dev_path == '/dev/sdb'
+  minSize: 100GiB
