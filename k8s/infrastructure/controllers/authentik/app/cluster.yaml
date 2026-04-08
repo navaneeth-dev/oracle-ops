@@ -8,28 +8,26 @@ spec:
   instances: 1
   # disable pod disruption budget for oracle single node
   enablePDB: false
+
   bootstrap:
     recovery:
-      backup:
-        name: authentik-20260408213602
-#  bootstrap:
-#    recovery:
-#      source: source
-#      recoveryTarget:
-#        targetTime: "2026-04-04 14:30:00+05:30"
-#  externalClusters:
-#    - name: source
-#      plugin:
-#        name: barman-cloud.cloudnative-pg.io
-#        parameters:
-#          barmanObjectName: ovhcloud
-#          serverName: authentik
+      source: source
+      recoveryTarget:
+        targetTime: "2026-04-04 14:30:00+05:30"
+  externalClusters:
+    - name: source
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: ovhcloud
+          serverName: authentik
+
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
         barmanObjectName: ovhcloud
-        serverName: authentik-april
+        serverName: authentik-april-2
   storage:
     size: 1.5Gi
   monitoring:
