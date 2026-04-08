@@ -6,15 +6,18 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 
 ## TODO
 
-- [ ] Remove all CPU limits
 - [ ] Migrate all helm repo app-template to oci
-- [ ] Fix alerting rules to Discord
 - [ ] Monitor authentik uptime either VMServiceScrape or VMProbe
+- [ ] qbittorrent 0.0.0.0/0 bypass auth so radarr & sonarr can talk
 
 ## Upgrades
 
 - talosctl rollback
 - OCI console based rollback
+
+3 month prod update.
+
+dev cluster to test.
 
 ## Security
 
