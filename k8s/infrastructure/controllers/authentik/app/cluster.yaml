@@ -13,7 +13,11 @@ spec:
     reusePVC: true
   bootstrap:
     recovery:
-      source: source
+      backup:
+        name: authentik-20260408213602
+#  bootstrap:
+#    recovery:
+#      source: source
 #      recoveryTarget:
 #        targetTime: "2026-04-04 14:30:00+05:30"
   externalClusters:
