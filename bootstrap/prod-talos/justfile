@@ -5,3 +5,4 @@ genconfig:
       --config-patch @patches/oracle-ntp.yaml --config-patch @patches/topolvm.yaml \
       --config-patch @patches/scheduling.yaml --config-patch @patches/cilium.yaml --config-patch @patches/cert-sans.yaml \
       --force
+    # delete yamls after gen
