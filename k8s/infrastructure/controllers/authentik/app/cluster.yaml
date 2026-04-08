@@ -20,13 +20,13 @@ spec:
 #      source: source
 #      recoveryTarget:
 #        targetTime: "2026-04-04 14:30:00+05:30"
-  externalClusters:
-    - name: source
-      plugin:
-        name: barman-cloud.cloudnative-pg.io
-        parameters:
-          barmanObjectName: ovhcloud
-          serverName: authentik
+#  externalClusters:
+#    - name: source
+#      plugin:
+#        name: barman-cloud.cloudnative-pg.io
+#        parameters:
+#          barmanObjectName: ovhcloud
+#          serverName: authentik
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
