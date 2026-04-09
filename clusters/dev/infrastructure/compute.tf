@@ -1,6 +1,6 @@
 resource "oci_core_instance" "talos_cp" {
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 
   compartment_id      = var.compartment_id
