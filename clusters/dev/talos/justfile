@@ -1,10 +1,11 @@
 LB_IP := `terraform -chdir=../infrastructure/ output -raw nlb_public_ip`
+CP1_IP := `terraform -chdir=../infrastructure/ output -raw instance_public_ip`
 NODE_IP := "10.0.0.11"
 
 KUBERNETES_VERSION := "1.35.0"
 TALOS_VERSION := "1.12.0"
 
-genconfig: cilium-regenerate-template
+genconfig:
     sops -d secrets.sops.yaml > secrets.yaml
     talosctl gen config --with-secrets secrets.yaml controlplane-rizexor-prod1 https://{{ LB_IP }}:6443 \
       --kubernetes-version {{ KUBERNETES_VERSION }} --talos-version {{ TALOS_VERSION }} \
@@ -14,6 +15,7 @@ genconfig: cilium-regenerate-template
       --config-patch @patches/cert-sans.yaml --config-patch-control-plane @patches/monitoring.yaml --config-patch @multidoc/volume.yaml \
       --force
     talosctl config endpoint {{ LB_IP }} --talosconfig talosconfig
+    talosctl config endpoint {{ CP1_IP }} --talosconfig talosconfig
     #rm secrets.yaml
 
 reboot:
@@ -27,7 +29,7 @@ kubeconfig:
     talosctl kubeconfig ./kubeconfig --nodes {{ NODE_IP }}
 
 # For documentation purpose
-cilium-regenerate-template:
+cilium-install:
     helm template \
         cilium \
         cilium/cilium \
