@@ -1,4 +1,8 @@
 resource "oci_core_instance" "talos_cp" {
+  lifecycle {
+    prevent_destroy = true
+  }
+
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domain.ads.name
   display_name        = "controlplane-dev-1"
@@ -23,9 +27,9 @@ resource "oci_core_instance" "talos_cp" {
     hostname_label   = "controlplane-dev-1"
   }
 
-  metadata = {
-    user_data = base64encode(file("${path.module}/../talos/clusterconfig/oracle-hyd-cluster-controlplane-hyd-1.yaml"))
-  }
+  # metadata = {
+  #   user_data = base64encode(file("${path.module}/../talos-new/dev-talos/controlplane.yaml"))
+  # }
 
   launch_options {
     network_type = "PARAVIRTUALIZED"

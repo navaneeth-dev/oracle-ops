@@ -32,3 +32,23 @@ resource "oci_core_image" "talos" {
     # source_image_type = var.source_image_type
   }
 }
+
+resource "oci_core_volume" "topolvm_data" {
+  compartment_id = var.compartment_id
+
+  availability_domain = data.oci_identity_availability_domain.ads.name
+  display_name = "Topolvm Data"
+  size_in_gbs = 150
+  vpus_per_gb = "120"
+
+  lifecycle {
+    ignore_changes = all
+    prevent_destroy = true
+  }
+}
+
+resource "oci_core_volume_attachment" "topolvm_data" {
+  attachment_type = "paravirtualized"
+  instance_id     = oci_core_instance.talos_cp.id
+  volume_id       = oci_core_volume.topolvm_data.id
+}
