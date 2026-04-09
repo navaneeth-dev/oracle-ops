@@ -1,0 +1,8 @@
+machine:
+  certSANs:
+    - "140.245.250.113"
+
+cluster:
+  apiServer:
+    certSANs:
+      - "140.245.250.113"
