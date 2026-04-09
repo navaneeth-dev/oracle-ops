@@ -12,6 +12,7 @@ resource "oci_core_instance" "talos_cp" {
   source_details {
     source_type = "image"
     source_id   = oci_core_image.talos.id
+    boot_volume_vpus_per_gb = "120"
   }
 
   create_vnic_details {
