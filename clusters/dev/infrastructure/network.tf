@@ -16,6 +16,17 @@ resource "oci_core_subnet" "talos_subnet" {
   prohibit_public_ip_on_vnic = false
 }
 
+resource "oci_core_subnet" "lb_subnet" {
+  compartment_id = var.compartment_id
+  vcn_id         = oci_core_vcn.talos_vcn.id
+  cidr_block     = "10.0.1.0/24"
+  display_name   = "Load Balancers Subnet"
+  dns_label      = "lb"
+
+  # Ensure we have a public IP if needed, although NLB will handle entry
+  prohibit_public_ip_on_vnic = false
+}
+
 resource "oci_core_internet_gateway" "talos_ig" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.talos_vcn.id
@@ -53,11 +64,20 @@ resource "oci_core_default_security_list" "talos_sl" {
 
 resource "oci_network_load_balancer_network_load_balancer" "talos_nlb" {
   compartment_id = var.compartment_id
-  display_name   = "${var.cluster_name}-nlb"
+  display_name   = "Talos & Kubernetes Load Balancer"
   subnet_id      = oci_core_subnet.talos_subnet.id
 
   is_private                     = false
   is_preserve_source_destination = false
+}
+
+resource "oci_network_load_balancer_network_load_balancer" "gateway" {
+  compartment_id = var.compartment_id
+  display_name   = "Envoy Gateway Load Balancer"
+  subnet_id      = oci_core_subnet.lb_subnet.id
+
+  is_private                     = false
+  is_preserve_source_destination = true
 }
 
 # Talos API Backend Set (Port 50000)
@@ -104,16 +124,16 @@ resource "oci_network_load_balancer_listener" "controlplane" {
   protocol                 = "TCP"
 }
 
-# resource "oci_network_load_balancer_backend" "talos_api" {
-#   backend_set_name         = oci_network_load_balancer_backend_set.talos_api.name
-#   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
-#   port                     = 50000
-#   target_id                = oci_core_instance.talos_cp.id
-# }
-#
-# resource "oci_network_load_balancer_backend" "controlplane" {
-#   backend_set_name         = oci_network_load_balancer_backend_set.controlplane.name
-#   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
-#   port                     = 6443
-#   target_id                = oci_core_instance.talos_cp.id
-# }
+resource "oci_network_load_balancer_backend" "talos_api" {
+  backend_set_name         = oci_network_load_balancer_backend_set.talos_api.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
+  port                     = 50000
+  target_id                = oci_core_instance.talos_cp.id
+}
+
+resource "oci_network_load_balancer_backend" "controlplane" {
+  backend_set_name         = oci_network_load_balancer_backend_set.controlplane.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.talos_nlb.id
+  port                     = 6443
+  target_id                = oci_core_instance.talos_cp.id
+}

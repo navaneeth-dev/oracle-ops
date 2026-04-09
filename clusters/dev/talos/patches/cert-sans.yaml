@@ -1,8 +1,0 @@
-machine:
-  certSANs:
-    - "80.225.210.160"
-
-cluster:
-  apiServer:
-    certSANs:
-      - "80.225.210.160"
