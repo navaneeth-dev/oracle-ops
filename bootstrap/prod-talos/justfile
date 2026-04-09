@@ -13,4 +13,4 @@ reboot:
     talosctl reboot -n 10.0.0.11
 
 applyconfig:
-    t apply-config -f controlplane.yaml -n 10.0.0.11
+    talosctl apply-config -f controlplane.yaml -n 10.0.0.11
