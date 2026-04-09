@@ -5,7 +5,7 @@ resource "oci_core_instance" "talos_cp" {
 
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domain.ads.name
-  display_name        = "controlplane-dev-1"
+  display_name        = "controlplane-rizexor-dev1"
   shape               = var.instance_shape
 
   shape_config {
@@ -24,7 +24,7 @@ resource "oci_core_instance" "talos_cp" {
     display_name     = "primaryvnic"
     assign_public_ip = true
     private_ip       = "10.0.0.11"
-    hostname_label   = "controlplane-dev-1"
+    hostname_label   = "controlplane-rizexor-dev1"
   }
 
   # metadata = {
