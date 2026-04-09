@@ -9,6 +9,7 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 - [ ] Migrate all helm repo app-template to oci
 - [ ] Monitor authentik uptime either VMServiceScrape or VMProbe
 - [ ] qbittorrent 0.0.0.0/0 bypass auth so radarr & sonarr can talk
+- [ ] OPA to prevent accidental deletion of critical resources
 
 ## Upgrades
 
