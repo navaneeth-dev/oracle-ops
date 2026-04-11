@@ -25,11 +25,6 @@ resource "oci_core_image" "talos" {
     bucket_name = var.bucket_name
     namespace_name = data.oci_objectstorage_namespace.ns.namespace
     object_name = oci_objectstorage_object.talos_oci.object
-
-    #Optional
-    # operating_system = var.image_image_source_details_operating_system
-    # operating_system_version = var.image_image_source_details_operating_system_version
-    # source_image_type = var.source_image_type
   }
 }
 
