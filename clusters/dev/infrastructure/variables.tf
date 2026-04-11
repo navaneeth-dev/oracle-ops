@@ -26,7 +26,6 @@ variable "memory_in_gbs" {
 
 variable "cluster_name" {
   type    = string
-  default = "rizexor-oracle-dev"
 }
 
 variable "vcn_cidr" {
