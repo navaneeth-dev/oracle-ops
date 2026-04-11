@@ -11,6 +11,8 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 - [ ] qbittorrent 0.0.0.0/0 bypass auth so radarr & sonarr can talk
 - [ ] OPA to prevent accidental deletion of critical resources
 - [ ] Create a github action to update talosctl & kubernetes version
+- [ ] Security, dont allow namespaces to talk to each other
+- [ ] Trivy scan k8s, terraform everything
 
 ## Upgrades
 
