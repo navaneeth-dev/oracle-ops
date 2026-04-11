@@ -10,6 +10,7 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 - [ ] Monitor authentik uptime either VMServiceScrape or VMProbe
 - [ ] qbittorrent 0.0.0.0/0 bypass auth so radarr & sonarr can talk
 - [ ] OPA to prevent accidental deletion of critical resources
+- [ ] Create a github action to update talosctl & kubernetes version
 
 ## Upgrades
 
