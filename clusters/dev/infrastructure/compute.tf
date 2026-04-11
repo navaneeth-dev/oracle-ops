@@ -1,6 +1,6 @@
 resource "oci_core_instance" "talos_cp" {
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 
   compartment_id      = var.compartment_id
@@ -17,6 +17,7 @@ resource "oci_core_instance" "talos_cp" {
     source_type = "image"
     source_id   = oci_core_image.talos.id
     boot_volume_vpus_per_gb = "120"
+    is_preserve_boot_volume_enabled = false
   }
 
   create_vnic_details {
@@ -26,10 +27,6 @@ resource "oci_core_instance" "talos_cp" {
     private_ip       = "10.0.0.11"
     hostname_label   = "controlplane-rizexor-dev1"
   }
-
-  # metadata = {
-  #   user_data = base64encode(file("${path.module}/../talos-new/dev-talos/controlplane.yaml"))
-  # }
 
   launch_options {
     network_type = "PARAVIRTUALIZED"

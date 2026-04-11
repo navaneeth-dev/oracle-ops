@@ -9,23 +9,26 @@ CLUSTER_NAME := "rizexor-oracle-dev"
 genconfig:
     sops -d secrets.sops.yaml > secrets.yaml
     talosctl gen config {{ CLUSTER_NAME }} https://{{ LB_IP }}:6443 \
-      --with-secrets secrets.yaml  \
+      --with-secrets secrets.yaml \
       --kubernetes-version {{ KUBERNETES_VERSION }} --talos-version {{ TALOS_VERSION }} \
       --config-patch @patches/cert-approver.yaml --config-patch @patches/oracle-ntp.yaml \
       --config-patch @patches/hostdns.yaml --config-patch @patches/topolvm.yaml \
       --config-patch @patches/scheduling.yaml --config-patch @patches/cilium.yaml \
       --config-patch @multidoc/volume.yaml --config-patch-control-plane @patches/monitoring.yaml \
       --additional-sans {{ LB_IP }} --force
-    talosctl config endpoint {{ LB_IP }} --talosconfig talosconfig
-    #talosctl config endpoint {{ CP1_IP }} --talosconfig talosconfig
+    talosctl config endpoint {{ LB_IP }}
+    #talosctl config endpoint {{ CP1_IP }}
     #rm secrets.yaml
 
 reboot:
     talosctl reboot -n {{ NODE_IP }}
 
 applyconfig:
-    talosctl apply-config -f controlplane.yaml -n {{ NODE_IP }}
+    talosctl apply-config -f controlplane.yaml -n {{ CP1_IP }} -e {{ CP1_IP }} -i
     rm controlplane.yaml worker.yaml
+
+bootstrap:
+    talosctl bootstrap -n {{ LB_IP }} -e {{ LB_IP }}
 
 kubeconfig:
     talosctl kubeconfig ./kubeconfig --nodes {{ NODE_IP }}
