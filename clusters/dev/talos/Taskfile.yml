@@ -5,7 +5,6 @@ includes:
     taskfile: ../../../Taskfile.yml
     dir: .
     vars:
-      CLUSTER_NAME: rizexor-oracle-dev
       KUBERNETES_VERSION: '1.35.0'
       TALOS_VERSION: '1.12.0'
       NODE_IP: '10.0.0.11'
@@ -13,36 +12,3 @@ includes:
         sh: terraform -chdir=../infrastructure/ output -raw nlb_public_ip
       CP1_IP:
         sh: terraform -chdir=../infrastructure/ output -raw instance_public_ip
-      TALOSCONFIG_FLAG: ''
-      APPLY_CONFIG_FLAGS: '-e {{.CP1_IP}} -i'
-
-tasks:
-  genconfig:
-    desc: Generate Talos configuration for dev cluster
-    cmds:
-      - task: common:genconfig
-
-  reboot:
-    desc: Reboot dev cluster node
-    cmds:
-      - task: common:reboot
-
-  applyconfig:
-    desc: Apply Talos configuration to dev cluster
-    cmds:
-      - task: common:applyconfig
-
-  bootstrap:
-    desc: Bootstrap dev cluster
-    cmds:
-      - task: common:bootstrap
-
-  kubeconfig:
-    desc: Get kubeconfig for dev cluster
-    cmds:
-      - task: common:kubeconfig
-
-  cilium-install:
-    desc: Generate Cilium manifest for dev cluster
-    cmds:
-      - task: common:cilium-install

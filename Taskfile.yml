@@ -8,7 +8,7 @@ tasks:
     cmds:
       - sops -d secrets.sops.yaml > secrets.yaml
       - |
-        talosctl gen config {{.CLUSTER_NAME}} https://{{.LB_IP}}:6443 \
+        talosctl gen config $TF_VAR_cluster_name https://{{.LB_IP}}:6443 \
           --with-secrets secrets.yaml \
           --kubernetes-version {{.KUBERNETES_VERSION}} \
           --talos-version {{.TALOS_VERSION}} \
@@ -21,7 +21,7 @@ tasks:
           --config-patch @multidoc/volume.yaml \
           --config-patch-control-plane @patches/monitoring.yaml \
           --additional-sans {{.LB_IP}} --force
-      - talosctl config endpoint {{.LB_IP}} {{.TALOSCONFIG_FLAG}}
+      - talosctl config endpoint {{.LB_IP}}
       - rm secrets.yaml
 
   reboot:
@@ -32,7 +32,7 @@ tasks:
   applyconfig:
     desc: Apply Talos configuration
     cmds:
-      - talosctl apply-config -f controlplane.yaml -n {{.CP1_IP}} {{.APPLY_CONFIG_FLAGS}}
+      - talosctl apply-config -f controlplane.yaml -n {{.NODE_IP}} -e {{.LB_IP}}
       - rm controlplane.yaml worker.yaml
 
   bootstrap:
@@ -43,6 +43,7 @@ tasks:
   kubeconfig:
     desc: Get kubeconfig
     cmds:
+      - echo {{.NODE_IP}} {{.LB_IP}}
       - talosctl kubeconfig ./kubeconfig --nodes {{.NODE_IP}}
 
   cilium-install:
