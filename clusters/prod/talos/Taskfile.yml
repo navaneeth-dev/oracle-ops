@@ -1,0 +1,53 @@
+---
+# https://taskfile.dev
+# TODO: Legacy taskfile for Talos, migrate to justfile soon
+
+version: '3'
+
+tasks:
+  talos:upgrade:
+    prompt:
+      - Do you want to upgrade Talos?
+    cmds:
+      - task: talos:genconfig
+      - task: talos:apply-config
+      - task: talos:upgrade-image-reboot
+      - cmd: kubectl uncordon controlplane-hyd-1
+      - cmd: kubectl version
+
+  talos:apply-config:
+    dir: ./bootstrap/talos
+    vars:
+      INSTALLER_URL:
+        sh: talhelper genurl installer -c talconfig.yaml
+    preconditions:
+      - sh: echo "{{.INSTALLER_URL}}" | grep -q "oracle-installer"
+        msg: "ABORT: Installer URL does not contain 'oracle-installer'. Got: {{.INSTALLER_URL}}"
+    cmds:
+      - talosctl apply-config --nodes 10.0.0.11 -f clusterconfig/oracle-hyd-cluster-controlplane-hyd-1.yaml
+
+  talos:genconfig:
+    dir: ./bootstrap/talos
+    cmd: talhelper genconfig
+
+  talos:upgrade-image-reboot:
+    dir: ./bootstrap/talos
+    preconditions:
+      - sh: echo "{{.INSTALLER_URL}}" | grep -q "oracle-installer"
+        msg: "ABORT: Installer URL does not contain 'oracle-installer'. Got: {{.INSTALLER_URL}}"
+    vars:
+      INSTALLER_URL:
+        sh: talhelper genurl installer -c talconfig.yaml
+    prompt:
+      - You are upgrading to {{.INSTALLER_URL}}. Continue?
+    cmd: |
+      talosctl upgrade --nodes 10.0.0.11 --wait --debug -m powercycle --image $(talhelper genurl installer)
+
+  talos:upgrade-k8s:
+    prompt:
+      - NOT TESTED PLEASE REVIEW CODE
+    cmds:
+      - kubectl version
+      - talosctl --nodes 10.0.0.11 upgrade-k8s --to xx1.35.0 --dry-run
+      - talosctl --nodes 10.0.0.11 upgrade-k8s
+      - kubectl version
