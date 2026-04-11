@@ -3,6 +3,29 @@ version: '3'
 # Base tasks - all variables provided by overlay files (dev/prod)
 
 tasks:
+  bootstrap-flux:
+    vars:
+      CLUSTER_PATH:
+        sh: |
+          if [ "$TF_VAR_cluster_name" = "rizexor-oracle-dev" ]; then
+            echo "rizexor-oracle-dev"
+          else
+            echo "oracle"
+          fi
+    cmds:
+      - kubectl get ns flux-system || kubectl create ns flux-system
+      - |
+        kubectl -n flux-system get secret sops-age || kubectl create secret generic sops-age \
+          --namespace=flux-system \
+          --from-literal=age.agekey="$(infisical secrets get TF_VAR_SOPS_AGEKEY --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 --plain)"
+      - |
+        infisical run --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 -- flux bootstrap github \
+          --owner=navaneeth-dev \
+          --repository=oracle-ops \
+          --branch=main \
+          --personal \
+          --path=k8s/clusters/{{.CLUSTER_PATH}}
+
   genconfig:
     desc: Generate Talos configuration
     cmds:
