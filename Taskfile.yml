@@ -1,0 +1,64 @@
+version: '3'
+
+# Base tasks - all variables provided by overlay files (dev/prod)
+
+tasks:
+  genconfig:
+    desc: Generate Talos configuration
+    cmds:
+      - sops -d secrets.sops.yaml > secrets.yaml
+      - |
+        talosctl gen config {{.CLUSTER_NAME}} https://{{.LB_IP}}:6443 \
+          --with-secrets secrets.yaml \
+          --kubernetes-version {{.KUBERNETES_VERSION}} \
+          --talos-version {{.TALOS_VERSION}} \
+          --config-patch @patches/cert-approver.yaml \
+          --config-patch @patches/oracle-ntp.yaml \
+          --config-patch @patches/hostdns.yaml \
+          --config-patch @patches/topolvm.yaml \
+          --config-patch @patches/scheduling.yaml \
+          --config-patch @patches/cilium.yaml \
+          --config-patch @multidoc/volume.yaml \
+          --config-patch-control-plane @patches/monitoring.yaml \
+          --additional-sans {{.LB_IP}} --force
+      - talosctl config endpoint {{.LB_IP}} {{.TALOSCONFIG_FLAG}}
+      - rm secrets.yaml
+
+  reboot:
+    desc: Reboot Talos node
+    cmds:
+      - talosctl reboot -n {{.NODE_IP}}
+
+  applyconfig:
+    desc: Apply Talos configuration
+    cmds:
+      - talosctl apply-config -f controlplane.yaml -n {{.CP1_IP}} {{.APPLY_CONFIG_FLAGS}}
+      - rm controlplane.yaml worker.yaml
+
+  bootstrap:
+    desc: Bootstrap Talos cluster
+    cmds:
+      - talosctl bootstrap -n {{.LB_IP}} -e {{.LB_IP}}
+
+  kubeconfig:
+    desc: Get kubeconfig
+    cmds:
+      - talosctl kubeconfig ./kubeconfig --nodes {{.NODE_IP}}
+
+  cilium-install:
+    desc: Generate Cilium installation manifest (for documentation)
+    cmds:
+      - |
+        helm template \
+          cilium \
+          cilium/cilium \
+          --version 1.18.0 \
+          --namespace kube-system \
+          --set ipam.mode=kubernetes \
+          --set kubeProxyReplacement=false \
+          --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}" \
+          --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}" \
+          --set cgroup.autoMount.enabled=false \
+          --set cgroup.hostRoot=/sys/fs/cgroup \
+          --set envoy.enabled=false \
+          --set operator.replicas=1 > .cilium.yaml

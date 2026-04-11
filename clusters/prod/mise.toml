@@ -1,3 +1,5 @@
 [env]
 KUBECONFIG = "{{config_root}}/talos/kubeconfig"
 TALOSCONFIG = "{{config_root}}/talos/talosconfig"
+
+TF_VAR_cluster_name = "oracle-hyd-cluster"
