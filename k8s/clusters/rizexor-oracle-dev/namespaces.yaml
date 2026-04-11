@@ -11,6 +11,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/infrastructure/namespaces/overlays/prod
+  path: ./k8s/infrastructure/namespaces/overlays/dev
   prune: true
   wait: true
