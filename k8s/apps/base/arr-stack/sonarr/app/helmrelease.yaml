@@ -39,6 +39,9 @@ spec:
             env:
               SONARR__UPDATE__BRANCH: develop
               TZ: "${TZ}"
+            envFrom:
+              - secretRef:
+                  name: sonarr-ovh-upload-secrets
             probes:
               liveness: &probes
                 enabled: true
@@ -104,5 +107,13 @@ spec:
         existingClaim: data
         globalMounts:
           - path: /data
+      scripts:
+        type: configMap
+        name: sonarr-ovh-upload-script
+        defaultMode: 493
+        globalMounts:
+          - path: /config/scripts/sonarr-ovh-upload.sh
+            subPath: sonarr-ovh-upload.sh
+            readOnly: true
       tmp:
         type: emptyDir

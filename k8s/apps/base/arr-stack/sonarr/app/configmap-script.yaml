@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sonarr-ovh-upload-script
+  namespace: homelab
+data:
+  sonarr-ovh-upload.sh: |
+    #!/usr/bin/env sh
+    set -eu
+
+    MC_BIN="${MC_BIN:-/tmp/mc}"
+    MC_CONFIG_DIR="${MC_CONFIG_DIR:-/tmp/mc-config}"
+    MC_ALIAS="${MC_ALIAS:-ovh}"
+    PRESIGN_EXPIRE="${PRESIGN_EXPIRE:-168h}"
+
+    FILE_PATH="${sonarr_episodefile_path:-}"
+
+    notify_discord() {
+      status="$1"
+      message="$2"
+
+      [ -n "${DISCORD_WEBHOOK_URL:-}" ] || return 0
+
+      escaped_message="$(printf '%s' "$message" | sed 's/\\/\\\\/g; s/"/\\"/g')"
+      payload="{\"content\":\"[$status] $escaped_message\"}"
+
+      if command -v curl >/dev/null 2>&1; then
+        curl -fsS -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL" >/dev/null || true
+        return 0
+      fi
+
+      if command -v wget >/dev/null 2>&1; then
+        wget -qO- --header="Content-Type: application/json" --post-data="$payload" "$DISCORD_WEBHOOK_URL" >/dev/null || true
+      fi
+    }
+
+    fail() {
+      message="$1"
+      notify_discord "FAILED" "$message"
+      exit 1
+    }
+
+    require_env() {
+      key="$1"
+      eval "value=\${$key:-}"
+      [ -n "$value" ] || fail "Missing required env: $key"
+    }
+
+    ensure_mc() {
+      if command -v mc >/dev/null 2>&1; then
+        MC_CMD="mc"
+        return 0
+      fi
+
+      if [ -x "$MC_BIN" ]; then
+        MC_CMD="$MC_BIN"
+        return 0
+      fi
+
+      arch="$(uname -m)"
+      case "$arch" in
+        x86_64) mc_arch="linux-amd64" ;;
+        aarch64|arm64) mc_arch="linux-arm64" ;;
+        *) fail "Unsupported architecture: $arch" ;;
+      esac
+
+      mc_url="https://dl.min.io/client/mc/release/${mc_arch}/mc"
+
+      if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$mc_url" -o "$MC_BIN" || fail "Unable to download mc with curl"
+      elif command -v wget >/dev/null 2>&1; then
+        wget -qO "$MC_BIN" "$mc_url" || fail "Unable to download mc with wget"
+      else
+        fail "Neither curl nor wget found; cannot download mc"
+      fi
+
+      chmod +x "$MC_BIN" || fail "Unable to chmod mc binary"
+      MC_CMD="$MC_BIN"
+    }
+
+    [ -n "$FILE_PATH" ] || exit 0
+    [ -f "$FILE_PATH" ] || fail "Downloaded file does not exist: $FILE_PATH"
+
+    require_env OVH_ENDPOINT
+    require_env OVH_BUCKET
+    require_env OVH_ACCESS_KEY
+    require_env OVH_SECRET_KEY
+    require_env DISCORD_WEBHOOK_URL
+
+    ensure_mc
+
+    mkdir -p "$MC_CONFIG_DIR" || fail "Unable to create mc config dir"
+
+    "$MC_CMD" --config-dir "$MC_CONFIG_DIR" alias set "$MC_ALIAS" "$OVH_ENDPOINT" "$OVH_ACCESS_KEY" "$OVH_SECRET_KEY" --api S3v4 \
+      >/dev/null || fail "Unable to configure mc alias"
+
+    filename="$(basename "$FILE_PATH")"
+    s3_prefix="${S3_PREFIX:-sonarr}"
+    s3_key="${s3_prefix}/${filename}"
+    object_path="${MC_ALIAS}/${OVH_BUCKET}/${s3_key}"
+
+    "$MC_CMD" --config-dir "$MC_CONFIG_DIR" cp "$FILE_PATH" "$object_path" || fail "Upload failed to ${OVH_BUCKET}/${s3_key}"
+
+    presign_output="$("$MC_CMD" --config-dir "$MC_CONFIG_DIR" share download --expire "$PRESIGN_EXPIRE" "$object_path" 2>&1)" \
+      || fail "Presign failed for ${OVH_BUCKET}/${s3_key}"
+
+    presigned_url="$(printf '%s\n' "$presign_output" | awk '/https?:\/\// {for (i=1; i<=NF; i++) if ($i ~ /^https?:\/\//) {print $i; exit}}')"
+    [ -n "$presigned_url" ] || fail "Could not parse presigned URL"
+
+    series_title="${sonarr_series_title:-Unknown Series}"
+    episode_title="${sonarr_episodefile_episodetitles:-Episode}"
+    notify_discord "OK" "${series_title} - ${episode_title} | URL (7d): ${presigned_url}"
