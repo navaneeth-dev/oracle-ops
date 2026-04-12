@@ -15,12 +15,15 @@ patches:
       kind: Secret
       name: discord-webhook
       namespace: observability
-  # Patch authentik cluster config
-  - path: patches/authentik-disable-backup.yaml
+  # Temporarily disable authentik
+  - patch: |-
+      $patch: delete
+      apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+        name: authentik
+        namespace: flux-system
     target:
-      kind: Cluster
+      kind: Kustomization
       name: authentik
-  - path: patches/authentik-reduce-storage.yaml
-    target:
-      kind: Cluster
-      name: authentik
+      namespace: flux-system
