@@ -7,7 +7,7 @@ resources:
   - dev-secrets/victoria-metrics-discord-webhook.yaml
 
 patches:
-  # Authentik dev serverName via Flux postBuild patches
+  # Authentik dev serverName via Flux Kustomization patches
   - patch: |-
       apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization
@@ -15,25 +15,24 @@ patches:
         name: authentik
         namespace: flux-system
       spec:
-        postBuild:
-          patches:
-            - patch: |-
-                apiVersion: postgresql.cnpg.io/v1
-                kind: Cluster
-                metadata:
-                  name: authentik
-                  namespace: authentik
-                spec:
-                  plugins:
-                    - name: barman-cloud.cloudnative-pg.io
-                      isWALArchiver: true
-                      parameters:
-                        barmanObjectName: ovhcloud
-                        serverName: authentik-dev
-              target:
-                kind: Cluster
+        patches:
+          - patch: |-
+              apiVersion: postgresql.cnpg.io/v1
+              kind: Cluster
+              metadata:
                 name: authentik
                 namespace: authentik
+              spec:
+                plugins:
+                  - name: barman-cloud.cloudnative-pg.io
+                    isWALArchiver: true
+                    parameters:
+                      barmanObjectName: ovhcloud
+                      serverName: authentik-dev
+            target:
+              kind: Cluster
+              name: authentik
+              namespace: authentik
     target:
       kind: Kustomization
       name: authentik
