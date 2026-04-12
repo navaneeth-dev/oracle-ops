@@ -2,19 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
+  # Victoria Metrics dev secrets
+  - dev-secrets/victoria-metrics-alertmanager.yaml
+  - dev-secrets/victoria-metrics-discord-webhook.yaml
 
 patches:
-  # Replace victoria-metrics secrets with dev versions
-  - path: dev-secrets/victoria-metrics-alertmanager.yaml
-    target:
-      kind: Secret
-      name: alertmanager
-      namespace: observability
-  - path: dev-secrets/victoria-metrics-discord-webhook.yaml
-    target:
-      kind: Secret
-      name: discord-webhook
-      namespace: observability
   # Temporarily disable authentik
   - patch: |-
       $patch: delete
