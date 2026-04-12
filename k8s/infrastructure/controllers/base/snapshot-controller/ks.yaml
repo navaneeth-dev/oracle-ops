@@ -7,7 +7,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  path: ./k8s/infrastructure/controllers/snapshot-controller/app
+  path: ./k8s/infrastructure/controllers/base/snapshot-controller/app
   prune: true
   sourceRef:
     kind: GitRepository
