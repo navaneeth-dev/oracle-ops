@@ -103,11 +103,19 @@ data:
 
     "$MC_CMD" --config-dir "$MC_CONFIG_DIR" cp "$FILE_PATH" "$object_path" || fail "Upload failed to ${OVH_BUCKET}/${s3_key}"
 
-    presign_output="$("$MC_CMD" --config-dir "$MC_CONFIG_DIR" share download --expire "$PRESIGN_EXPIRE" "$object_path" 2>&1)" \
+    presign_output="$("$MC_CMD" --config-dir "$MC_CONFIG_DIR" share download --json --expire "$PRESIGN_EXPIRE" "$object_path" 2>&1)" \
       || fail "Presign failed for ${OVH_BUCKET}/${s3_key}"
 
-    presigned_url="$(printf '%s\n' "$presign_output" | awk '/https?:\/\// {for (i=1; i<=NF; i++) if ($i ~ /^https?:\/\//) {print $i; exit}}')"
+    presigned_url="$(printf '%s\n' "$presign_output" | sed -n 's/.*"share":"\([^"]*\)".*/\1/p' | sed 's#\\/#/#g; s/\\u0026/\&/g')"
     [ -n "$presigned_url" ] || fail "Could not parse presigned URL"
+
+    case "$presigned_url" in
+      *\?*X-Amz-*|*X-Amz-*)
+        ;;
+      *)
+        fail "Generated URL is not presigned (missing X-Amz query params)"
+        ;;
+    esac
 
     series_title="${sonarr_series_title:-Unknown Series}"
     episode_title="${sonarr_episodefile_episodetitles:-Episode}"
