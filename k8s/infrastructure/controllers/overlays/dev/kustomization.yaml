@@ -7,14 +7,33 @@ resources:
   - dev-secrets/victoria-metrics-discord-webhook.yaml
 
 patches:
-  # Temporarily disable authentik
+  # Authentik dev serverName via Flux postBuild patches
   - patch: |-
-      $patch: delete
       apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization
       metadata:
         name: authentik
         namespace: flux-system
+      spec:
+        postBuild:
+          patches:
+            - patch: |-
+                apiVersion: postgresql.cnpg.io/v1
+                kind: Cluster
+                metadata:
+                  name: authentik
+                  namespace: authentik
+                spec:
+                  plugins:
+                    - name: barman-cloud.cloudnative-pg.io
+                      isWALArchiver: true
+                      parameters:
+                        barmanObjectName: ovhcloud
+                        serverName: authentik-dev
+              target:
+                kind: Cluster
+                name: authentik
+                namespace: authentik
     target:
       kind: Kustomization
       name: authentik
