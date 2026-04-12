@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: alertmanager
+    namespace: observability
+stringData:
+    HEALTH_CHECKS_IO_URL: ENC[AES256_GCM,data:1UckPeU31cEBv13v3Dfe4HuIXXRquaXLElJobzMQ+n2i2xSZcKr04qnkOA+gDylspBk=,iv:jwLzJSO+pjmhAPVCVmfoAtqibUhFSoTKZKWjroaRvK8=,tag:49Q4NfiLFQCNWMJv/rE1Jg==,type:str]
+sops:
+    age:
+        - recipient: age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBLdzAvSWs0cEdhUmg1NFh2
+            aEV6bHVrU1AybDB2bHBqUVNMNHd4U0daUEVRCmdQVE5WekZlTzhwOERMelVKek9N
+            ZitOOVlaRFBsc0xlMUhJME9wU1cxZFkKLS0tIHhhZlIyOVNIQnRsQnRhcG1iVldB
+            M3FETEFGTVpGdDlzUTQxaEdBK3hlTFEKRFhNkzwecJ8JUlLo+LubhYfHJx/M1BZE
+            aST8b1qKEuDMN0SPTLXngWCKBEp7dpWavycwG83tGCinGlH/6ZPimw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-04-12T06:21:13Z"
+    mac: ENC[AES256_GCM,data:53Zc/VJ0YlTEeuIi22cGqpeR1j95XWSRHe18tYbLpju2zgt6nKssuaVTCbBZL0ddj3HyJIey2J/UjwloOhHTtUhVfHt5nD0Ibc25lEbktLup2sZ7auaPXGrA6R2hLTo/SadhJEC1d9Bzko1N9s7GYoKFloNewVJtsXSp3fwfgCU=,iv:WJTpApOguKzboAWBNXu5sYSVd9NJ1I79Hy6F291sfxo=,tag:t6f9HwVS8MPhthIXu5DcxQ==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.12.2
