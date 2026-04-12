@@ -28,23 +28,23 @@ data:
         
         quality_definition:
           type: series
-          qualities:
-          - name: Bluray-1080p
-            min: 45
-            max: 150
-            preferred: 55
+          #qualities:
+          #- name: Bluray-1080p
+          #  min: 45
+          #  max: 150
+          #  preferred: 55
         
         quality_profiles:
           # WEB-1080p
           - trash_id: 72dae194fc92bf828f32cde7744e51a1  # WEB-1080p
             reset_unmatched_scores:
               enabled: true
-            qualities:
-              - name: WEB 1080p
-                qualities:
-                  - WEBDL-1080p
-                  - WEBRip-1080p
-              - name: Bluray-1080p
+            #qualities:
+            #  - name: WEB 1080p
+            #    qualities:
+            #      - WEBDL-1080p
+            #      - WEBRip-1080p
+            #  - name: Bluray-1080p
           
           # WEB-2160p
           - trash_id: d1498e7d189fbe6c7110ceaabb7473e6  # WEB-2160p
