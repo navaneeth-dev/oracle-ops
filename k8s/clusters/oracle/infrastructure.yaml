@@ -40,7 +40,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/infrastructure/configs
+  path: ./k8s/infrastructure/configs/overlays/prod
   postBuild:
     substituteFrom:
       - kind: ConfigMap
