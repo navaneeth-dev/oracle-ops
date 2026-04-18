@@ -137,3 +137,59 @@ resource "oci_network_load_balancer_backend" "controlplane" {
   port                     = 6443
   target_id                = oci_core_instance.talos_cp.id
 }
+
+# Gateway HTTP Backend Set (Port 80 -> NodePort 32579)
+resource "oci_network_load_balancer_backend_set" "gateway_http" {
+  name                     = "gateway-http"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
+  policy                   = "TWO_TUPLE"
+  is_preserve_source       = true
+
+  health_checker {
+    port     = 32579
+    protocol = "TCP"
+  }
+}
+
+resource "oci_network_load_balancer_listener" "gateway_http" {
+  name                     = "gateway-http"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
+  default_backend_set_name = oci_network_load_balancer_backend_set.gateway_http.name
+  port                     = 80
+  protocol                 = "TCP"
+}
+
+resource "oci_network_load_balancer_backend" "gateway_http" {
+  backend_set_name         = oci_network_load_balancer_backend_set.gateway_http.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
+  port                     = 32579
+  ip_address               = "10.0.0.11"
+}
+
+# Gateway HTTPS Backend Set (Port 443 -> NodePort 31258)
+resource "oci_network_load_balancer_backend_set" "gateway_https" {
+  name                     = "gateway-https"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
+  policy                   = "TWO_TUPLE"
+  is_preserve_source       = true
+
+  health_checker {
+    port     = 31258
+    protocol = "TCP"
+  }
+}
+
+resource "oci_network_load_balancer_listener" "gateway_https" {
+  name                     = "gateway-https"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
+  default_backend_set_name = oci_network_load_balancer_backend_set.gateway_https.name
+  port                     = 443
+  protocol                 = "TCP"
+}
+
+resource "oci_network_load_balancer_backend" "gateway_https" {
+  backend_set_name         = oci_network_load_balancer_backend_set.gateway_https.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
+  port                     = 31258
+  ip_address               = "10.0.0.11"
+}
