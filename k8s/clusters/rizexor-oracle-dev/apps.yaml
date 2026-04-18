@@ -11,6 +11,7 @@ spec:
     kind: GitRepository
     name: flux-system
   path: ./k8s/apps/oracle-rizexor-dev
+  prune: false
   # disable wait because of pvc WaitForConsumer
   wait: false
   timeout: 15m0s
