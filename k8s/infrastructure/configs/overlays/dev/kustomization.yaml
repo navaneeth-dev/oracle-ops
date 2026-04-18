@@ -4,10 +4,13 @@ resources:
   - ../../base
 
 patches:
-  # Replace all volsync secrets with dev version
-  - path: dev-secrets/volsync.yaml
+  - patch: |-
+      - op: add
+        path: /spec/components/-
+        value: ../../../../../components/volsync-dev
     target:
-      group: ""
+      group: kustomize.toolkit.fluxcd.io
       version: v1
-      kind: Secret
-      name: .*-volsync
+      kind: Kustomization
+      name: grafana
+      namespace: flux-system
