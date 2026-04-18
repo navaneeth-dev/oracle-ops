@@ -14,6 +14,7 @@ Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 - [ ] Security, dont allow namespaces to talk to each other
 - [ ] Trivy scan k8s, terraform everything
 - [ ] One more backup site / copy to achieve 3-2-1
+- [ ] grafana perms on restore 10001
 
 ## Upgrades
 

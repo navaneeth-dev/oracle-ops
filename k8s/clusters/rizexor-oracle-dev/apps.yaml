@@ -10,7 +10,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/apps/oracle
+  path: ./k8s/apps/oracle-rizexor-dev
   # disable wait because of pvc WaitForConsumer
   wait: false
   timeout: 15m0s
@@ -41,7 +41,7 @@ spec:
     - patch: |-
         - op: add
           path: /spec/components/-
-          value: ../../../../../components/volsync-prod
+          value: ../../../../../components/volsync-dev
       target:
         group: kustomize.toolkit.fluxcd.io
         version: v1
