@@ -16,7 +16,7 @@ variable "instance_shape" {
 
 variable "ocpus" {
   type    = number
-  default = 2
+  default = 3
 }
 
 variable "memory_in_gbs" {
