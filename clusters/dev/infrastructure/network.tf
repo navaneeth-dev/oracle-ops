@@ -11,7 +11,7 @@ resource "oci_core_subnet" "talos_subnet" {
   cidr_block     = var.subnet_cidr
   display_name   = "${var.cluster_name}-subnet"
   dns_label      = "kubernetes"
-  
+
   # Ensure we have a public IP if needed, although NLB will handle entry
   prohibit_public_ip_on_vnic = false
 }
@@ -77,7 +77,7 @@ resource "oci_network_load_balancer_network_load_balancer" "gateway" {
   subnet_id      = oci_core_subnet.lb_subnet.id
 
   is_private                     = false
-  is_preserve_source_destination = true
+  is_preserve_source_destination = false
 }
 
 # Talos API Backend Set (Port 50000)
@@ -142,7 +142,7 @@ resource "oci_network_load_balancer_backend" "controlplane" {
 resource "oci_network_load_balancer_backend_set" "gateway_http" {
   name                     = "gateway-http"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
-  policy                   = "TWO_TUPLE"
+  policy                   = "FIVE_TUPLE"
   is_preserve_source       = true
 
   health_checker {
@@ -156,21 +156,23 @@ resource "oci_network_load_balancer_listener" "gateway_http" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
   default_backend_set_name = oci_network_load_balancer_backend_set.gateway_http.name
   port                     = 80
-  protocol                 = "TCP"
+  protocol                 = "TCP_AND_UDP"
+  tcp_idle_timeout         = 120
+  udp_idle_timeout         = 120
 }
 
 resource "oci_network_load_balancer_backend" "gateway_http" {
   backend_set_name         = oci_network_load_balancer_backend_set.gateway_http.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
   port                     = 32579
-  ip_address               = "10.0.0.11"
+  target_id                = oci_core_instance.talos_cp.id
 }
 
 # Gateway HTTPS Backend Set (Port 443 -> NodePort 31258)
 resource "oci_network_load_balancer_backend_set" "gateway_https" {
   name                     = "gateway-https"
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
-  policy                   = "TWO_TUPLE"
+  policy                   = "FIVE_TUPLE"
   is_preserve_source       = true
 
   health_checker {
@@ -184,12 +186,14 @@ resource "oci_network_load_balancer_listener" "gateway_https" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
   default_backend_set_name = oci_network_load_balancer_backend_set.gateway_https.name
   port                     = 443
-  protocol                 = "TCP"
+  protocol                 = "TCP_AND_UDP"
+  tcp_idle_timeout         = 120
+  udp_idle_timeout         = 120
 }
 
 resource "oci_network_load_balancer_backend" "gateway_https" {
   backend_set_name         = oci_network_load_balancer_backend_set.gateway_https.name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.gateway.id
   port                     = 31258
-  ip_address               = "10.0.0.11"
+  target_id                = oci_core_instance.talos_cp.id
 }
