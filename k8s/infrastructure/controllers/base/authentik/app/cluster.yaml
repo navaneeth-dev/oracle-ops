@@ -28,12 +28,6 @@ spec:
       parameters:
         barmanObjectName: ovhcloud
         serverName: authentik-april-2
-
-    - name: barman-cloud.cloudnative-pg.io
-      isWALArchiver: true
-      parameters:
-        barmanObjectName: r2
-        serverName: authentik-prod
   storage:
     size: 2Gi
   monitoring:

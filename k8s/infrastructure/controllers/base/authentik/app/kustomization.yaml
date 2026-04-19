@@ -4,9 +4,7 @@ kind: Kustomization
 resources:
   - backendtrafficpolicy.yaml
   - secret.yaml
-  - secret-r2.yaml
   - objectstore.yaml
-  - objectstore-r2.yaml
   - secret-authentik.yaml
   - cluster.yaml
   - helmrepository.yaml
