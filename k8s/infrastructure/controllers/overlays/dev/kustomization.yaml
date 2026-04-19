@@ -29,6 +29,12 @@ patches:
                     parameters:
                       barmanObjectName: ovhcloud
                       serverName: authentik-dev
+              
+                  - name: barman-cloud.cloudnative-pg.io
+                    isWALArchiver: true
+                    parameters:
+                      barmanObjectName: r2
+                      serverName: authentik-dev
             target:
               kind: Cluster
               name: authentik
