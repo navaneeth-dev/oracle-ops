@@ -1,13 +1,12 @@
-name: Linting
-
-on: {}
+name: build-yamls.yml
+on:
+  push:
 
 jobs:
-  main:
-    name: yamllint
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - name: Lint YAML files
-        run: yamllint .
+      - run: curl https://mise.run | sh
+      - run: mise use pkl
