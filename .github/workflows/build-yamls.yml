@@ -13,4 +13,4 @@ jobs:
           install: true
       - run: cd test && pkl eval deployment.pkl
 
-      - run: echo "${GHCR_TOKEN}" | oras login --username "${GHCR_USER}" --password-stdin ghcr.io
+      - run: echo "${GITHUB_TOKEN}" | oras login --username navaneeth-dev --password-stdin ghcr.io
