@@ -11,7 +11,7 @@ jobs:
       - uses: jdx/mise-action@v4
         with:
           install: true
-      - run: cd test && pkl eval deployment.pkl
+      - run: cd test && pkl eval deployment.pkl > deoployment.yaml
 
       - run: echo "${GITHUB_TOKEN}" | oras login --username navaneeth-dev --password-stdin ghcr.io
         env:
