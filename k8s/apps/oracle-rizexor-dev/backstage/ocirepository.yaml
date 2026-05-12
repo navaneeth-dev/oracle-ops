@@ -8,4 +8,4 @@ spec:
   interval: 15m
   url: oci://ghcr.io/navaneeth-dev/manifests/oracle-ops
   ref:
-    tag: bd0dd2a
+    tag: f539382
