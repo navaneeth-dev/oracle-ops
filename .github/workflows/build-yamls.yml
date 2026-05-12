@@ -1,4 +1,4 @@
-name: build-yamls.yml
+name: Render manifests to OCI
 on:
   push:
 
