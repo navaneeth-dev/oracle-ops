@@ -16,3 +16,5 @@ jobs:
       - run: echo "${GITHUB_TOKEN}" | oras login --username navaneeth-dev --password-stdin ghcr.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: cd test && oras push ghcr.io/navaneeth-dev/oracle-ops-backstage-dev:main deployment.yaml
