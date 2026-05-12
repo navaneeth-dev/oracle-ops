@@ -9,4 +9,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - run: curl https://mise.run | sh
-      - run: mise use pkl
+      - run: mise install
+      - run: cd test && pkl eval deployment.pkl
+
+      - run: echo "${GHCR_TOKEN}" | oras login --username "${GHCR_USER}" --password-stdin ghcr.io
