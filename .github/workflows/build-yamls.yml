@@ -16,11 +16,21 @@ jobs:
         with:
           install: true
 
-      - run: echo "${GITHUB_TOKEN}" | oras login --username navaneeth-dev --password-stdin ghcr.io
+      - name: Login to GHCR
+        run: echo "${GITHUB_TOKEN}" | flux registry login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: |
+      - name: Render manifests
+        run: |
+          mkdir -p rendered
           cd test
-          pkl eval deployment.pkl > deployment.yaml
-          oras push ghcr.io/navaneeth-dev/oracle-ops-backstage-dev:main deployment.yaml
+          pkl eval deployment.pkl > ../rendered/deployment.yaml
+
+      - name: Push rendered manifests
+        run: |
+          flux push artifact oci://ghcr.io/${{ github.repository_owner }}/oracle-ops-backstage-dev:main \
+            --path=./rendered \
+            --source="${{ github.server_url }}/${{ github.repository }}" \
+            --revision="${{ github.ref_name }}@sha1:${{ github.sha }}" \
+            --annotations='org.opencontainers.image.source=https://github.com/${{ github.repository }}'
