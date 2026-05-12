@@ -11,10 +11,12 @@ jobs:
       - uses: jdx/mise-action@v4
         with:
           install: true
-      - run: cd test && pkl eval deployment.pkl > deoployment.yaml
 
       - run: echo "${GITHUB_TOKEN}" | oras login --username navaneeth-dev --password-stdin ghcr.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: cd test && oras push ghcr.io/navaneeth-dev/oracle-ops-backstage-dev:main deployment.yaml
+      - run: |
+          cd test
+          pkl eval deployment.pkl > deoployment.yaml
+          oras push ghcr.io/navaneeth-dev/oracle-ops-backstage-dev:main deployment.yaml
