@@ -4,3 +4,5 @@ resources:
   - ../base/arr-stack
   - ../base/librespeed
   - ../base/homepage
+  - ./backstage/ocirepository.yaml
+  - ./backstage/ks.yaml
