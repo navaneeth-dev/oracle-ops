@@ -2,6 +2,9 @@ name: Render manifests to OCI
 on:
   push:
 
+env:
+  OCI_REPO: "oci://ghcr.io/${{ github.actor }}/manifests/${{ github.event.repository.name }}"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,25 +15,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - uses: jdx/mise-action@v4
+
+      - name: Setup Flux CLI
+        uses: fluxcd/flux2/action@main
+
+      - name: Setup Cosign
+        uses: sigstore/cosign-installer@main
         with:
-          install: true
+          cosign-release: v2.6.1 # cosign v3+ will be supported only in Flux v2.8+
 
       - name: Login to GHCR
-        run: echo "${GITHUB_TOKEN}" | flux registry login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: docker/login-action@v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Render manifests
+      - name: Push and sign manifests
         run: |
-          mkdir -p rendered
-          cd test
-          pkl eval deployment.pkl > ../rendered/deployment.yaml
+          digest_url=$(flux push artifact \
+          $OCI_REPO:$(git rev-parse --short HEAD) \
+          --path="./manifests" \
+          --source="$(git config --get remote.origin.url)" \
+          --revision="$(git branch --show-current)@sha1:$(git rev-parse HEAD)" \
+          --annotations='org.opencontainers.image.source=https://github.com/${{ github.repository }}' \
+          --output=json | \
+          jq -r '. | .repository + "@" + .digest')
 
-      - name: Push rendered manifests
-        run: |
-          flux push artifact oci://ghcr.io/${{ github.repository_owner }}/oracle-ops-backstage-dev:main \
-            --path=./rendered \
-            --source="${{ github.server_url }}/${{ github.repository }}" \
-            --revision="${{ github.ref_name }}@sha1:${{ github.sha }}" \
-            --annotations='org.opencontainers.image.source=https://github.com/${{ github.repository }}'
+          cosign sign --yes $digest_url          
