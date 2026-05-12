@@ -1,4 +1,4 @@
-name: Render manifests to OCI
+name: Render manifests and push to OCI
 on:
   push:
 
@@ -16,6 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
+      - uses: jdx/mise-action@v4
+        with:
+          install: true
+
       - name: Setup Flux CLI
         uses: fluxcd/flux2/action@main
 
@@ -31,14 +35,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Render manifests
+        run: |
+          mkdir -p rendered
+          cd test
+          pkl eval deployment.pkl > ../rendered/deployment.yaml
+
       - name: Push and sign manifests
         run: |
           digest_url=$(flux push artifact \
           $OCI_REPO:$(git rev-parse --short HEAD) \
-          --path="./manifests" \
+          --path="./rendered" \
           --source="$(git config --get remote.origin.url)" \
           --revision="$(git branch --show-current)@sha1:$(git rev-parse HEAD)" \
-          --annotations='org.opencontainers.image.source=https://github.com/${{ github.repository }}' \
           --output=json | \
           jq -r '. | .repository + "@" + .digest')
 
