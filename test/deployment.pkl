@@ -27,12 +27,19 @@ resources: Listing<K8sResource> = new {
           containers {
             new {
               name = "backstage"
-              image = "ghcr.io/navaneeth-dev/backstage:v0.0.1"
+              image = "ghcr.io/navaneeth-dev/backstage:main"
               imagePullPolicy = "IfNotPresent"
               ports {
                 new {
                   containerPort = 7007
                   protocol = "TCP"
+                }
+              }
+              envFrom {
+                new {
+                  secretRef {
+                    name = "GITHUB_AUTH"
+                  }
                 }
               }
             }
