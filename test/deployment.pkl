@@ -38,7 +38,7 @@ resources: Listing<K8sResource> = new {
               envFrom {
                 new {
                   secretRef {
-                    name = "GITHUB_AUTH"
+                    name = "github-oauth"
                   }
                 }
               }
