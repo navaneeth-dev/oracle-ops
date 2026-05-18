@@ -12,3 +12,4 @@ resources:
   - observability.yaml
   - volsync.yaml
   - kube-system.yaml
+  - kro-system.yaml
