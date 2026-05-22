@@ -7,5 +7,5 @@ metadata:
 spec:
   name: backstage
   replicas: 1
-  image: ghcr.io/rizexor/backstage:v0.0.1
+  image: ghcr.io/navaneeth-dev/backstage:v0.0.1
   hostname: backstage.${DOMAIN}
