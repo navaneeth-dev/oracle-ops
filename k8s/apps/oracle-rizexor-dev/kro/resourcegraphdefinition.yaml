@@ -24,7 +24,8 @@ spec:
         kind: Deployment
         metadata:
           name: ${schema.spec.name} # Use the name provided by user
-        spec:
+          namespace: ${schema.spec.name}
+      spec:
           replicas: ${schema.spec.replicas} # Use the replicas provided by user
           selector:
             matchLabels:
@@ -46,6 +47,7 @@ spec:
         kind: Service
         metadata:
           name: ${schema.spec.name}-svc
+          namespace: ${schema.spec.name}
         spec:
           selector: ${deployment.spec.selector.matchLabels} # Use the deployment selector
           ports:
@@ -59,6 +61,7 @@ spec:
         kind: HTTPRoute
         metadata:
           name: ${schema.spec.name}
+          namespace: ${schema.spec.name}
         spec:
           parentRefs:
             - name: reverse-proxy
@@ -69,3 +72,14 @@ spec:
             - backendRefs:
                 - name: ${service.metadata.name}
                   port: 80
+
+#    - id: db
+#      template:
+#        apiVersion: postgresql.cnpg.io/v1
+#        kind: Cluster
+#        metadata:
+#          name: ${schema.spec.name}
+#        spec:
+#          instances: 1
+#          storage:
+#            size: 1Gi
