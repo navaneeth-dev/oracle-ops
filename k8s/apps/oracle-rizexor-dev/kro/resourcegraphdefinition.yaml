@@ -1,0 +1,71 @@
+apiVersion: kro.run/v1alpha1
+kind: ResourceGraphDefinition
+metadata:
+  name: WebApp
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+spec:
+  schema:
+    apiVersion: v1alpha1
+    kind: Application
+    spec:
+      name: string
+      image: string | default="nginx"
+      replicas: integer | default=1
+      hostname: string
+    status:
+      deploymentConditions: ${deployment.status.conditions}
+      availableReplicas: ${deployment.status.availableReplicas}
+
+  resources:
+    - id: deployment
+      template:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: ${schema.spec.name} # Use the name provided by user
+        spec:
+          replicas: ${schema.spec.replicas} # Use the replicas provided by user
+          selector:
+            matchLabels:
+              app: ${schema.spec.name}
+          template:
+            metadata:
+              labels:
+                app: ${schema.spec.name}
+            spec:
+              containers:
+                - name: ${schema.spec.name}
+                  image: ${schema.spec.image} # Use the image provided by user
+                  ports:
+                    - containerPort: 80
+
+    - id: service
+      template:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: ${schema.spec.name}-svc
+        spec:
+          selector: ${deployment.spec.selector.matchLabels} # Use the deployment selector
+          ports:
+            - protocol: TCP
+              port: 80
+              targetPort: 80
+
+    - id: httproute
+      template:
+        apiVersion: gateway.networking.k8s.io/v1
+        kind: HTTPRoute
+        metadata:
+          name: ${schema.spec.name}
+        spec:
+          parentRefs:
+            - name: reverse-proxy
+              namespace: envoy-gateway-system
+          hostnames:
+            - '${schema.spec.hostname}'
+          rules:
+            - backendRefs:
+                - name: ${service.metadata.name}
+                  port: 80
