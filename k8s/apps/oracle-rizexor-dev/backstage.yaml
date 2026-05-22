@@ -3,6 +3,7 @@ apiVersion: kro.run/v1alpha1
 kind: WebAppWithDatabase
 metadata:
   name: backstage
+  namespace: backstage
 spec:
   name: backstage
   replicas: 1
