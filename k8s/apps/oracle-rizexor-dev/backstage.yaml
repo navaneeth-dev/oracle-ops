@@ -1,0 +1,10 @@
+---
+apiVersion: kro.run/v1alpha1
+kind: Application
+metadata:
+  name: backstage
+spec:
+  name: backstage
+  replicas: 1
+  httproute:
+    enabled: true
