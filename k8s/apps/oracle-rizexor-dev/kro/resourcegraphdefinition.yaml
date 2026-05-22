@@ -18,6 +18,13 @@ spec:
       availableReplicas: ${deployment.status.availableReplicas}
 
   resources:
+    - id: ns
+      template:
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: ${schema.spec.name}
+
     - id: deployment
       template:
         apiVersion: apps/v1
