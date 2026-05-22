@@ -1,10 +1,10 @@
 ---
 apiVersion: kro.run/v1alpha1
-kind: Application
+kind: WebAppWithDatabase
 metadata:
   name: backstage
 spec:
   name: backstage
   replicas: 1
-  httproute:
-    enabled: true
+  image: ghcr.io/rizexor/backstage:v0.0.1
+  hostname: backstage.${DOMAIN}

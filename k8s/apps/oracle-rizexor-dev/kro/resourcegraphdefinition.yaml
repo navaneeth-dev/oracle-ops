@@ -10,7 +10,7 @@ spec:
     kind: WebAppWithDatabase
     spec:
       name: string
-      image: string | default="nginx"
+      image: string
       replicas: integer | default=1
       hostname: string
     status:
