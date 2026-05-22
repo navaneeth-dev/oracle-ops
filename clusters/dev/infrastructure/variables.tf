@@ -16,12 +16,12 @@ variable "instance_shape" {
 
 variable "ocpus" {
   type    = number
-  default = 3
+  default = 4
 }
 
 variable "memory_in_gbs" {
   type    = number
-  default = 12
+  default = 24
 }
 
 variable "cluster_name" {
