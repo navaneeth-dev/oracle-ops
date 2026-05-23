@@ -81,13 +81,13 @@ spec:
                 - name: ${service.metadata.name}
                   port: 80
 
-#    - id: db
-#      template:
-#        apiVersion: postgresql.cnpg.io/v1
-#        kind: Cluster
-#        metadata:
-#          name: ${schema.spec.name}
-#        spec:
-#          instances: 1
-#          storage:
-#            size: 1Gi
+    - id: db
+      template:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        metadata:
+          name: ${schema.spec.name}
+        spec:
+          instances: 1
+          storage:
+            size: 1Gi
