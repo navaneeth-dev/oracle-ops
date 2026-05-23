@@ -24,6 +24,7 @@ tasks:
           --repository=oracle-ops \
           --branch=main \
           --personal \
+          --read-write-key=true \
           --components-extra="image-reflector-controller,image-automation-controller" \
           --path=k8s/clusters/{{.CLUSTER_PATH}}
 
