@@ -15,7 +15,7 @@ spec:
       replicas: integer | default=1
       hostname: string
       port: integer | default=80
-      env: list[object] | default=[]
+      env: "[]object"
     status:
       deploymentConditions: ${deployment.status.conditions}
       availableReplicas: ${deployment.status.availableReplicas}
@@ -50,10 +50,33 @@ spec:
                   image: ${schema.spec.image} # Use the image provided by user
                   ports:
                     - containerPort: ${schema.spec.port}
-                  envFrom:
-                    - secretRef:
-                        name: ${schema.spec.name}-envs
-                  env: ${schema.spec.env}
+                  env:
+                    - name: POSTGRES_HOST
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-superuser
+                          key: host
+
+                    - name: POSTGRES_PORT
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-superuser
+                          key: port
+
+                    - name: POSTGRES_USER
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-superuser
+                          key: username
+
+                    - name: POSTGRES_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-superuser
+                          key: password
+
+                    - name: BASE_URL
+                      value: ${schema.spec.hostname}
 
     - id: service
       template:
