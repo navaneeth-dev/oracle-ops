@@ -55,25 +55,25 @@ spec:
                     - name: POSTGRES_HOST
                       valueFrom:
                         secretKeyRef:
-                          name: ${schema.spec.name}-app
+                          name: ${schema.spec.name}-superuser
                           key: host
 
                     - name: POSTGRES_PORT
                       valueFrom:
                         secretKeyRef:
-                          name: ${schema.spec.name}-app
+                          name: ${schema.spec.name}-superuser
                           key: port
 
                     - name: POSTGRES_USER
                       valueFrom:
                         secretKeyRef:
-                          name: ${schema.spec.name}-app
+                          name: ${schema.spec.name}-superuser
                           key: username
 
                     - name: POSTGRES_PASSWORD
                       valueFrom:
                         secretKeyRef:
-                          name: ${schema.spec.name}-app
+                          name: ${schema.spec.name}-superuser
                           key: password
 
     - id: service
