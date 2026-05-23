@@ -48,6 +48,9 @@ spec:
                   image: ${schema.spec.image} # Use the image provided by user
                   ports:
                     - containerPort: 80
+                  envFrom:
+                    - secretRef:
+                        name: ${schema.spec.name}-envs
                   env:
                     - name: POSTGRES_HOST
                       valueFrom:

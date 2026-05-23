@@ -8,4 +8,5 @@ resources:
 #  - ./backstage/ks.yaml
   - ./kro
   - backstage.yaml
+  - backstage-secret.yaml
   - image-update/test.yaml
