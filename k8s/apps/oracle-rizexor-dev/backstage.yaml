@@ -7,7 +7,7 @@ metadata:
 spec:
   name: backstage
   replicas: 1
-  image: ghcr.io/navaneeth-dev/backstage:main # {"$imagepolicy": "flux-system:default"}
+  image: ghcr.io/navaneeth-dev/backstage:main # {"$imagepolicy": "backstage:backstage"}
   hostname: backstage.${DOMAIN}
   port: 7007
   env:
