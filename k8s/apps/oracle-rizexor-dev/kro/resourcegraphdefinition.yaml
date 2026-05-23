@@ -14,6 +14,7 @@ spec:
       image: string
       replicas: integer | default=1
       hostname: string
+      port: integer | default=80
     status:
       deploymentConditions: ${deployment.status.conditions}
       availableReplicas: ${deployment.status.availableReplicas}
@@ -47,7 +48,7 @@ spec:
                 - name: ${schema.spec.name}
                   image: ${schema.spec.image} # Use the image provided by user
                   ports:
-                    - containerPort: 80
+                    - containerPort: ${schema.spec.port}
                   envFrom:
                     - secretRef:
                         name: ${schema.spec.name}-envs
@@ -88,7 +89,7 @@ spec:
           ports:
             - protocol: TCP
               port: 80
-              targetPort: 80
+              targetPort: ${schema.spec.port}
 
     - id: httproute
       template:

@@ -9,3 +9,4 @@ spec:
   replicas: 1
   image: ghcr.io/navaneeth-dev/backstage:main # {"$imagepolicy": "flux-system:default"}
   hostname: backstage.${DOMAIN}
+  port: 7007
