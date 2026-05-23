@@ -10,3 +10,30 @@ spec:
   image: ghcr.io/navaneeth-dev/backstage:main # {"$imagepolicy": "flux-system:default"}
   hostname: backstage.${DOMAIN}
   port: 7007
+  env:
+    - name: BASE_URL
+      value: https://backstage.${DOMAIN}
+
+    - name: POSTGRES_HOST
+      valueFrom:
+        secretKeyRef:
+          name: ${schema.spec.name}-superuser
+          key: host
+
+    - name: POSTGRES_PORT
+      valueFrom:
+        secretKeyRef:
+          name: ${schema.spec.name}-superuser
+          key: port
+
+    - name: POSTGRES_USER
+      valueFrom:
+        secretKeyRef:
+          name: ${schema.spec.name}-superuser
+          key: username
+
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: ${schema.spec.name}-superuser
+          key: password

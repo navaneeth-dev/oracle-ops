@@ -15,6 +15,7 @@ spec:
       replicas: integer | default=1
       hostname: string
       port: integer | default=80
+      env: list[object] | default=[]
     status:
       deploymentConditions: ${deployment.status.conditions}
       availableReplicas: ${deployment.status.availableReplicas}
@@ -52,30 +53,7 @@ spec:
                   envFrom:
                     - secretRef:
                         name: ${schema.spec.name}-envs
-                  env:
-                    - name: POSTGRES_HOST
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${schema.spec.name}-superuser
-                          key: host
-
-                    - name: POSTGRES_PORT
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${schema.spec.name}-superuser
-                          key: port
-
-                    - name: POSTGRES_USER
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${schema.spec.name}-superuser
-                          key: username
-
-                    - name: POSTGRES_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: ${schema.spec.name}-superuser
-                          key: password
+                  env: ${schema.spec.env}
 
     - id: service
       template:
