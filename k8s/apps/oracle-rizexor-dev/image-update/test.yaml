@@ -10,11 +10,12 @@ spec:
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy
 metadata:
-  name: default
-  namespace: flux-system
+  name: backstage
+  namespace: backstage
 spec:
   imageRepositoryRef:
     name: backstage
+    namespace: backstage
   policy:
     semver:
       range: "*"
