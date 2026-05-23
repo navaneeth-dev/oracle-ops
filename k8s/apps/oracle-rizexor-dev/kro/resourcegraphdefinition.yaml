@@ -48,30 +48,30 @@ spec:
                   image: ${schema.spec.image} # Use the image provided by user
                   ports:
                     - containerPort: 80
-              env:
-                - name: POSTGRES_HOST
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${schema.spec.name}-app
-                      key: host
+                  env:
+                    - name: POSTGRES_HOST
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-app
+                          key: host
 
-                - name: POSTGRES_PORT
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${schema.spec.name}-app
-                      key: port
+                    - name: POSTGRES_PORT
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-app
+                          key: port
 
-                - name: POSTGRES_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${schema.spec.name}-app
-                      key: username
+                    - name: POSTGRES_USER
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-app
+                          key: username
 
-                - name: POSTGRES_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${schema.spec.name}-app
-                      key: password
+                    - name: POSTGRES_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: ${schema.spec.name}-app
+                          key: password
 
     - id: service
       template:
