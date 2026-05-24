@@ -76,7 +76,7 @@ spec:
                           key: password
 
                     - name: BASE_URL
-                      value: ${schema.spec.hostname}
+                      value: https://${schema.spec.hostname}
 
     - id: service
       template:
