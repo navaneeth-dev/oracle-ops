@@ -6,7 +6,7 @@ metadata:
 spec:
   name: backstage
   replicas: 1
-  image: ghcr.io/navaneeth-dev/backstage:v0.0.3 # {"$imagepolicy": "backstage:backstage"}
+  image: ghcr.io/navaneeth-dev/backstage:v0.0.4 # {"$imagepolicy": "backstage:backstage"}
   hostname: backstage.${DOMAIN}
   port: 7007
   env:
