@@ -55,8 +55,9 @@ spec:
               startup:
                 enabled: true
                 spec:
-                  failureThreshold: 30
-                  periodSeconds: 10
+                  initialDelaySeconds: 2
+                  failureThreshold: 60
+                  periodSeconds: 5
             securityContext:
 #              privileged: true
               allowPrivilegeEscalation: false

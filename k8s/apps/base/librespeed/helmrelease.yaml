@@ -31,6 +31,25 @@ spec:
               tag: latest@sha256:31df609d432ce21f3cbb7fd8c14dfe739c7e3aba0ffacf3e350061ad06951089
             env:
               MODE: standalone
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 8080
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  initialDelaySeconds: 2
+                  failureThreshold: 24
+                  periodSeconds: 5
             resources:
               limits:
                 memory: 100Mi
@@ -43,7 +62,7 @@ spec:
         controller: *name
         ports:
           http:
-            port: 8080
+            port: *port
 
     route:
       main:

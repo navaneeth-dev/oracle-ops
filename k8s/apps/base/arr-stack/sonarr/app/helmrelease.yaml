@@ -50,11 +50,17 @@ spec:
                   httpGet:
                     path: /ping
                     port: &port 8989
-                  initialDelaySeconds: 80
+                  initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 15
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  initialDelaySeconds: 2
+                  failureThreshold: 36
+                  periodSeconds: 5
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true

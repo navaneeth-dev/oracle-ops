@@ -48,11 +48,17 @@ spec:
                   httpGet:
                     path: /api?mode=version
                     port: &port 8080
-                  initialDelaySeconds: 20
+                  initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 15
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  initialDelaySeconds: 2
+                  failureThreshold: 24
+                  periodSeconds: 5
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
