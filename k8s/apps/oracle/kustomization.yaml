@@ -4,3 +4,4 @@ resources:
   - ../base/arr-stack
   - ../base/librespeed
   - ../base/homepage
+  - secret-wireguard.yaml

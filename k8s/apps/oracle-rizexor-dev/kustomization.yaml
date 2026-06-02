@@ -10,3 +10,4 @@ resources:
   - backstage.yaml
   - backstage-secret.yaml
   - image-update/test.yaml
+  - secret-wireguard.yaml
