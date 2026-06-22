@@ -10,12 +10,8 @@ spec:
     kind: OCIRepository
     name: eg
   install:
-    crds: CreateReplace
+    crds: Skip
   upgrade:
-    crds: CreateReplace
+    crds: Skip
   maxHistory: 3
   timeout: 30m
-#  values:
-#    crds:
-#      envoyGateway:
-#        enabled: true
