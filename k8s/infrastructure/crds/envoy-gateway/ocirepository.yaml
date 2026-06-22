@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: gateway-crds-helm
+  name: eg
   namespace: envoy-gateway-system
 spec:
   interval: 30m
@@ -10,5 +10,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: v0.0.0-latest
-  url: oci://docker.io/envoyproxy/gateway-crds-helm
+    tag: 1.8.1
+  url: oci://docker.io/envoyproxy/gateway-helm

@@ -2,38 +2,16 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name gateway-crds-helm
-  namespace: &ns envoy-gateway-system
+  name: &name eg
+  namespace: envoy-gateway-system
 spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: *name
-    namespace: *ns
+    name: eg
   install:
     crds: CreateReplace
   upgrade:
-    remediation:
-      remediateLastFailure: true
-      retries: 3
-      strategy: rollback
-    cleanupOnFail: true
     crds: CreateReplace
-    force: true
-  test:
-    enable: true
-  rollback:
-    recreate: true
-    force: true
-    cleanupOnFail: true
-  uninstall:
-    keepHistory: false
   maxHistory: 3
-  timeout: 5m
-  values:
-    crds:
-      gatewayAPI:
-        enabled: true
-        channel: experimental
-      envoyGateway:
-        enabled: true
+  timeout: 30m
