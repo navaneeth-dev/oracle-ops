@@ -1,6 +1,8 @@
 version: '3'
 
 # Base tasks - all variables provided by overlay files (dev/prod)
+vars:
+  TALOS_INSTALLER_BASE_URL: 'factory.talos.dev/oracle-installer/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba'
 
 tasks:
   bootstrap-flux:
@@ -37,6 +39,7 @@ tasks:
           --with-secrets secrets.yaml \
           --kubernetes-version {{.KUBERNETES_VERSION}} \
           --talos-version {{.TALOS_VERSION}} \
+          --install-image {{.TALOS_INSTALLER_BASE_URL}}:{{.TALOS_VERSION}} \
           --config-patch @patches/cert-approver.yaml \
           --config-patch @patches/oracle-ntp.yaml \
           --config-patch @patches/hostdns.yaml \
@@ -64,6 +67,11 @@ tasks:
     desc: Bootstrap Talos cluster
     cmds:
       - talosctl bootstrap -n {{.LB_IP}} -e {{.LB_IP}}
+
+  upgrade:
+    desc: Upgrade Talos cluster
+    cmds:
+      - talosctl upgrade -n {{.NODE_IP}}
 
   kubeconfig:
     desc: Get kubeconfig
