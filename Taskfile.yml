@@ -71,7 +71,12 @@ tasks:
   upgrade:
     desc: Upgrade Talos cluster
     cmds:
-      - talosctl upgrade -n {{.NODE_IP}}
+      - talosctl -n {{.NODE_IP}} upgrade --image {{.TALOS_INSTALLER_BASE_URL}}:{{.TALOS_VERSION}} --debug
+
+  upgrade-k8s:
+    desc: Upgrade Talos cluster
+    cmds:
+      - talosctl -n {{.NODE_IP}} upgrade-k8s --to {{.KUBERNETES_VERSION}}
 
   kubeconfig:
     desc: Get kubeconfig
