@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: ghcr.io/librespeed/speedtest
-              tag: latest@sha256:31df609d432ce21f3cbb7fd8c14dfe739c7e3aba0ffacf3e350061ad06951089
+              tag: latest@sha256:a57731182416f08e61d0d93595b0874b2f21394393510c8befadb428303f7e26
             env:
               MODE: standalone
             probes:
