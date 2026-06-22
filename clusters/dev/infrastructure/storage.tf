@@ -42,8 +42,8 @@ resource "oci_core_volume" "topolvm_data" {
   }
 }
 
-resource "oci_core_volume_attachment" "topolvm_data" {
-  attachment_type = "paravirtualized"
-  instance_id     = oci_core_instance.talos_cp.id
-  volume_id       = oci_core_volume.topolvm_data.id
-}
+# resource "oci_core_volume_attachment" "topolvm_data" {
+#   attachment_type = "paravirtualized"
+#   instance_id     = oci_core_instance.talos_cp.id
+#   volume_id       = oci_core_volume.topolvm_data.id
+# }
