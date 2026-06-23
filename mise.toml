@@ -6,7 +6,6 @@ SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 [tools]
 flux2 = "2.8.8"
 kubectl = "1.35.3"
-pkl = "0.31.1"
 sops = "3.13.1"
 talosctl = "v1.12.9"
 terraform = "1.15.6"
