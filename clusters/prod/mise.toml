@@ -5,4 +5,4 @@ TALOSCONFIG = "{{config_root}}/talos/talosconfig"
 TF_VAR_cluster_name = "oracle-hyd-cluster"
 
 [tools]
-kubectl = "1.35.5"
+kubectl = "1.36.3"
