@@ -47,6 +47,10 @@ data:
             href: 'https://jellyfin.${DOMAIN}'
             icon: jellyfin
             description: Watch Movies/TV
+        - Emby:
+            href: 'https://emby.${DOMAIN}'
+            icon: emby
+            description: Watch Movies/TV
         - Jellyseerr:
             href: 'https://requests.${DOMAIN}'
             icon: jellyseerr

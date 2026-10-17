@@ -48,7 +48,7 @@ spec:
         version: v1
         kind: Kustomization
         namespace: flux-system
-        name: ^(seerr|bazarr|recyclarr|audiobookshelf|qbittorrent|jellyfin|prowlarr|sabnzbd|sonarr|radarr)$
+        name: ^(seerr|bazarr|recyclarr|audiobookshelf|qbittorrent|jellyfin|emby|prowlarr|sabnzbd|sonarr|radarr)$
   postBuild:
     substituteFrom:
       - kind: ConfigMap
