@@ -41,6 +41,24 @@
       automergeType: 'branch',
       ignoreTests: true,
     },
+    {
+      description: 'Auto-merge non-major sonarr and radarr updates',
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/home-operations/sonarr',
+        'ghcr.io/home-operations/radarr',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+        'digest',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      ignoreTests: true,
+    },
   ],
   customManagers: [
     {
