@@ -90,6 +90,22 @@
       ignoreTests: true,
     },
     {
+      description: 'Auto-merge non-major blackbox-exporter chart updates',
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/prometheus-community/charts/prometheus-blackbox-exporter',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      ignoreTests: true,
+    },
+    {
       description: 'Auto-merge librespeed digest updates',
       matchDatasources: [
         'docker',
