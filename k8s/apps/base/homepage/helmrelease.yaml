@@ -71,7 +71,7 @@ spec:
 
     route:
       internal:
-        hostnames: [*host]
+        hostnames: ["start.${DOMAIN}"]
         parentRefs:
           - kind: Gateway
             name: reverse-proxy
