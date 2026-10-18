@@ -19,6 +19,11 @@ spec:
       groups:
         kubeScheduler:
           create: false
+        kube-prometheus-general.rules:
+          rules:
+            # count(up == 0) is empty while every target is up, which trips RecordingRulesNoData
+            count:up0:
+              enabled: false
 
     external:
       grafana:
