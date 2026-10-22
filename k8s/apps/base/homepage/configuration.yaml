@@ -47,10 +47,6 @@ data:
             href: 'https://authentik.${DOMAIN}'
             icon: authentik
             description: Account & SSO
-        - Jellyfin:
-            href: 'https://jellyfin.${DOMAIN}'
-            icon: jellyfin
-            description: Watch Movies/TV
         - Emby:
             href: 'https://emby.${DOMAIN}'
             icon: emby
