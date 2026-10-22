@@ -4,6 +4,11 @@
 
 Highly available Kubernetes setup on Oracle Cloud Always Free Tier.
 
+## Media downloads
+
+I switched from Usenet to torrents because frequent unavailable-chunk errors
+prevented Usenet downloads from completing.
+
 ## TODO
 
 - [ ] Migrate all helm repo app-template to oci
