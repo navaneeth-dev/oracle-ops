@@ -65,10 +65,11 @@ spec:
               capabilities: { drop: [ "ALL" ] }
             resources:
               limits:
-                memory: 2Gi
+                # Retain unpacking capacity until representative download load is measured.
+                memory: 2048Mi
               requests:
                 cpu: 25m
-                memory: 100Mi
+                memory: 2048Mi
 
     service:
       app:

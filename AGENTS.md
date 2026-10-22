@@ -3,6 +3,12 @@
 Always use Conventional Commits for commit messages, including amended commits
 (for example, `fix(cpu): right-size workload reservations`).
 
+# Kubernetes resource sizing
+
+- **Memory:** Set request equal to limit, sized from historical peaks plus
+  headroom.
+- **CPU:** Set a realistic request; leave CPU uncapped where bursts matter.
+
 # Kubernetes access
 
 The production Kubernetes context is configured through mise in

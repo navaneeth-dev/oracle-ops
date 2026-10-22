@@ -21,6 +21,12 @@ spec:
       qbittorrent:
         containers:
           gluetun:
+            resources:
+              requests:
+                cpu: 10m
+                memory: 512Mi
+              limits:
+                memory: 512Mi
             image:
               repository: qmcgaw/gluetun
               tag: v3.41.3
@@ -79,9 +85,10 @@ spec:
             resources:
               requests:
                 cpu: 50m
-                memory: 1Gi
+                # Peak working set was 171Mi; the old 4Gi usage was mostly file cache.
+                memory: 1024Mi
               limits:
-                memory: 4Gi
+                memory: 1024Mi
     service:
       app:
         primary: true

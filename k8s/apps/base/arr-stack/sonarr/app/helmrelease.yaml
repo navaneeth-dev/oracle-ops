@@ -68,10 +68,10 @@ spec:
               capabilities: { drop: [ "ALL" ] }
             resources:
               limits:
-                memory: 2Gi
+                memory: 512Mi
               requests:
                 cpu: 50m
-                memory: 100Mi
+                memory: 512Mi
 
     service:
       app:

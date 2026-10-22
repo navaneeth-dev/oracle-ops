@@ -21,8 +21,11 @@ spec:
     crds: CreateReplace
   values:
     resources:
+      limits:
+        memory: 192Mi
       requests:
         cpu: 20m
+        memory: 192Mi
     metrics:
       disableAuth: true
     podSecurityContext:

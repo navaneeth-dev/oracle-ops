@@ -45,6 +45,13 @@ spec:
     vmsingle:
       enabled: true
       spec:
+        resources:
+          limits:
+            cpu: 1200m
+            memory: 1500Mi
+          requests:
+            cpu: 150m
+            memory: 1500Mi
         extraArgs:
           opentelemetry.usePrometheusNaming: "true"
 
@@ -56,14 +63,36 @@ spec:
           fsGroupChangePolicy: OnRootMismatch
           seccompProfile: { type: RuntimeDefault }
 
-    vmagent:
+    vmalert:
       spec:
         resources:
           limits:
-            memory: 1Gi
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        configReloaderResources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 32Mi
+
+    vmagent:
+      spec:
+        configReloaderResources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 32Mi
+        resources:
+          limits:
+            memory: 320Mi
           requests:
             cpu: 100m
-            memory: 500Mi
+            memory: 320Mi
 
     kube-state-metrics:
       vmScrape:
@@ -412,6 +441,20 @@ spec:
 
     alertmanager:
       enabled: true
+      spec:
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 30m
+            memory: 64Mi
+        configReloaderResources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 32Mi
       config:
         route:
           receiver: "discord-infra"

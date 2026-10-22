@@ -52,10 +52,10 @@ spec:
                   periodSeconds: 5
             resources:
               limits:
-                memory: 100Mi
+                memory: 64Mi
               requests:
                 cpu: 10m
-                memory: 80Mi
+                memory: 64Mi
     service:
       app:
         primary: true

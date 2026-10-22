@@ -55,10 +55,10 @@ spec:
                   periodSeconds: 5
             resources:
               requests:
-                memory: 10Mi
+                memory: 192Mi
                 cpu: 10m
               limits:
-                memory: 200Mi
+                memory: 192Mi
 
     serviceAccount:
       homepage: {}
