@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zerofs-benchmark
+  namespace: zerofs
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  storageClassName: zerofs-test
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi

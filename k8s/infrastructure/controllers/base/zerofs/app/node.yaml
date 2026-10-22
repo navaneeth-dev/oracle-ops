@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: zerofs-csi-node
+  namespace: zerofs
+spec:
+  selector:
+    matchLabels:
+      app: zerofs-csi-node
+  updateStrategy:
+    type: OnDelete
+  template:
+    metadata:
+      labels:
+        app: zerofs-csi-node
+    spec:
+      serviceAccountName: zerofs-csi-node
+      tolerations:
+      - operator: Exists
+      priorityClassName: system-node-critical
+      containers:
+      - name: zerofs-csi
+        image: ghcr.io/barre/zerofs-csi@sha256:89f99a1c9bfaaebe3cfa405c773e9894dd8553015fbc21002094fb614a1cf1bd
+        args:
+        - --mode=node
+        - --endpoint=unix:///csi/csi.sock
+        env:
+        - name: NODE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        ports:
+        - name: healthz
+          containerPort: 9808
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: healthz
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        volumeMounts:
+        - name: socket-dir
+          mountPath: /csi
+        - name: kubelet-dir
+          mountPath: /var/lib/kubelet
+          mountPropagation: Bidirectional
+        - name: dev-fuse
+          mountPath: /dev/fuse
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+      - name: node-driver-registrar
+        image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.17.0
+        args:
+        - --csi-address=/csi/csi.sock
+        - --kubelet-registration-path=/var/lib/kubelet/plugins/csi.zerofs.net/csi.sock
+        volumeMounts:
+        - name: socket-dir
+          mountPath: /csi
+        - name: registration-dir
+          mountPath: /registration
+        resources:
+          requests:
+            cpu: 20m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 64Mi
+      - name: livenessprobe
+        image: registry.k8s.io/sig-storage/livenessprobe:v2.19.0
+        args:
+        - --csi-address=/csi/csi.sock
+        - --health-port=9808
+        volumeMounts:
+        - name: socket-dir
+          mountPath: /csi
+        resources:
+          requests:
+            cpu: 20m
+            memory: 64Mi
+          limits:
+            cpu: 250m
+            memory: 64Mi
+      volumes:
+      - name: socket-dir
+        hostPath:
+          path: /var/lib/kubelet/plugins/csi.zerofs.net
+          type: DirectoryOrCreate
+      - name: registration-dir
+        hostPath:
+          path: /var/lib/kubelet/plugins_registry
+          type: Directory
+      - name: kubelet-dir
+        hostPath:
+          path: /var/lib/kubelet
+          type: Directory
+      - name: dev-fuse
+        hostPath:
+          path: /dev/fuse
+          type: CharDevice

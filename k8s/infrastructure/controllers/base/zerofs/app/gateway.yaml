@@ -1,0 +1,311 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: zerofs
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zerofs-gateway-a-config
+  namespace: zerofs
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+data:
+  zerofs.toml: |
+    [cache]
+    dir = "/data/cache"
+    disk_size_gb = 6.0
+    memory_size_gb = 0.5
+
+    [storage]
+    url = "s3://rizexor-media/zerofs-test"
+    encryption_password = "${ZEROFS_PASSWORD}"
+
+    [filesystem]
+    max_size_gb = 100.0
+
+    [servers]
+
+    [servers.ninep]
+    addresses = ["0.0.0.0:5564"]
+
+    [servers.rpc]
+    addresses = ["0.0.0.0:7000"]
+
+    # role is a bootstrap hint: at startup each node asks its peer (Hello) who
+    # is leading and defers to an active peer, so a restart after a failover
+    # does not fence the live leader.
+    [replication]
+    node_id = "node-a"
+    role = "leader"
+    replication_listen = "0.0.0.0:9000"
+    peers = ["zerofs-gateway-b.zerofs.svc:9000"]
+
+    # Remove this [aws] section when using IRSA or instance roles: config
+    # parsing fails on unset ${VAR} references, and the AWS SDK picks up those
+    # credential sources on its own.
+    [aws]
+    access_key_id = "${AWS_ACCESS_KEY_ID}"
+    secret_access_key = "${AWS_SECRET_ACCESS_KEY}"
+
+    endpoint = "${OVH_ENDPOINT}"
+    default_region = "ap-south-mum"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zerofs-gateway-a
+  namespace: zerofs
+spec:
+  selector:
+    app: zerofs-gateway
+    node: node-a
+  ports:
+  - name: ninep
+    port: 5564
+  - name: admin
+    port: 7000
+  - name: repl
+    port: 9000
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zerofs-gateway-a
+  namespace: zerofs
+spec:
+  serviceName: zerofs-gateway-a
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zerofs-gateway
+      node: node-a
+  template:
+    metadata:
+      labels:
+        app: zerofs-gateway
+        node: node-a
+    spec:
+      containers:
+      - name: zerofs
+        image: ghcr.io/barre/zerofs@sha256:207833a628ca374af7e1ac6cb9bc2ae21d0a1c36ee12460d6b9ad1ae0aecf6c0
+        args:
+        - run
+        - -c
+        - /etc/zerofs/zerofs.toml
+        ports:
+        - name: ninep
+          containerPort: 5564
+        - name: admin
+          containerPort: 7000
+        - name: repl
+          containerPort: 9000
+        readinessProbe:
+          tcpSocket:
+            port: repl
+          periodSeconds: 2
+          timeoutSeconds: 1
+        env:
+        - name: ZEROFS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: ZEROFS_PASSWORD
+        - name: OVH_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: OVH_ENDPOINT
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: OVH_ACCESS_KEY
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: OVH_SECRET_KEY
+        volumeMounts:
+        - name: config
+          mountPath: /etc/zerofs
+        - name: cache
+          mountPath: /data/cache
+        resources:
+          requests:
+            cpu: 250m
+            memory: 2Gi
+          limits:
+            cpu: 500m
+            memory: 2Gi
+      volumes:
+      - name: config
+        configMap:
+          name: zerofs-gateway-a-config
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
+  volumeClaimTemplates:
+  - metadata:
+      name: cache
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
+      storageClassName: topolvm-provisioner-thin
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zerofs-gateway-b-config
+  namespace: zerofs
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+data:
+  zerofs.toml: |
+    [cache]
+    dir = "/data/cache"
+    disk_size_gb = 6.0
+    memory_size_gb = 0.5
+
+    [storage]
+    url = "s3://rizexor-media/zerofs-test"
+    encryption_password = "${ZEROFS_PASSWORD}"
+
+    [filesystem]
+    max_size_gb = 100.0
+
+    [servers]
+
+    [servers.ninep]
+    addresses = ["0.0.0.0:5564"]
+
+    [servers.rpc]
+    addresses = ["0.0.0.0:7000"]
+
+    [replication]
+    node_id = "node-b"
+    role = "standby"
+    replication_listen = "0.0.0.0:9000"
+    peers = ["zerofs-gateway-a.zerofs.svc:9000"]
+
+    # Remove this [aws] section when using IRSA or instance roles.
+    [aws]
+    access_key_id = "${AWS_ACCESS_KEY_ID}"
+    secret_access_key = "${AWS_SECRET_ACCESS_KEY}"
+
+    endpoint = "${OVH_ENDPOINT}"
+    default_region = "ap-south-mum"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zerofs-gateway-b
+  namespace: zerofs
+spec:
+  selector:
+    app: zerofs-gateway
+    node: node-b
+  ports:
+  - name: ninep
+    port: 5564
+  - name: admin
+    port: 7000
+  - name: repl
+    port: 9000
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zerofs-gateway-b
+  namespace: zerofs
+spec:
+  serviceName: zerofs-gateway-b
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zerofs-gateway
+      node: node-b
+  template:
+    metadata:
+      labels:
+        app: zerofs-gateway
+        node: node-b
+    spec:
+      containers:
+      - name: zerofs
+        image: ghcr.io/barre/zerofs@sha256:207833a628ca374af7e1ac6cb9bc2ae21d0a1c36ee12460d6b9ad1ae0aecf6c0
+        args:
+        - run
+        - -c
+        - /etc/zerofs/zerofs.toml
+        ports:
+        - name: ninep
+          containerPort: 5564
+        - name: admin
+          containerPort: 7000
+        - name: repl
+          containerPort: 9000
+        readinessProbe:
+          tcpSocket:
+            port: repl
+          periodSeconds: 2
+          timeoutSeconds: 1
+        env:
+        - name: ZEROFS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: ZEROFS_PASSWORD
+        - name: OVH_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: OVH_ENDPOINT
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: OVH_ACCESS_KEY
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: zerofs-ovh
+              key: OVH_SECRET_KEY
+        volumeMounts:
+        - name: config
+          mountPath: /etc/zerofs
+        - name: cache
+          mountPath: /data/cache
+        resources:
+          requests:
+            cpu: 250m
+            memory: 2Gi
+          limits:
+            cpu: 500m
+            memory: 2Gi
+      volumes:
+      - name: config
+        configMap:
+          name: zerofs-gateway-b-config
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
+  volumeClaimTemplates:
+  - metadata:
+      name: cache
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
+      storageClassName: topolvm-provisioner-thin
