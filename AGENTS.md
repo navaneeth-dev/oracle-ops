@@ -1,3 +1,8 @@
+# Commit messages
+
+Always use Conventional Commits for commit messages, including amended commits
+(for example, `fix(cpu): right-size workload reservations`).
+
 # Kubernetes access
 
 The production Kubernetes context is configured through mise in

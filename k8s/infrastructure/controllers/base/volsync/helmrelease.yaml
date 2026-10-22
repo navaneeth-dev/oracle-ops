@@ -20,6 +20,9 @@ spec:
   upgrade:
     crds: CreateReplace
   values:
+    resources:
+      requests:
+        cpu: 20m
     metrics:
       disableAuth: true
     podSecurityContext:

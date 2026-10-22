@@ -1,0 +1,19 @@
+{
+  "start": 1792085400,
+  "end": 1792690200,
+  "queries": {
+    "usage": "sum by(namespace,pod,container)(rate(container_cpu_usage_seconds_total{metrics_path=\"/metrics/cadvisor\",container!=\"\",container!=\"POD\",namespace!=\"\",namespace!=\"zerofs\"}[5m]))",
+    "peak1m": "sum by(namespace,pod,container)(rate(container_cpu_usage_seconds_total{metrics_path=\"/metrics/cadvisor\",container!=\"\",container!=\"POD\",namespace!=\"\",namespace!=\"zerofs\"}[1m]))",
+    "throttled": "sum by(namespace,pod,container)(rate(container_cpu_cfs_throttled_periods_total{container!=\"\",container!=\"POD\",namespace!=\"\",namespace!=\"zerofs\"}[5m]))",
+    "periods": "sum by(namespace,pod,container)(rate(container_cpu_cfs_periods_total{container!=\"\",container!=\"POD\",namespace!=\"\",namespace!=\"zerofs\"}[5m]))",
+    "throttle_seconds": "sum by(namespace,pod,container)(rate(container_cpu_cfs_throttled_seconds_total{container!=\"\",container!=\"POD\",namespace!=\"\",namespace!=\"zerofs\"}[5m]))",
+    "requests": "max by(namespace,pod,container)(kube_pod_container_resource_requests{resource=\"cpu\",namespace!=\"zerofs\"})",
+    "limits": "max by(namespace,pod,container)(kube_pod_container_resource_limits{resource=\"cpu\",namespace!=\"zerofs\"})",
+    "node": "sum(rate(node_cpu_seconds_total{mode!=\"idle\"}[5m]))"
+  },
+  "source": "Production VictoriaMetrics vmsingle-stack, observability; read-only port-forward",
+  "usage_step_seconds": 300,
+  "peak_step_seconds": 60,
+  "timezone": "UTC",
+  "units": "CPU summary in millicores; throttle columns in percent; resource min/max are historical simultaneous workload totals"
+}

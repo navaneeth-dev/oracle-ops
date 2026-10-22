@@ -14,3 +14,8 @@ spec:
     crds: CreateReplace
   upgrade:
     crds: CreateReplace
+  values:
+    deployment:
+      resources:
+        requests:
+          cpu: 20m
