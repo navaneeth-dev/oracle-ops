@@ -77,6 +77,10 @@ data:
         - qBittorrent:
             href: 'https://qbittorrent.${DOMAIN}'
             icon: qbittorrent
+        - Qui:
+            href: 'https://qui.${DOMAIN}'
+            icon: qbittorrent
+            description: Manage Torrents
     - Monitoring:
         - Grafana:
             href: 'https://grafana.${DOMAIN}'
