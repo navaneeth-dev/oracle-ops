@@ -69,6 +69,9 @@ data:
             description: Speedtest
     
     - 'Arr Stack':
+        - Prowlarr:
+            href: 'https://prowlarr.${DOMAIN}'
+            icon: prowlarr
         - Radarr:
             href: 'https://radarr.${DOMAIN}'
             icon: radarr
