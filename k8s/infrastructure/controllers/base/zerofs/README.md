@@ -32,7 +32,7 @@ Do not drain/reboot the node or restart Emby for this trial.
   over the trial observations; reassess the node plugin when adding many mounts.
 - `zerofs-test` is a non-default RWX StorageClass with `Retain`. PVC capacity is
   descriptive: CSI does not enforce per-PVC quotas. The gateway's filesystem-wide
-  `max_size_gb = 100.0` caps logical usage at 100 decimal GB.
+  `max_size_gb = 200.0` caps logical usage at 200 decimal GB (about 186.3 GiB).
 - Both gateways are on the same physical node. The pair tests gateway failover;
   it does not protect against loss of this node.
 
