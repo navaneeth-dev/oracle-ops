@@ -7,18 +7,6 @@ metadata:
 spec:
   interval: 1h
   timeout: 10m
-  # The chart hardcodes these init-container resources outside its values.
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              group: apps
-              version: v1
-              labelSelector: k8s-app=crowdsec,type in (agent,appsec)
-            patch: |-
-              - op: replace
-                path: /spec/template/spec/initContainers/0/resources/requests/memory
-                value: 50Mi
   chart:
     spec:
       chart: crowdsec

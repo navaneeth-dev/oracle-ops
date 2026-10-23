@@ -28,7 +28,9 @@ upstream proxy chain and confirm access logs identify the same client IP.
 
 LAPI intentionally uses a single replica with persistent SQLite state for the
 current single-node clusters. Move to PostgreSQL before increasing LAPI replicas.
-Memory requests equal limits and CPU is uncapped. These are initial memory
+Main-container memory requests equal limits and CPU is uncapped. The chart's
+registration init containers retain their defaults: 10Mi requested, 50Mi limit.
+These are initial memory
 budgets; no CrowdSec workload history exists yet, so review observed peaks after
 rollout. The pinned bouncer v0.8.2 image publishes both amd64 and arm64 manifests.
 
