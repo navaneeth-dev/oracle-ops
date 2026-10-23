@@ -53,6 +53,50 @@ The node plugin uses FUSE, requires `/dev/fuse`, and has an `OnDelete` update st
 Restarting it breaks its active FUSE mounts until consuming pods are recreated.
 Do not restart this plugin while applications depend on it.
 
+## Measured benchmarks — 22 October 2026
+
+Measured on the production single-node Talos cluster against OVH Mumbai using a
+separate benchmark PVC and the historical `zerofs-test` backend. These results
+come from the former leader/standby setup, with a 6 decimal GB disk cache and
+0.5 decimal GB memory cache per gateway. The current standalone gateway has not
+been benchmarked with the full arr workload.
+
+Fio used direct I/O, synchronous workers at queue depth one, a **32 MiB/s aggregate
+traffic cap**, and a 500m CPU limit per gateway. Four-reader runs capped each
+worker at 8 MiB/s. Sequential results near 32 MiB/s reached the configured cap;
+they do not measure maximum throughput. The current gateway CPU is uncapped.
+
+| File size | Workload | Throughput (MiB/s) | p95 completion latency (ms) |
+| --- | --- | ---: | ---: |
+| 2 GiB | Sequential write | 30.92 | 77.07 |
+| 2 GiB | CRC32C verification read | 32.01 | 18.74 |
+| 2 GiB | 128 KiB random read, 1 worker | 32.00 | 5.14 |
+| 8 GiB | Sequential write | 31.72 | 78.12 |
+| 8 GiB | Sequential read | 32.00 | 15.53 |
+| 8 GiB | CRC32C verification read | 32.00 | 16.06 |
+| 8 GiB | 128 KiB random read, 1 worker | 2.85 | 152.04 |
+| 8 GiB | 128 KiB random read, 4 workers (aggregate throughput) | 15.55 | 107.48 |
+| 8 GiB | Sequential 1 GiB range, first pass | 31.84 | 29.75 |
+| 8 GiB | Sequential 1 GiB range, repeat | 32.03 | 21.10 |
+
+All listed fio runs completed with error code zero. CRC32C verification passed;
+separate arr-style checks passed hardlink creation, rename, matching inode
+numbers, link count two, and matching sampled bytes for both file sizes. Gateway
+memory during writes was approximately 1.0–1.4 GiB. No gateway or CSI restart
+occurred during successful runs; Emby retained its pod identity and restart count.
+
+The 2 GiB file fits in cache; the 8 GiB file exceeds the disk cache and exercises
+eviction and backend reads. These were not strictly cold-cache runs: direct I/O
+bypasses the client page cache, while ZeroFS caches remain active. The repeated
+1 GiB range fits in cache. Cache contents also differed between random-read
+passes, so the four-worker improvement is not a controlled concurrency comparison.
+
+No 20 GiB run, actual qBittorrent swarm, sustained 48 MiB/s download, concurrent
+Emby playback/seeding, or gateway failover was measured. The results establish
+capped sequential throughput and filesystem correctness for this trial, not a
+guarantee for those workloads. The original report and raw fio JSON remain in Git
+history at commit `e784869`, under `benchmark/results/` in this directory.
+
 ## Deployment and operation
 
 Flux manages the CSI driver, standalone gateway, cache claim, non-default
@@ -66,7 +110,8 @@ ZeroFS download paths.
 The gateway restricts ingress with NetworkPolicy: 9P from the CSI node plugin and
 admin RPC from the CSI controller. There is no replication listener or public route.
 
-The one-time benchmark manifests, scripts and results have been removed. Its
+The one-time benchmark manifests, scripts and raw results were removed from the
+current tree; the measurements are summarized above. Its
 production PVCs, PV objects and obsolete `zerofs-test` StorageClass were deleted
 before switching to the permanent backend; historical S3 data remains. Removing
 Kubernetes objects does not remove that data or stop storage charges. Existing
