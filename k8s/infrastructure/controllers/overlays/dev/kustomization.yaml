@@ -37,7 +37,7 @@ patches:
       kind: Kustomization
       name: authentik
       namespace: flux-system
-  # Keep the standalone dev writer isolated from production object data.
+  # A unique object prefix is required for each independent cluster writer.
   - target:
       kind: Kustomization
       name: zerofs
@@ -49,31 +49,6 @@ patches:
         name: zerofs
         namespace: flux-system
       spec:
-        patches:
-          - target:
-              kind: ConfigMap
-              name: zerofs-gateway-a-config
-              namespace: zerofs
-            patch: |
-              apiVersion: v1
-              kind: ConfigMap
-              metadata:
-                name: zerofs-gateway-a-config
-                namespace: zerofs
-              data:
-                backend: s3://rizexor-media/zerofs-dev
-          - target:
-              kind: StatefulSet
-              name: zerofs-gateway-a
-              namespace: zerofs
-            patch: |
-              apiVersion: apps/v1
-              kind: StatefulSet
-              metadata:
-                name: zerofs-gateway-a
-                namespace: zerofs
-              spec:
-                template:
-                  metadata:
-                    annotations:
-                      zerofs.net/backend: rizexor-media/zerofs-dev
+        postBuild:
+          substitute:
+            ZEROFS_STORAGE_URL: s3://rizexor-media/zerofs-dev

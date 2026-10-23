@@ -13,7 +13,6 @@ metadata:
   annotations:
     kustomize.toolkit.fluxcd.io/substitute: disabled
 data:
-  backend: s3://rizexor-media/zerofs
   zerofs.toml: |
     [cache]
     dir = "/data/cache"
@@ -49,6 +48,27 @@ data:
 
     endpoint = "${OVH_ENDPOINT}"
     default_region = "ap-south-mum"
+  prepare-cache.py: |
+    """Discard disposable cache once when changing object-storage namespaces."""
+    import os
+    import shutil
+    from pathlib import Path
+
+    root = Path('/data/cache')
+    backend = os.environ['ZEROFS_STORAGE_URL'].strip()
+    if not backend.startswith('s3://') or backend == 's3://':
+        raise RuntimeError('Set a cluster-specific ZEROFS_STORAGE_URL before starting ZeroFS')
+    marker = root / '.backend'
+    if not marker.exists() or marker.read_text().strip() != backend:
+        for entry in root.glob('bucket_*'):
+            if entry.is_symlink() or not entry.is_dir():
+                raise RuntimeError('Unexpected entry in ZeroFS cache; refusing cleanup')
+            shutil.rmtree(entry)
+        with marker.open('w') as f:
+            f.write(backend)
+            f.flush()
+            os.fsync(f.fileno())
+        print('Prepared local cache for selected backend; object data unchanged.')
 ---
 apiVersion: v1
 kind: Service
@@ -82,8 +102,6 @@ spec:
       labels:
         app: zerofs-gateway
         node: node-a
-      annotations:
-        zerofs.net/backend: rizexor-media/zerofs
     spec:
       containers:
       - name: zerofs
@@ -104,10 +122,7 @@ spec:
           timeoutSeconds: 1
         env:
         - name: ZEROFS_STORAGE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: zerofs-gateway-a-config
-              key: backend
+          value: ${ZEROFS_STORAGE_URL}
         - name: ZEROFS_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -138,7 +153,6 @@ spec:
             cpu: 250m
             memory: 2Gi
           limits:
-            cpu: 500m
             memory: 2Gi
       volumes:
       - name: config
@@ -149,6 +163,33 @@ spec:
         runAsGroup: 1001
         fsGroup: 1001
         fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+      - name: prepare-cache
+        image: python:3.13-slim-bookworm@sha256:e32be0e55814a08977501ca863271d9bd02443710db8f2afaf8372e2c4508530
+        command:
+        - python
+        - /etc/zerofs/prepare-cache.py
+        env:
+        - name: ZEROFS_STORAGE_URL
+          value: ${ZEROFS_STORAGE_URL}
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: config
+          mountPath: /etc/zerofs
+          readOnly: true
+        - name: cache
+          mountPath: /data/cache
   volumeClaimTemplates:
   - metadata:
       name: cache

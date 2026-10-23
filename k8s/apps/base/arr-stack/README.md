@@ -1,16 +1,18 @@
-# Opt-in ZeroFS storage for the arr stack
+# ZeroFS storage for the arr stack
 
-Both Oracle and Oracle-dev include `k8s/apps/base/arr-zerofs` through the shared
+Both Oracle and Oracle-dev include `zerofs-pvc.yaml` through the shared
 arr-stack base. The mounts are declared directly in the qBittorrent, Sonarr and
-Radarr HelmReleases; their Flux Kustomizations depend on ZeroFS.
+Radarr HelmReleases and are always mounted; their Flux Kustomizations depend on
+ZeroFS. Individual items opt in through their root folder and the `zerofs` tag.
 
 Each cluster mounts its own `arr-zerofs` PVC at `/zerofs` in qBittorrent,
 Sonarr and Radarr. Existing `/data` mounts and media stay in place. Emby is
 unchanged and does not yet have access to this filesystem. App configuration and
 SQLite databases remain on their existing local config PVCs.
 
-The PVC requests 200 decimal GB; the gateway enforces the **shared** 200 GB logical
-quota, not a separate 200 GB allocation per claim. The standalone gateway retains
+The PVC requests 200 decimal GB. Each cluster has its own 200 GB logical quota,
+shared across all claims on that cluster's ZeroFS filesystem; it is not a separate
+200 GB allocation per claim. The standalone gateway retains
 its 8 GiB local cache PVC (6 decimal GB cache). Neither media nor cache uses VolSync.
 
 ## Deployment and direct setup
@@ -25,8 +27,12 @@ These are independent filesystems with separate 200 GB quotas and local caches.
 On the initial production deployment, the gateway switches from the historical benchmark prefix
 `rizexor-media/zerofs-test` to `rizexor-media/zerofs`, using the same OVH Secret and
 ZeroFS encryption password. This opens a fresh filesystem; it does not migrate
-old benchmark data. Any one-time cleanup of the old local cache is manual, with
-the gateway stopped. Historical objects and benchmark claims are retained. Do not switch an active media filesystem's prefix later.
+old benchmark data. Before the gateway starts, its init container clears local
+`bucket_*` cache directories when the backend marker is absent or differs from the
+selected backend, then records that backend. Restarts on the same backend preserve
+the cache. Historical S3 objects remain; the unused production benchmark claims
+and PV objects have been deleted. Do not switch an active media filesystem's prefix
+later: cache cleanup does not migrate its data or existing volumes.
 
 After deploying the manifests through Flux, perform these one-time operations
 with direct `kubectl exec` commands and the application UIs/APIs. Run production

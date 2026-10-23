@@ -1,16 +1,21 @@
 # ZeroFS CSI storage
 
 Shared infrastructure, included by both production and dev controller overlays.
-The temporary benchmark is deliberately **not** a Flux resource. The opt-in arr
-integration is documented in [arr-zerofs](../../../../apps/base/arr-zerofs/README.md).
+The temporary benchmark is deliberately **not** a Flux resource. The arr
+integration is documented in [arr-stack](../../../../apps/base/arr-stack/README.md).
 Emby is unchanged; do not drain/reboot the node or restart Emby for storage checks.
 
 ## Storage and resource budget
 
 - Backends: production `s3://rizexor-media/zerofs`, dev
-  `s3://rizexor-media/zerofs-dev`, OVH Mumbai (`ap-south-mum`). The dev overlay
-  overrides the backend ConfigMap key and rollout annotation. The gateway reads
-  the selected backend setting. Historical
+  `s3://rizexor-media/zerofs-dev`, OVH Mumbai (`ap-south-mum`). Each controller overlay
+  sets `spec.postBuild.substitute.ZEROFS_STORAGE_URL` on the `zerofs` Flux
+  Kustomization. Flux writes this value directly into the gateway and initializer
+  environment variables, so changing it triggers a pod rollout. There is no base
+  backend default; the initializer refuses to start with a missing backend. The gateway and cache
+  initializer read the same selected backend. Before startup, the initializer clears
+  local `bucket_*` cache directories if the backend marker is absent or changed;
+  restarts on the same backend retain the cache. Historical
   benchmarks used the separate `zerofs-test` prefix, retained without migration. This is
   ZeroFS's internal object format, separate from existing media object keys.
 - `secret-ovh.yaml` reuses the endpoint/access key/secret key from Sonarr's disabled
@@ -25,11 +30,11 @@ Emby is unchanged; do not drain/reboot the node or restart Emby for storage chec
   approximately 36.3 GiB free. Filling one 8 GiB claim leaves about 28.3 GiB
   of physical headroom, before other workloads grow. Thin PVC capacity is not
   a measurement of physical free space.
-- Gateway CPU request: 250m; CPU limit: 500m. Memory request and
+- Gateway CPU request: 250m; no CPU limit, allowing bursts. Memory request and
   limit: 2Gi, based on observed usage around 1.0–1.4 GiB plus headroom. These are bounded **trial values**, not upstream sizing
   recommendations. Check throttling and memory before selecting production values.
   The manual benchmark used temporary 25m gateway requests to fit the current
-  scheduler budget; limits remained 500m/2Gi. Roll out the preceding CPU-sizing
+  scheduler budget; the current memory limit remains 2Gi. Roll out the preceding CPU-sizing
   commit before reconciling these 250m requests through GitOps. CSI memory requests
   equal limits (64Mi per small sidecar, 256Mi for the node plugin), as required by
   the repository resource-sizing policy. These memory ceilings include headroom
@@ -50,17 +55,13 @@ Do not restart this plugin while applications depend on it.
 
 ## Apply locally before a GitOps push
 
-Run from `clusters/prod`, using the production mise environment. This does not
-require committing or pushing. The namespace must exist before applying Secrets.
-The manual infrastructure overlay uses temporary 25m gateway CPU reservations;
-Flux uses the 250m requests in `app/` after the CPU-sizing rollout. The filter
-prevents the encrypted SOPS document from being applied as credentials.
+Use the cluster's reconciled ZeroFS gateway for manual benchmarks. Do not apply
+`app/` or `benchmark/infra` directly over a live gateway: the app requires Flux
+backend substitution, and the old trial overlay reduces its CPU reservation.
+For production, run from `clusters/prod` with the production mise environment:
 
 ```sh
 zerofs_dir=../../k8s/infrastructure/controllers/base/zerofs
-mise exec -- kubectl create namespace zerofs --dry-run=client -o yaml | mise exec -- kubectl apply -f -
-mise exec -- sops decrypt "$zerofs_dir/app/secret-ovh.yaml" | mise exec -- kubectl apply -f -
-mise exec -- kubectl kustomize "$zerofs_dir/benchmark/infra" | mise exec -- yq 'select(.kind != "Secret" or .metadata.name != "zerofs-ovh")' | mise exec -- kubectl apply -f -
 mise exec -- kubectl apply -k "$zerofs_dir/benchmark"
 mise exec -- kubectl rollout status -n zerofs deployment/zerofs-benchmark --timeout=120s
 ```
@@ -114,7 +115,9 @@ The `parallel` mode uses four readers with an 8 MiB/s cap each, keeping the tota
 cap at 32 MiB/s while checking whether concurrent requests can hide backend latency.
 
 Delete the benchmark Deployment after the experiment to release its CPU requests.
-The test PVC/PV and object data are retained intentionally. Removing a pod does
+The production benchmark PVCs and PV objects have been deleted; historical S3
+object data remains. New benchmark claims use `Retain`, so deleting them leaves
+their PVs and object data for explicit cleanup. Removing a pod does
 not remove the OVH data or stop storage charges. Delete only trial files through
 the mounted filesystem when finished; never remove internal S3 objects manually
 from an active ZeroFS volume.
@@ -124,9 +127,9 @@ from an active ZeroFS volume.
 Push only when ready. Flux will manage the CSI driver, standalone gateway, cache claim,
 non-default StorageClass, and encrypted credentials through `zerofs/ks.yaml`.
 The cache claim is a native StatefulSet claim, without VolSync. Temporary test
-pods remain manual. The production arr overlay adds a shared media PVC and mounts
-it into qBittorrent, Sonarr and Radarr. Keep app config/SQLite databases on local
-storage and run the direct setup/hardlink check documented in arr-zerofs before
+pods remain manual. The shared arr-stack base adds a media PVC in each cluster and
+mounts it into qBittorrent, Sonarr and Radarr. Keep app config/SQLite databases on local
+storage and run the direct setup/hardlink check documented in arr-stack before
 changing any production download paths.
 
 References: https://www.zerofs.net/docs/kubernetes-csi,
@@ -155,6 +158,40 @@ that live pod. During a deliberate rollout:
    remains allocated. No arr data migration or object-prefix rename is included
    in this topology change.
 
-The manual benchmark now uses a fresh `zerofs-benchmark-data` claim on `zerofs`.
-The previous benchmark claim and its historical data are retained; changing the
-StorageClass field of an already bound PVC is not supported.
+The manual benchmark manifest creates `zerofs-benchmark-data` on `zerofs`. Both
+previous production benchmark claims and their PV objects, plus the obsolete
+`zerofs-test` StorageClass, have been deleted before the permanent backend switch.
+Their historical S3 data remains. Reapplying the benchmark creates a new volume on
+the currently selected backend; existing volumes do not migrate across backends.
+Changing the StorageClass field of an already bound PVC is not supported.
+
+## Adding another cluster
+
+Reuse the shared controller base and arr-stack base. In the new controller
+overlay, patch the `zerofs` Flux Kustomization's
+`spec.postBuild.substitute.ZEROFS_STORAGE_URL` to a unique S3 prefix, for example
+`s3://rizexor-media/zerofs-staging`. Copy the small prod/dev overlay patch, changing
+only that URL. Never share a prefix between independent cluster writers. Both the
+gateway and cache initializer receive this one value; do not add a second backend
+setting or rollout annotation.
+
+Provision the cluster's SOPS decryption access, ZeroFS storage credentials and
+persistent encryption password. A shared encrypted Secret is currently used;
+use a cluster-specific Secret override if credentials or passwords must differ.
+Verify access to the chosen bucket/prefix and preserve the password needed to
+reopen that filesystem.
+
+Before enabling reconciliation, check scheduler capacity for the gateway's 250m
+CPU and 2Gi memory requests plus the CSI pods. Check actual TopoLVM thin-pool free
+space for an 8Gi cache and future growth, rather than only PVC sizes. Dev is
+currently unused; its live capacity has not been verified. Each cluster has its
+own cache PVC and 200 GB filesystem quota.
+
+CSI node/controller pods currently use pod networking. The gateway NetworkPolicy
+selects those pods; reassess network access before introducing `hostNetwork`.
+The three arr Flux Kustomizations explicitly check their HelmReleases despite
+`wait: false`, so their Ready condition includes Helm release health.
+
+After rollout, follow the shared arr-stack README to create directories, verify
+hardlinks and configure per-item opt-in. New clusters need the same setup; Flux
+provides the PVC and mounts, not application root folders or download categories.
