@@ -13,4 +13,3 @@ resources:
   - emby/ks.yaml
   - seerr/ks.yaml
   - audiobookshelf/ks.yaml
-  - bazarr/ks.yaml
