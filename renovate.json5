@@ -42,13 +42,14 @@
       ignoreTests: true,
     },
     {
-      description: 'Auto-merge non-major sonarr and radarr updates',
+      description: 'Auto-merge non-major sonarr, radarr, and prowlarr updates',
       matchDatasources: [
         'docker',
       ],
       matchPackageNames: [
         'ghcr.io/home-operations/sonarr',
         'ghcr.io/home-operations/radarr',
+        'ghcr.io/home-operations/prowlarr',
       ],
       matchUpdateTypes: [
         'minor',
@@ -63,6 +64,20 @@
       description: 'Auto-merge non-major create-github-app-token updates',
       matchDepNames: [
         'actions/create-github-app-token',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+        'digest',
+      ],
+      automerge: true,
+      automergeType: 'branch',
+      ignoreTests: true,
+    },
+    {
+      description: 'Auto-merge non-major renovatebot github-action updates',
+      matchDepNames: [
+        'renovatebot/github-action',
       ],
       matchUpdateTypes: [
         'minor',
