@@ -1,7 +1,8 @@
 # Opt-in ZeroFS storage for the arr stack
 
 The optional `k8s/apps/base/arr-zerofs` Kustomize component bundles the PVC and
-app mount patches. Enable it in a cluster overlay with
+Flux dependency and readiness settings. The mounts are declared directly in the
+qBittorrent, Sonarr and Radarr HelmReleases; dev explicitly disables them. Enable it in a cluster overlay with
 `components: [../base/arr-zerofs]` after enabling the ZeroFS infrastructure.
 Oracle currently enables it.
 

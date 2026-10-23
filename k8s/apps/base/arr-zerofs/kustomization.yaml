@@ -14,23 +14,6 @@ patches:
     spec:
       dependsOn:
       - name: zerofs
-      patches:
-      - target:
-          kind: HelmRelease
-        patch: |
-          apiVersion: helm.toolkit.fluxcd.io/v2
-          kind: HelmRelease
-          metadata:
-            name: _
-          spec:
-            values:
-              persistence:
-                zerofs:
-                  enabled: true
-                  type: persistentVolumeClaim
-                  existingClaim: arr-zerofs
-                  globalMounts:
-                  - path: /zerofs
 - target:
     kind: Kustomization
     name: qbittorrent
