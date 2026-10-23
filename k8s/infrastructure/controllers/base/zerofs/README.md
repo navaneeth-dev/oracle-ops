@@ -1,13 +1,14 @@
-# ZeroFS CSI trial
+# ZeroFS CSI storage
 
 Production-only infrastructure, wired through the production controller overlay.
-The temporary benchmark is deliberately **not** a Flux resource. No arr or Emby
-HelmRelease, mount, root folder, download category, or existing data PVC is changed.
-Do not drain/reboot the node or restart Emby for this trial.
+The temporary benchmark is deliberately **not** a Flux resource. The opt-in arr
+integration is documented in [arr-zerofs](../../../../apps/oracle/arr-zerofs/README.md).
+Emby is unchanged; do not drain/reboot the node or restart Emby for storage checks.
 
 ## Storage and resource budget
 
-- Backend: `s3://rizexor-media/zerofs-test`, OVH Mumbai (`ap-south-mum`). This is
+- Backend: `s3://rizexor-media/zerofs`, OVH Mumbai (`ap-south-mum`). Historical
+  benchmarks used the separate `zerofs-test` prefix, retained without migration. This is
   ZeroFS's internal object format, separate from existing media object keys.
 - `secret-ovh.yaml` reuses the endpoint/access key/secret key from Sonarr's disabled
   upload integration, encrypted with the repository's SOPS recipient. It has a
@@ -120,9 +121,10 @@ from an active ZeroFS volume.
 Push only when ready. Flux will manage the CSI driver, standalone gateway, cache claim,
 non-default StorageClass, and encrypted credentials through `zerofs/ks.yaml`.
 The cache claim is a native StatefulSet claim, without VolSync. Temporary test
-pods remain manual. After benchmarks, add a shared media PVC and mount it into the
-chosen arr apps in a separate change. Keep app config/SQLite databases on local
-storage and validate hardlinks before changing any production download paths.
+pods remain manual. The production arr overlay adds a shared media PVC and mounts
+it into qBittorrent, Sonarr and Radarr. Keep app config/SQLite databases on local
+storage and run the direct setup/hardlink check documented in arr-zerofs before
+changing any production download paths.
 
 References: https://www.zerofs.net/docs/kubernetes-csi,
 https://www.zerofs.net/docs/caching, https://www.zerofs.net/docs/configuration.
