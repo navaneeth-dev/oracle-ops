@@ -113,11 +113,5 @@ spec:
         existingClaim: data
         globalMounts:
           - path: /data
-      zerofs:
-        enabled: true
-        type: persistentVolumeClaim
-        existingClaim: arr-zerofs
-        globalMounts:
-          - path: /zerofs
       tmp:
         type: emptyDir

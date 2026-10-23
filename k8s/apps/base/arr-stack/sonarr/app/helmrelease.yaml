@@ -122,11 +122,5 @@ spec:
       #     - path: /config/scripts/sonarr-ovh-upload.sh
       #       subPath: sonarr-ovh-upload.sh
       #       readOnly: true
-      zerofs:
-        enabled: true
-        type: persistentVolumeClaim
-        existingClaim: arr-zerofs
-        globalMounts:
-          - path: /zerofs
       tmp:
         type: emptyDir

@@ -14,4 +14,3 @@ resources:
   - snapshot-controller/ks.yaml
   - prometheus-operator-crds/ks.yaml
   - kro/ks.yaml
-  - zerofs
