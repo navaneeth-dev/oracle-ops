@@ -34,10 +34,10 @@ Do not drain/reboot the node for storage checks; Emby mounts `/zerofs` too.
   of physical headroom, before other workloads grow. Thin PVC capacity is not
   a measurement of physical free space.
 - Gateway CPU request: 250m; no CPU limit, allowing bursts. Memory request and
-  limit: 2Gi, based on observed usage around 1.0–1.4 GiB plus headroom. These are bounded **trial values**, not upstream sizing
-  recommendations. Check throttling and memory before selecting production values.
-  The manual benchmark used temporary 25m gateway requests to fit the current
-  scheduler budget; the current memory limit remains 2Gi. CSI memory requests
+  limit: 4Gi. Steady usage was around 1.0–1.4 GiB, but 2Gi was OOMKilled on
+  startup when segment reclamation ran four concurrent repack jobs (~170 MiB
+  gathered each, 256 MiB nominal) on top of the 0.5 GB memory cache. Check
+  throttling and memory under real arr workloads before tightening. CSI memory requests
   equal limits (64Mi per small sidecar, 256Mi for the node plugin), as required by
   the repository resource-sizing policy. These memory ceilings include headroom
   over the trial observations; reassess the node plugin when adding many mounts.
@@ -143,7 +143,7 @@ Verify access to the chosen bucket/prefix and preserve the password needed to
 reopen that filesystem.
 
 Before enabling reconciliation, check scheduler capacity for the gateway's 250m
-CPU and 2Gi memory requests plus the CSI pods. Check actual TopoLVM thin-pool free
+CPU and 4Gi memory requests plus the CSI pods. Check actual TopoLVM thin-pool free
 space for an 8Gi cache and future growth, rather than only PVC sizes. Dev is
 currently unused; its live capacity has not been verified. Each cluster has its
 own cache PVC and 200 GB filesystem quota.
