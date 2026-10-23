@@ -1,5 +1,10 @@
 # Opt-in ZeroFS storage for the arr stack
 
+The optional `k8s/apps/base/arr-zerofs` Kustomize component bundles the PVC and
+app mount patches. Enable it in a cluster overlay with
+`components: [../base/arr-zerofs]` after enabling the ZeroFS infrastructure.
+Oracle currently enables it.
+
 Production mounts the shared `arr-zerofs` PVC at `/zerofs` in qBittorrent,
 Sonarr and Radarr. Existing `/data` mounts and media stay in place. Emby is
 unchanged and does not yet have access to this filesystem. App configuration and

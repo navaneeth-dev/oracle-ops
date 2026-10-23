@@ -2,7 +2,7 @@
 
 Production-only infrastructure, wired through the production controller overlay.
 The temporary benchmark is deliberately **not** a Flux resource. The opt-in arr
-integration is documented in [arr-zerofs](../../../../apps/oracle/arr-zerofs/README.md).
+integration is documented in [arr-zerofs](../../../../apps/base/arr-zerofs/README.md).
 Emby is unchanged; do not drain/reboot the node or restart Emby for storage checks.
 
 ## Storage and resource budget
