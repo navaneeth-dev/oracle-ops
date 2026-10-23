@@ -22,19 +22,24 @@ old benchmark data. The gateway init container clears disposable local bucket
 cache once before opening the new prefix. Historical objects and benchmark claims
 are retained. Do not switch an active media filesystem's prefix later.
 
-After deploying the manifests through Flux, run from the repository root:
+After deploying the manifests through Flux, perform these one-time operations
+with direct `kubectl exec` commands and the application UIs/APIs. Run production
+kubectl commands from `clusters/prod` with `mise exec -- kubectl`.
 
-```sh
-python3 k8s/apps/oracle/arr-zerofs/scripts/prepare-volume.py
-python3 k8s/apps/oracle/arr-zerofs/scripts/configure-local.py --dry-run
-python3 k8s/apps/oracle/arr-zerofs/scripts/configure-local.py
-```
+1. Confirm the gateway is Ready on the permanent backend, the `arr-zerofs` PVC is
+   Bound, and all three applications have `/zerofs` mounted.
+2. Create the directories below on the mounted filesystem. Set ownership to
+   UID/GID 1000 and directory permissions to 775. Use a temporary utility Pod only
+   if elevated permissions are needed; delete it afterward.
+3. As UID/GID 1000, write a small temporary file in `/zerofs/torrents/movies`,
+   hardlink it into `/zerofs/media/movies`, and verify matching inode numbers,
+   link count two, and readable contents. Remove both temporary names afterward.
+4. Configure the additional roots, categories, tagged clients and delay profiles
+   described below through the app UIs/APIs. Preserve existing defaults and do not
+   move media or start downloads during configuration.
 
-The first command checks the permanent backend and gateway readiness, creates a
-short-lived utility Pod to run shell-equivalent Python commands against the PVC,
-then deletes it. It creates directories with UID/GID 1000 and mode 775 and verifies
-write/read/fsync and a cross-directory hardlink as that UID. It neither copies nor
-moves existing media. It preserves the current `/data` layout exactly:
+No setup scripts are retained or run by GitOps. Directory creation preserves the
+current `/data` layout exactly:
 
 ```text
 /zerofs/
@@ -54,21 +59,19 @@ moves existing media. It preserves the current `/data` layout exactly:
     └── complete/
 ```
 
-The API command reads existing API keys into memory through kubectl and uses
-localhost-only port forwards. It adds the following, without moving any existing
-movie/series or starting downloads:
+Configure these additional roots and qBittorrent categories:
 
 | Application | Additional root | qBittorrent category | Category save path |
 | --- | --- | --- | --- |
 | Radarr | `/zerofs/media/movies` | `radarr-zerofs` | `/zerofs/torrents/movies` |
 | Sonarr | `/zerofs/media/tv` | `sonarr-zerofs` | `/zerofs/torrents/tv` |
 
-Each arr app gets a `zerofs` tag, a tagged `qBittorrent ZeroFS` client cloned from
-its existing untagged qBittorrent client, and a tag-scoped torrent-only delay
-profile. The profile prevents SABnzbd downloads on local `/data` being selected
-for these items. Default clients and profiles are preserved. The categories
-explicitly disable a separate incomplete-download directory, matching current
-qBittorrent behavior and keeping all data on the shared filesystem.
+In each arr app, add a `zerofs` tag, a tagged `qBittorrent ZeroFS` client copied
+from its existing untagged qBittorrent client (using the corresponding category
+above), and a tag-scoped torrent-only delay profile. The profile prevents SABnzbd downloads on local `/data` being selected
+for these items. Preserve default clients and profiles. Explicitly disable a separate incomplete
+download directory for both categories, matching current qBittorrent behavior and
+keeping all data on the shared filesystem.
 
 For an item to use ZeroFS, select **both its new root folder and the `zerofs` tag**.
 The root determines the final library location; the tag selects the torrent
@@ -76,10 +79,6 @@ client/category. Existing untagged items continue using current routes. Hardlink
 are required and checked before setup; seeding and library paths share one PVC.
 
 ## Verification and limits
-
-```sh
-python3 -m unittest discover -s k8s/apps/oracle/arr-zerofs/scripts -p 'test_*.py'
-```
 
 After setup, inspect the new roots and download clients in both arr UIs. Start a
 single deliberately selected download, check its category/save path, and confirm
