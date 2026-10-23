@@ -49,6 +49,15 @@ spec:
           storageClassName: topolvm-provisioner-thin
           size: 100Mi
       env:
+        - name: ENROLL_KEY
+          valueFrom:
+            secretKeyRef:
+              name: crowdsec-keys
+              key: ENROLL_KEY
+        - name: ENROLL_INSTANCE_NAME
+          value: oracle-prod
+        - name: ENROLL_TAGS
+          value: oracle
         - name: BOUNCER_KEY_envoy
           valueFrom:
             secretKeyRef:

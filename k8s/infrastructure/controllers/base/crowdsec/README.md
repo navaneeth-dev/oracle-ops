@@ -11,7 +11,9 @@ Both clusters load this stack through the shared infrastructure base:
 
 The fixed bouncer key is shared by two namespace-local Secrets, encrypted with
 `sops -e` using the repository's age recipient. Flux decrypts them using
-`flux-system/sops-age`. Console enrollment is optional and is not configured.
+`flux-system/sops-age`. The LAPI Secret also holds the Console enrollment key;
+LAPI reads it through `ENROLL_KEY`. After rollout, accept each engine's enrollment
+in the CrowdSec Console and restart LAPI to synchronize its connection.
 Never replace only one copy of the key; LAPI and the bouncer must agree.
 
 External authorization and AppSec use fail-open behavior: detected attacks are
