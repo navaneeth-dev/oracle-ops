@@ -1,13 +1,14 @@
 # ZeroFS storage for the arr stack
 
 Both Oracle and Oracle-dev include `zerofs-pvc.yaml` through the shared
-arr-stack base. The mounts are declared directly in the qBittorrent, Sonarr and
-Radarr HelmReleases and are always mounted; their Flux Kustomizations depend on
+arr-stack base. The mounts are declared directly in the qBittorrent, Sonarr,
+Radarr and Emby HelmReleases and are always mounted; their Flux Kustomizations depend on
 ZeroFS. Individual items opt in through their root folder and the `zerofs` tag.
 
 Each cluster mounts its own `arr-zerofs` PVC at `/zerofs` in qBittorrent,
-Sonarr and Radarr. Existing `/data` mounts and media stay in place. Emby is
-unchanged and does not yet have access to this filesystem. App configuration and
+Sonarr, Radarr and Emby. Existing `/data` mounts and media stay in place. Add
+`/zerofs/media/movies` and `/zerofs/media/tv` to Emby's libraries to play
+ZeroFS items. App configuration and
 SQLite databases remain on their existing local config PVCs.
 
 The PVC requests 200 decimal GB. Each cluster has its own 200 GB logical quota,
@@ -98,5 +99,5 @@ library to this filesystem as part of the first check.
 
 Historical fio results reached about 32 MiB/s with an explicit 32 MiB/s cap; they
 do not establish support for sustained 48 MiB/s downloads or concurrent playback
-and seeding. Emby playback from ZeroFS needs a separate integration step. Existing
-Emby playback is unaffected by adding these three app mounts.
+and seeding. Emby playback from ZeroFS reads through the gateway cache and has not
+been benchmarked; playback from `/data` is unaffected.

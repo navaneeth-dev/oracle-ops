@@ -2,7 +2,7 @@
 
 Shared infrastructure, included by both production and dev controller overlays.
 The arr integration is documented in [arr-stack](../../../../apps/base/arr-stack/README.md).
-Emby is unchanged; do not drain/reboot the node or restart Emby for storage checks.
+Do not drain/reboot the node for storage checks; Emby mounts `/zerofs` too.
 
 ## Storage and resource budget
 
