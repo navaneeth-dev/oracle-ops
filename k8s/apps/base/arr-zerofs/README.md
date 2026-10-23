@@ -1,12 +1,10 @@
 # Opt-in ZeroFS storage for the arr stack
 
-The optional `k8s/apps/base/arr-zerofs` Kustomize component bundles the PVC and
-Flux dependency and readiness settings. The mounts are declared directly in the
-qBittorrent, Sonarr and Radarr HelmReleases; dev explicitly disables them. Enable it in a cluster overlay with
-`components: [../base/arr-zerofs]` after enabling the ZeroFS infrastructure.
-Oracle currently enables it.
+Both Oracle and Oracle-dev include `k8s/apps/base/arr-zerofs` through the shared
+arr-stack base. The mounts are declared directly in the qBittorrent, Sonarr and
+Radarr HelmReleases; their Flux Kustomizations depend on ZeroFS.
 
-Production mounts the shared `arr-zerofs` PVC at `/zerofs` in qBittorrent,
+Each cluster mounts its own `arr-zerofs` PVC at `/zerofs` in qBittorrent,
 Sonarr and Radarr. Existing `/data` mounts and media stay in place. Emby is
 unchanged and does not yet have access to this filesystem. App configuration and
 SQLite databases remain on their existing local config PVCs.
@@ -21,7 +19,10 @@ Flux manages the permanent infrastructure, PVC and app mounts. There are no
 configuration or directory Jobs. Directory creation and application API changes
 are direct operations, not recurring reconciliation.
 
-On deployment, the gateway switches from the historical benchmark prefix
+Oracle uses `rizexor-media/zerofs`; Oracle-dev uses `rizexor-media/zerofs-dev`.
+These are independent filesystems with separate 200 GB quotas and local caches.
+
+On the initial production deployment, the gateway switches from the historical benchmark prefix
 `rizexor-media/zerofs-test` to `rizexor-media/zerofs`, using the same OVH Secret and
 ZeroFS encryption password. This opens a fresh filesystem; it does not migrate
 old benchmark data. The gateway init container clears disposable local bucket

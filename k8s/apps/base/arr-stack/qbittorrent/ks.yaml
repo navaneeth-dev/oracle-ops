@@ -6,6 +6,13 @@ metadata:
   name: qbittorrent
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: zerofs
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: qbittorrent
+      namespace: homelab
   components:
     - ../../../../../components/volsync
   interval: 1h

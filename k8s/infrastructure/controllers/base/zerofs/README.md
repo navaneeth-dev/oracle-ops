@@ -1,13 +1,16 @@
 # ZeroFS CSI storage
 
-Production-only infrastructure, wired through the production controller overlay.
+Shared infrastructure, included by both production and dev controller overlays.
 The temporary benchmark is deliberately **not** a Flux resource. The opt-in arr
 integration is documented in [arr-zerofs](../../../../apps/base/arr-zerofs/README.md).
 Emby is unchanged; do not drain/reboot the node or restart Emby for storage checks.
 
 ## Storage and resource budget
 
-- Backend: `s3://rizexor-media/zerofs`, OVH Mumbai (`ap-south-mum`). Historical
+- Backends: production `s3://rizexor-media/zerofs`, dev
+  `s3://rizexor-media/zerofs-dev`, OVH Mumbai (`ap-south-mum`). The dev overlay
+  overrides the backend ConfigMap key and rollout annotation. The gateway and cache
+  initializer read the same backend setting. Historical
   benchmarks used the separate `zerofs-test` prefix, retained without migration. This is
   ZeroFS's internal object format, separate from existing media object keys.
 - `secret-ovh.yaml` reuses the endpoint/access key/secret key from Sonarr's disabled
