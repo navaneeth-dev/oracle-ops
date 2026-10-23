@@ -9,8 +9,8 @@ Emby is unchanged; do not drain/reboot the node or restart Emby for storage chec
 
 - Backends: production `s3://rizexor-media/zerofs`, dev
   `s3://rizexor-media/zerofs-dev`, OVH Mumbai (`ap-south-mum`). The dev overlay
-  overrides the backend ConfigMap key and rollout annotation. The gateway and cache
-  initializer read the same backend setting. Historical
+  overrides the backend ConfigMap key and rollout annotation. The gateway reads
+  the selected backend setting. Historical
   benchmarks used the separate `zerofs-test` prefix, retained without migration. This is
   ZeroFS's internal object format, separate from existing media object keys.
 - `secret-ovh.yaml` reuses the endpoint/access key/secret key from Sonarr's disabled
