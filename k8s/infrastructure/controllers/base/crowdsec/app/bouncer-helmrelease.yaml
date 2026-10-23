@@ -1,0 +1,40 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: crowdsec-envoy-bouncer
+  namespace: envoy-gateway-system
+spec:
+  interval: 1h
+  dependsOn:
+    - name: crowdsec
+      namespace: crowdsec
+  chartRef:
+    kind: OCIRepository
+    name: crowdsec-envoy-bouncer
+  values:
+    fullnameOverride: crowdsec-envoy-bouncer
+    resources:
+      requests:
+        cpu: 20m
+        memory: 128Mi
+      limits:
+        cpu: null
+        memory: 128Mi
+    config:
+      # Envoy resolves the client IP through the Gateway ClientTrafficPolicy
+      # and stamps it into this header.
+      trustedIPHeader: X-Envoy-External-Address
+      bouncer:
+        lapiURL: http://crowdsec-service.crowdsec.svc.cluster.local:8080
+        apiKeySecretRef:
+          name: crowdsec-envoy-bouncer-secrets
+          key: api-key
+      waf:
+        enabled: true
+        appSecURL: http://crowdsec-appsec-service.crowdsec.svc.cluster.local:7422
+        apiKeySecretRef:
+          name: crowdsec-envoy-bouncer-secrets
+          key: api-key
+        # Let requests through if AppSec is unavailable; LAPI bans still apply.
+        failOpen: true

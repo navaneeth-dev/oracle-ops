@@ -1,0 +1,22 @@
+---
+# CrowdSec LAPI decisions and AppSec WAF for every route on the Gateway.
+# Request bodies are not forwarded: Envoy Gateway answers 413 for bodies larger
+# than bodyToExtAuth.maxRequestBytes, which would break uploads.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: crowdsec-ext-auth
+  namespace: envoy-gateway-system
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: reverse-proxy
+  extAuth:
+    failOpen: true
+    grpc:
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: crowdsec-envoy-bouncer
+          port: 8080

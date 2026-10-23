@@ -1,0 +1,113 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: crowdsec
+  namespace: crowdsec
+spec:
+  interval: 1h
+  timeout: 10m
+  # The chart hardcodes these init-container resources outside its values.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              labelSelector: k8s-app=crowdsec,type in (agent,appsec)
+            patch: |-
+              - op: replace
+                path: /spec/template/spec/initContainers/0/resources/requests/memory
+                value: 50Mi
+  chart:
+    spec:
+      chart: crowdsec
+      version: 0.24.2
+      sourceRef:
+        kind: HelmRepository
+        name: crowdsec
+        namespace: flux-system
+  values:
+    container_runtime: containerd
+
+    config:
+      config.yaml.local: |
+        api:
+          client:
+            unregister_on_exit: true
+          server:
+            auto_registration:
+              enabled: true
+              token: "${REGISTRATION_TOKEN}"
+              allowed_ranges:
+                - "127.0.0.1/32"
+                - "10.0.0.0/8"
+        db_config:
+          flush:
+            agents_autodelete:
+              login_password: 6h
+              cert: 6h
+
+    lapi:
+      # One replica with persistent SQLite state for these single-node clusters.
+      replicas: 1
+      persistentVolume:
+        data:
+          enabled: true
+          storageClassName: topolvm-provisioner-thin
+          size: 1Gi
+        config:
+          enabled: true
+          storageClassName: topolvm-provisioner-thin
+          size: 100Mi
+      env:
+        - name: BOUNCER_KEY_envoy
+          valueFrom:
+            secretKeyRef:
+              name: crowdsec-keys
+              key: BOUNCER_KEY_envoy
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          cpu: null
+          memory: 256Mi
+
+    agent:
+      acquisition:
+        - namespace: envoy-gateway-system
+          podName: envoy-envoy-gateway-system-reverse-proxy-*
+          program: envoy
+          poll_without_inotify: true
+      env:
+        - name: COLLECTIONS
+          value: yanis-kouidri/envoy
+      resources:
+        requests:
+          cpu: 50m
+          memory: 256Mi
+        limits:
+          cpu: null
+          memory: 256Mi
+
+    appsec:
+      enabled: true
+      acquisitions:
+        - source: appsec
+          listen_addr: 0.0.0.0:7422
+          path: /
+          appsec_configs:
+            - crowdsecurity/appsec-default
+          labels:
+            type: appsec
+      env:
+        - name: COLLECTIONS
+          value: crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: null
+          memory: 512Mi

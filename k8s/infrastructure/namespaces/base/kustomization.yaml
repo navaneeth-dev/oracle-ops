@@ -13,3 +13,4 @@ resources:
   - volsync.yaml
   - kube-system.yaml
   - kro-system.yaml
+  - crowdsec.yaml
