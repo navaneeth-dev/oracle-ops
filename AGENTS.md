@@ -3,6 +3,16 @@
 Always use Conventional Commits for commit messages, including amended commits
 (for example, `fix(cpu): right-size workload reservations`).
 
+# Shared cluster application configuration
+
+Oracle and Oracle-dev should run the same applications and normal application
+configuration through the shared base. Put shared software, HelmRelease values,
+and application storage integrations in base instead of duplicating them or
+introducing different behavior in cluster overlays. Keep overlays limited to
+settings that must differ between clusters. Running different application
+software is an exception reserved for rare, explicitly intended testing; do not
+introduce dev-only application differences by default.
+
 # Kubernetes resource sizing
 
 - **Memory:** Set request equal to limit, sized from historical peaks plus
