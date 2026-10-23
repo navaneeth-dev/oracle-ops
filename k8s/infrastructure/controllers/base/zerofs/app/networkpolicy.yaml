@@ -24,10 +24,3 @@ spec:
     - podSelector:
         matchLabels:
           app: zerofs-csi-controller
-  - ports:
-    - port: 9000
-      protocol: TCP
-    from:
-    - podSelector:
-        matchLabels:
-          app: zerofs-gateway

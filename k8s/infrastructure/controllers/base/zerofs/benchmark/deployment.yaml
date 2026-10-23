@@ -78,7 +78,7 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: zerofs-benchmark
+          claimName: zerofs-benchmark-data
       - name: script
         configMap:
           name: zerofs-benchmark

@@ -4,16 +4,16 @@ metadata:
   name: zerofs-csi-admin
   namespace: zerofs
 stringData:
-  adminEndpoint: http://zerofs-gateway-a.zerofs.svc:7000,http://zerofs-gateway-b.zerofs.svc:7000
+  adminEndpoint: http://zerofs-gateway-a.zerofs.svc:7000
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: zerofs-test
+  name: zerofs
 provisioner: csi.zerofs.net
 parameters:
-  adminEndpoint: http://zerofs-gateway-a.zerofs.svc:7000,http://zerofs-gateway-b.zerofs.svc:7000
-  gateway: zerofs-gateway-a.zerofs.svc:5564,zerofs-gateway-b.zerofs.svc:5564
+  adminEndpoint: http://zerofs-gateway-a.zerofs.svc:7000
+  gateway: zerofs-gateway-a.zerofs.svc:5564
   volumesRoot: /volumes
   csi.storage.k8s.io/provisioner-secret-name: zerofs-csi-admin
   csi.storage.k8s.io/provisioner-secret-namespace: zerofs

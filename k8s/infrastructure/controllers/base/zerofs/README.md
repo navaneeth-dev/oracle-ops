@@ -13,16 +13,16 @@ Do not drain/reboot the node or restart Emby for this trial.
   upload integration, encrypted with the repository's SOPS recipient. It has a
   separate generated ZeroFS password. Keep that encrypted password to reopen data.
   Sonarr's upload hook and Discord webhook are not enabled or copied.
-- Two gateways, each with an **8 GiB TopoLVM cache PVC**, **6 decimal GB disk cache**,
+- One standalone gateway with an **8 GiB TopoLVM cache PVC**, **6 decimal GB disk cache**,
   and **0.5 decimal GB memory cache**. No VolSync or backup component is used.
 - The cache budget includes metadata and file data. A 20 GiB file need not fit
   locally. Reads outside cache fetch object data from OVH.
 - Initial physical thin-pool measurement: 160,897,695,744 bytes, 75.77% used,
-  approximately 36.3 GiB free. Filling both 8 GiB claims leaves about 20.3 GiB
+  approximately 36.3 GiB free. Filling one 8 GiB claim leaves about 28.3 GiB
   of physical headroom, before other workloads grow. Thin PVC capacity is not
   a measurement of physical free space.
-- Gateway CPU request: 250m each; CPU limit: 500m each. Memory request and
-  limit: 2Gi each, based on observed usage around 1.0–1.4 GiB plus headroom. These are bounded **trial values**, not upstream sizing
+- Gateway CPU request: 250m; CPU limit: 500m. Memory request and
+  limit: 2Gi, based on observed usage around 1.0–1.4 GiB plus headroom. These are bounded **trial values**, not upstream sizing
   recommendations. Check throttling and memory before selecting production values.
   The manual benchmark used temporary 25m gateway requests to fit the current
   scheduler budget; limits remained 500m/2Gi. Roll out the preceding CPU-sizing
@@ -30,11 +30,12 @@ Do not drain/reboot the node or restart Emby for this trial.
   equal limits (64Mi per small sidecar, 256Mi for the node plugin), as required by
   the repository resource-sizing policy. These memory ceilings include headroom
   over the trial observations; reassess the node plugin when adding many mounts.
-- `zerofs-test` is a non-default RWX StorageClass with `Retain`. PVC capacity is
+- `zerofs` is a non-default RWX StorageClass with `Retain`. PVC capacity is
   descriptive: CSI does not enforce per-PVC quotas. The gateway's filesystem-wide
   `max_size_gb = 200.0` caps logical usage at 200 decimal GB (about 186.3 GiB).
-- Both gateways are on the same physical node. The pair tests gateway failover;
-  it does not protect against loss of this node.
+- A single gateway matches the single-node cluster. Kubernetes restarts it after
+  failure; filesystem access pauses during recovery. There is no gateway failover.
+  The original benchmark results describe the former two-gateway configuration.
 
 CSI gateway/node images are pinned to the published v2.3.5 image digests
 (source revision `4283dadfd2c6053d7d7ea04742f0d8465065f596`). Manifests were adapted
@@ -60,8 +61,8 @@ mise exec -- kubectl apply -k "$zerofs_dir/benchmark"
 mise exec -- kubectl rollout status -n zerofs deployment/zerofs-benchmark --timeout=120s
 ```
 
-Gateways restrict ingress with NetworkPolicy: 9P from the CSI node plugin, admin
-RPC from the CSI controller, replication between gateways. No public route exists.
+The gateway restricts ingress with NetworkPolicy: 9P from the CSI node plugin and
+admin RPC from the CSI controller. There is no replication listener or public route.
 
 ## Temporary fio benchmark
 
@@ -116,12 +117,39 @@ from an active ZeroFS volume.
 
 ## End goal: GitOps
 
-Push only when ready. Flux will manage the CSI driver, gateway pair, cache claims,
+Push only when ready. Flux will manage the CSI driver, standalone gateway, cache claim,
 non-default StorageClass, and encrypted credentials through `zerofs/ks.yaml`.
-The cache claims are native StatefulSet claims, without VolSync. Temporary test
+The cache claim is a native StatefulSet claim, without VolSync. Temporary test
 pods remain manual. After benchmarks, add a shared media PVC and mount it into the
 chosen arr apps in a separate change. Keep app config/SQLite databases on local
 storage and validate hardlinks before changing any production download paths.
 
 References: https://www.zerofs.net/docs/kubernetes-csi,
 https://www.zerofs.net/docs/caching, https://www.zerofs.net/docs/configuration.
+
+## Retiring the previously applied standby
+
+This commit changes the desired configuration only. The former gateway was applied
+manually and `zerofs/ks.yaml` has `prune: false`; removing it from YAML does not stop
+that live pod. During a deliberate rollout:
+
+1. Confirm no workloads are currently using ZeroFS mounts. Keep Emby and the node
+   untouched. Existing arr apps have not yet been mounted on this filesystem.
+2. Scale `zerofs-gateway-b` to zero before restarting the retained leader. Do not
+   leave the old HA-configured standby running against a standalone leader.
+3. Apply the retained leader configuration and single-endpoint admin Secret. The
+   readiness probe now checks 9P, since port 9000 is no longer used.
+4. StorageClass parameters are immutable. Apply the new permanent `zerofs`
+   StorageClass from this commit; it has only the retained gateway. Do not try
+   to patch the previously applied class in place. Existing PV volumeAttributes also retain
+   their old endpoint list and are not rewritten by a new StorageClass.
+5. Validate mounts and recheck data before deleting the retired StatefulSet,
+   Service, ConfigMap, and finally `cache-zerofs-gateway-b-0`. Only that cache PVC
+   is disposable; preserve the leader cache, data PVC/PV, encryption Secret, and
+   object-store data. Until the old cache claim is deleted, its local disk space
+   remains allocated. No arr data migration or object-prefix rename is included
+   in this topology change.
+
+The manual benchmark now uses a fresh `zerofs-benchmark-data` claim on `zerofs`.
+The previous benchmark claim and its historical data are retained; changing the
+StorageClass field of an already bound PVC is not supported.
