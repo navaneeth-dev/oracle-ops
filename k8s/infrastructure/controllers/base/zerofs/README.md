@@ -9,14 +9,16 @@ Emby is unchanged; do not drain/reboot the node or restart Emby for storage chec
 - Backends: production `s3://rizexor-media/zerofs`, dev
   `s3://rizexor-media/zerofs-dev`, OVH Mumbai (`ap-south-mum`). Each controller overlay
   sets `spec.postBuild.substitute.ZEROFS_STORAGE_URL` on the `zerofs` Flux
-  Kustomization. Flux writes this value directly into the gateway and initializer
-  environment variables, so changing it triggers a pod rollout. There is no base
-  backend default; the initializer refuses to start with a missing backend. The gateway and cache
-  initializer read the same selected backend. Before startup, the initializer clears
-  local `bucket_*` cache directories if the backend marker is absent or changed;
-  restarts on the same backend retain the cache. Historical
-  benchmarks used the separate `zerofs-test` prefix, retained without migration. This is
-  ZeroFS's internal object format, separate from existing media object keys.
+  Kustomization. Flux writes this value directly into the gateway environment,
+  so changing it triggers a pod rollout. There is no base backend default; each
+  overlay must supply its URL. ZeroFS isolates local caches using a filesystem UUID
+  stored in `.zerofs_bucket_id` at the backend database path. Each filesystem uses
+  its own `bucket_<id>` directory under the cache root. Backend changes therefore
+  do not need a custom cache initializer. Orphaned cache directories are not
+  automatically removed; reclaim their disk space manually with the gateway
+  stopped if needed. Historical benchmarks used the separate `zerofs-test` prefix,
+  retained without migration. This is ZeroFS's internal object format, separate
+  from existing media object keys.
 - `secret-ovh.yaml` reuses the endpoint/access key/secret key from Sonarr's disabled
   upload integration, encrypted with the repository's SOPS recipient. It has a
   separate generated ZeroFS password. Keep that encrypted password to reopen data.
@@ -118,8 +120,8 @@ Kubernetes objects does not remove that data or stop storage charges. Existing
 volumes do not migrate when a gateway's backend changes.
 
 Never delete cache files from a running gateway or remove internal S3 objects
-manually from an active ZeroFS filesystem. The initializer handles local cache
-cleanup before gateway startup when the selected backend changes.
+manually from an active ZeroFS filesystem. Ordinary restarts reuse the current
+filesystem's cache; no custom startup cleanup runs.
 
 References: https://www.zerofs.net/docs/kubernetes-csi,
 https://www.zerofs.net/docs/caching, https://www.zerofs.net/docs/configuration.
@@ -130,9 +132,9 @@ Reuse the shared controller base and arr-stack base. In the new controller
 overlay, patch the `zerofs` Flux Kustomization's
 `spec.postBuild.substitute.ZEROFS_STORAGE_URL` to a unique S3 prefix, for example
 `s3://rizexor-media/zerofs-staging`. Copy the small prod/dev overlay patch, changing
-only that URL. Never share a prefix between independent cluster writers. Both the
-gateway and cache initializer receive this one value; do not add a second backend
-setting or rollout annotation.
+only that URL. Never share a prefix between independent cluster writers. The
+gateway receives this one value; do not add a second backend setting or rollout
+annotation.
 
 Provision the cluster's SOPS decryption access, ZeroFS storage credentials and
 persistent encryption password. A shared encrypted Secret is currently used;

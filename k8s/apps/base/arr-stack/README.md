@@ -27,12 +27,11 @@ These are independent filesystems with separate 200 GB quotas and local caches.
 On the initial production deployment, the gateway switches from the historical benchmark prefix
 `rizexor-media/zerofs-test` to `rizexor-media/zerofs`, using the same OVH Secret and
 ZeroFS encryption password. This opens a fresh filesystem; it does not migrate
-old benchmark data. Before the gateway starts, its init container clears local
-`bucket_*` cache directories when the backend marker is absent or differs from the
-selected backend, then records that backend. Restarts on the same backend preserve
-the cache. Historical S3 objects remain; the unused production benchmark claims
-and PV objects have been deleted. Do not switch an active media filesystem's prefix
-later: cache cleanup does not migrate its data or existing volumes.
+old benchmark data. ZeroFS uses separate local cache directories for each
+filesystem UUID, so switching to a fresh backend does not reuse the old cache.
+There is no custom cache cleanup on startup. Historical S3 objects remain; the
+unused production benchmark claims and PV objects have been deleted. Do not switch
+an active media filesystem's prefix later: existing data and volumes do not migrate.
 
 After deploying the manifests through Flux, perform these one-time operations
 with direct `kubectl exec` commands and the application UIs/APIs. Run production
