@@ -1,4 +1,8 @@
 creation_rules:
+  # Talos ExtensionServiceConfig: only the environment holds secrets.
+  - path_regex: clusters/.*/talos/multidoc/tailscale\.sops\.yaml$
+    encrypted_regex: ^environment$
+    age: age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252
   - path_regex: .*.yaml
     encrypted_regex: ^(data|stringData)$
     age: age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252

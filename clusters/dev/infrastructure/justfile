@@ -2,7 +2,9 @@ set shell := ["bash", "-c"]
 
 talos_version := "1.12.0"
 arch := "arm64"
-image_url := "https://factory.talos.dev/image/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba/v" + talos_version + "/oracle-" + arch + ".qcow2"
+# Same Image Factory schematic as the installer used by Taskfile.yml.
+schematic_id := `curl -fsS --retry 3 -X POST --data-binary @../../../talos-schematic.yaml https://factory.talos.dev/schematics | jq -er .id`
+image_url := "https://factory.talos.dev/image/" + schematic_id + "/v" + talos_version + "/oracle-" + arch + ".qcow2"
 
 all: prepare-image tf-init tf-apply
 

@@ -1,0 +1,7 @@
+# Talos Image Factory schematic shared by every cluster. The Taskfile and the
+# dev image download post this file to the factory to get its ID; edit it to
+# change system extensions.
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/tailscale

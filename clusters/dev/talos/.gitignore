@@ -4,3 +4,4 @@ worker.yaml
 talosconfig
 .cilium.yaml
 kubeconfig
+tailscale.yaml

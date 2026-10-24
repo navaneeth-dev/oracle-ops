@@ -2,7 +2,8 @@ version: '3'
 
 # Base tasks - all variables provided by overlay files (dev/prod)
 vars:
-  TALOS_INSTALLER_BASE_URL: 'factory.talos.dev/oracle-installer/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba'
+  # Image Factory schematic (system extensions) shared by every cluster.
+  TALOS_SCHEMATIC_FILE: '{{.TASKFILE_DIR}}/talos-schematic.yaml'
 
 tasks:
   bootstrap-flux:
@@ -32,14 +33,20 @@ tasks:
 
   genconfig:
     desc: Generate Talos configuration
+    vars:
+      # Content-addressed: the factory returns the same ID for the same file.
+      TALOS_SCHEMATIC_ID:
+        sh: curl -fsS --retry 3 -X POST --data-binary @{{.TALOS_SCHEMATIC_FILE}} https://factory.talos.dev/schematics | jq -er .id
+      TALOS_INSTALLER_IMAGE: 'factory.talos.dev/oracle-installer/{{.TALOS_SCHEMATIC_ID}}:{{.TALOS_VERSION}}'
     cmds:
       - sops -d secrets.sops.yaml > secrets.yaml
+      - '{{if .TAILSCALE_HOSTNAME}}sops -d multidoc/tailscale.sops.yaml > tailscale.yaml{{else}}true{{end}}'
       - |
         talosctl gen config $TF_VAR_cluster_name https://{{.LB_IP}}:6443 \
           --with-secrets secrets.yaml \
           --kubernetes-version {{.KUBERNETES_VERSION}} \
           --talos-version {{.TALOS_VERSION}} \
-          --install-image {{.TALOS_INSTALLER_BASE_URL}}:{{.TALOS_VERSION}} \
+          --install-image {{.TALOS_INSTALLER_IMAGE}} \
           --config-patch @patches/cert-approver.yaml \
           --config-patch @patches/oracle-ntp.yaml \
           --config-patch @patches/hostdns.yaml \
@@ -48,9 +55,10 @@ tasks:
           --config-patch @patches/cilium.yaml \
           --config-patch @multidoc/volume.yaml \
           --config-patch-control-plane @patches/monitoring.yaml \
+          {{if .TAILSCALE_HOSTNAME}}--config-patch @tailscale.yaml --additional-sans {{.TAILSCALE_HOSTNAME}}{{end}} \
           --additional-sans {{.LB_IP}} --force
       - talosctl config endpoint {{.LB_IP}}
-      - rm secrets.yaml
+      - rm -f secrets.yaml tailscale.yaml
 
   reboot:
     desc: Reboot Talos node
@@ -70,8 +78,13 @@ tasks:
 
   upgrade:
     desc: Upgrade Talos cluster
+    vars:
+      # Content-addressed: the factory returns the same ID for the same file.
+      TALOS_SCHEMATIC_ID:
+        sh: curl -fsS --retry 3 -X POST --data-binary @{{.TALOS_SCHEMATIC_FILE}} https://factory.talos.dev/schematics | jq -er .id
+      TALOS_INSTALLER_IMAGE: 'factory.talos.dev/oracle-installer/{{.TALOS_SCHEMATIC_ID}}:{{.TALOS_VERSION}}'
     cmds:
-      - talosctl -n {{.NODE_IP}} upgrade --image {{.TALOS_INSTALLER_BASE_URL}}:{{.TALOS_VERSION}} --debug
+      - talosctl -n {{.NODE_IP}} upgrade --image {{.TALOS_INSTALLER_IMAGE}} --debug
 
   upgrade-k8s:
     desc: Upgrade Talos cluster

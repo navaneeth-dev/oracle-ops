@@ -3,3 +3,4 @@ controlplane.yaml
 worker.yaml
 talosconfig
 kubeconfig
+tailscale.yaml
