@@ -32,8 +32,9 @@ dev cluster to test.
 
 ## Security
 
-Only Network Load Balancers have a public IP, all Talos nodes have only Private
-IPs and can be ONLY accessed via OCI Bastion.
+The prod Talos node has an ephemeral public IP and shares a public subnet with
+both Network Load Balancers. See [docs/bastion.md](docs/bastion.md) for why
+OCI Bastion is not used for API access.
 
 ## Updates
 
