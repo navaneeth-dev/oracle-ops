@@ -20,6 +20,12 @@ user-facing service is added, renamed or removed, update its Instatus monitor
 and component in the same change, and tell the user if you cannot do it
 yourself. Keep the README's overview and tech stack logos in sync as well.
 
+Before any operation that causes downtime, such as a Talos upgrade, node
+reboot or prod network change, schedule an Instatus maintenance covering the
+affected components and the expected window, and complete it once services
+are verified healthy. If you cannot create it yourself, ask the user to do it
+and wait for confirmation before starting.
+
 # Documentation
 
 Keep the README a high-level overview. Put details under `docs/`: removed
