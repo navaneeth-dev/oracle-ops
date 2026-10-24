@@ -13,6 +13,19 @@ settings that must differ between clusters. Running different application
 software is an exception reserved for rare, explicitly intended testing; do not
 introduce dev-only application differences by default.
 
+# Status page and README
+
+The public status page is Instatus at https://rizexor.instatus.com. When a
+user-facing service is added, renamed or removed, update its Instatus monitor
+and component in the same change, and tell the user if you cannot do it
+yourself. Keep the README's overview and tech stack logos in sync as well.
+
+# Documentation
+
+Keep the README a high-level overview. Put details under `docs/`: removed
+experiments and why they failed in `docs/experiments/`, earlier homelab
+editions in `docs/previous-setups/`, and runbooks in `docs/operations/`.
+
 # Kubernetes resource sizing
 
 - **Memory:** Set request equal to limit, sized from historical peaks plus
