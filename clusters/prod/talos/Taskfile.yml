@@ -6,5 +6,5 @@ includes:
     dir: .
     vars:
       KUBERNETES_VERSION: "1.35.5"
-      TALOS_VERSION: "v1.12.9"
+      TALOS_VERSION: "v1.13.12"
       NODE_IP: "10.0.0.11"

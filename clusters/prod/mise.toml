@@ -6,3 +6,4 @@ TF_VAR_cluster_name = "oracle-hyd-cluster"
 
 [tools]
 kubectl = "1.35.5"
+talosctl = "v1.13.12"
