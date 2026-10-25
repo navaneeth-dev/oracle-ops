@@ -63,7 +63,8 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 
 ## Security
 
-The prod Talos node has an ephemeral public IP and shares a public subnet with
-both Network Load Balancers. The Talos and Kubernetes APIs are reachable at the
-node private IP `10.0.0.11`, which the Talos `siderolabs/tailscale` system
-extension advertises as a Tailscale subnet route.
+The Talos and Kubernetes APIs are not exposed to the internet. They are reachable
+at the node private IP `10.0.0.11`, which the Talos `siderolabs/tailscale` system
+extension advertises as a Tailscale subnet route. Only the gateway Network Load
+Balancer (HTTP/HTTPS) is public. See
+[break-glass access](docs/operations/break-glass-access.md) if Tailscale fails.
