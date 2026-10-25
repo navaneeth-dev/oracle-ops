@@ -115,4 +115,9 @@ tasks:
           --set cgroup.autoMount.enabled=false \
           --set cgroup.hostRoot=/sys/fs/cgroup \
           --set envoy.enabled=false \
+          --set hubble.enabled=true \
+          --set hubble.relay.enabled=true \
+          --set hubble.relay.resources.requests.cpu=100m \
+          --set hubble.relay.resources.requests.memory=256Mi \
+          --set hubble.relay.resources.limits.memory=256Mi \
           --set operator.replicas=1 > .cilium.yaml
