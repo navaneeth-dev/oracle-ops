@@ -40,9 +40,9 @@ tasks:
       TALOS_INSTALLER_IMAGE: 'factory.talos.dev/oracle-installer/{{.TALOS_SCHEMATIC_ID}}:{{.TALOS_VERSION}}'
     cmds:
       - sops -d secrets.sops.yaml > secrets.yaml
-      - '{{if .TAILSCALE_HOSTNAME}}sops -d multidoc/tailscale.sops.yaml > tailscale.yaml{{else}}true{{end}}'
+      - sops -d multidoc/tailscale.sops.yaml > tailscale.yaml
       - |
-        talosctl gen config $TF_VAR_cluster_name https://{{.LB_IP}}:6443 \
+        talosctl gen config $TF_VAR_cluster_name https://{{.NODE_IP}}:6443 \
           --with-secrets secrets.yaml \
           --kubernetes-version {{.KUBERNETES_VERSION}} \
           --talos-version {{.TALOS_VERSION}} \
@@ -55,10 +55,11 @@ tasks:
           --config-patch @patches/cilium.yaml \
           --config-patch @multidoc/volume.yaml \
           --config-patch-control-plane @patches/monitoring.yaml \
-          {{if .TAILSCALE_HOSTNAME}}--config-patch @tailscale.yaml --additional-sans {{.TAILSCALE_HOSTNAME}}{{end}} \
+          --config-patch @tailscale.yaml \
           --additional-sans {{.LB_IP}} --force
-      # Admin access goes over Tailscale when the cluster has it.
-      - talosctl config endpoint {{.TAILSCALE_HOSTNAME | default .LB_IP}}
+      # The node's private IP serves the node itself and admins, who reach it
+      # through the Tailscale subnet route the node advertises.
+      - talosctl config endpoint {{.NODE_IP}}
       - talosctl config node {{.NODE_IP}}
       - rm -f secrets.yaml tailscale.yaml
 
@@ -76,7 +77,7 @@ tasks:
   bootstrap:
     desc: Bootstrap Talos cluster
     cmds:
-      - talosctl bootstrap -n {{.LB_IP}} -e {{.LB_IP}}
+      - talosctl bootstrap -n {{.NODE_IP}}
 
   upgrade:
     desc: Upgrade Talos cluster
@@ -97,7 +98,6 @@ tasks:
     desc: Get kubeconfig
     cmds:
       - talosctl kubeconfig ./kubeconfig --nodes {{.NODE_IP}} --merge=false --force
-      - '{{if .TAILSCALE_HOSTNAME}}kubectl --kubeconfig ./kubeconfig config set-cluster $TF_VAR_cluster_name --server https://{{.TAILSCALE_HOSTNAME}}:6443{{else}}true{{end}}'
 
   cilium-install:
     desc: Generate Cilium installation manifest (for documentation)

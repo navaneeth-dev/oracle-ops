@@ -12,5 +12,3 @@ includes:
         sh: terraform -chdir=../infrastructure/ output -raw nlb_public_ip
       CP1_IP:
         sh: terraform -chdir=../infrastructure/ output -raw instance_public_ip
-      # Tailscale MagicDNS name, added to the Talos and Kubernetes API certSANs.
-      TAILSCALE_HOSTNAME: 'oracle-dev.tail64b5f.ts.net'

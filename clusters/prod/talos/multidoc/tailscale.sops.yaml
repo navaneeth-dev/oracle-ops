@@ -6,6 +6,7 @@ environment:
     - ENC[AES256_GCM,data:Pj2nls5g+rQIN8fi0zp8FzHr9i9wOgLM8ThRn6dsuCp9hEu8LyV0IA==,iv:EmOULLyaf+M2PEy6p8lWKy9fNoCInxQDqopJqxlsRTc=,tag:Rq69xyEOvSVBkxu4sFbuBA==,type:str]
     - ENC[AES256_GCM,data:S0rFt8jXc2sBmkk3jIDeOplO6rrao8w=,iv:Csg0F03SahmWnPPdgLzqMOeIp/oUes8w2FDJa58bpT0=,tag:YRao5VZRDBspMG5eUHY6sg==,type:str]
     - ENC[AES256_GCM,data:ERtDqD+u82u/NvmniPaeO08=,iv:ormDIYpMY71Qf0HV2drWHNN/ZJYnRio4aF6N0oqWF/4=,tag:70U/icvZYwkrOeroa2/1Rw==,type:str]
+    - ENC[AES256_GCM,data:sxQ+LTILP/cRE/S0x/OvDDgLwu/OnA==,iv:WMqTanHdm/2v1fgMN7WryWHVcFOeNY4ZFWFtzAIAHk0=,tag:ZapSltzoJE4EndqgZtrjhA==,type:str]
 sops:
     age:
         - enc: |
@@ -18,6 +19,6 @@ sops:
             -----END AGE ENCRYPTED FILE-----
           recipient: age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252
     encrypted_regex: ^environment$
-    lastmodified: "2026-10-24T13:43:22Z"
-    mac: ENC[AES256_GCM,data:kqwDs9CiSKS3ZjifuzwOiH6hK2w+5/1uuATWFXAt5eFVFiCC1I6hrJnh9GMf/0ku7WaZbNkM/fBgp3jDHGY/L+iV2DBWyI4RoB3DIzI/QAwr2Zrmbs54xXnInQmLFpPbCpbbfkCrtQzdKWKm8DyTmZIULx0AkxamHEOAvAMCrNM=,iv:ZhovPCjbkq8GOG71oc8hqzhSPmf11yTaSueERh/IPH0=,tag:gizIZ4wfG/ebt6Gwsc+rGw==,type:str]
+    lastmodified: "2026-10-25T06:15:27Z"
+    mac: ENC[AES256_GCM,data:o4HOmLgfzXwBXS5l7J8W4Y+pyZqMQcoE+DNtrnLFudiQOuF+OMT3Zi05+MtEaZP+mQ3P9csfgPnsXXI2Uz/u0P5WDtyfKv+qABGzEGZIzzlnfjP10A5I34hGCHsjP0VjK6RwyZhEeqH8LFR4dTK3/vOEjW0vDGAieEv6EOfUCGs=,iv:MkDRt/x++oaUbuoPgwM/yPDizQpx4h0P7PWcPEw7TIg=,tag:blbB8q+Wuyz054mH+6PhLw==,type:str]
     version: 3.13.3
