@@ -57,7 +57,9 @@ tasks:
           --config-patch-control-plane @patches/monitoring.yaml \
           {{if .TAILSCALE_HOSTNAME}}--config-patch @tailscale.yaml --additional-sans {{.TAILSCALE_HOSTNAME}}{{end}} \
           --additional-sans {{.LB_IP}} --force
-      - talosctl config endpoint {{.LB_IP}}
+      # Admin access goes over Tailscale when the cluster has it.
+      - talosctl config endpoint {{.TAILSCALE_HOSTNAME | default .LB_IP}}
+      - talosctl config node {{.NODE_IP}}
       - rm -f secrets.yaml tailscale.yaml
 
   reboot:
@@ -68,7 +70,7 @@ tasks:
   applyconfig:
     desc: Apply Talos configuration
     cmds:
-      - talosctl apply-config -f controlplane.yaml -n {{.NODE_IP}} -e {{.LB_IP}}
+      - talosctl apply-config -f controlplane.yaml -n {{.NODE_IP}}
       - rm controlplane.yaml worker.yaml
 
   bootstrap:
@@ -94,8 +96,8 @@ tasks:
   kubeconfig:
     desc: Get kubeconfig
     cmds:
-      - echo {{.NODE_IP}} {{.LB_IP}}
-      - talosctl kubeconfig ./kubeconfig --nodes {{.NODE_IP}}
+      - talosctl kubeconfig ./kubeconfig --nodes {{.NODE_IP}} --merge=false --force
+      - '{{if .TAILSCALE_HOSTNAME}}kubectl --kubeconfig ./kubeconfig config set-cluster $TF_VAR_cluster_name --server https://{{.TAILSCALE_HOSTNAME}}:6443{{else}}true{{end}}'
 
   cilium-install:
     desc: Generate Cilium installation manifest (for documentation)
