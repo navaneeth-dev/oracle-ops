@@ -56,8 +56,7 @@ tasks:
           --config-patch @multidoc/volume.yaml \
           --config-patch-control-plane @patches/monitoring.yaml \
           --config-patch-control-plane @patches/service-account-issuer.yaml \
-          --config-patch @tailscale.yaml \
-          --additional-sans {{.LB_IP}} --force
+          --config-patch @tailscale.yaml --force
       # The node's private IP serves the node itself and admins, who reach it
       # through the Tailscale subnet route the node advertises.
       - talosctl config endpoint {{.NODE_IP}}

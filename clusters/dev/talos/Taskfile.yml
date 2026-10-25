@@ -8,7 +8,3 @@ includes:
       KUBERNETES_VERSION: '1.35.0'
       TALOS_VERSION: '1.12.0'
       NODE_IP: '10.0.0.11'
-      LB_IP:
-        sh: terraform -chdir=../infrastructure/ output -raw nlb_public_ip
-      CP1_IP:
-        sh: terraform -chdir=../infrastructure/ output -raw instance_public_ip
