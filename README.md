@@ -7,6 +7,8 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 [![Status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Frizexor.instatus.com%2Fsummary.json&query=%24.page.status&label=status)](https://rizexor.instatus.com)
 [![Uptime](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Frizexor.instatus.com&search=%28%5B0-9.%5D%2B%25%29%20uptime&replace=%241&label=uptime%20%2830d%29)](https://rizexor.instatus.com)
 
+[Start page](https://start.oci.fossindia.ovh) · [Status page](https://rizexor.instatus.com)
+
 </div>
 
 ## Overview
@@ -21,7 +23,7 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
   restic backups.
 - **Observability:** VictoriaMetrics, Grafana and Fluent Bit. Public status at
   [rizexor.instatus.com](https://rizexor.instatus.com).
-- **Apps:** Jellyfin, Emby, Audiobookshelf, the arr stack, Seerr, Homepage and
+- **Apps:** Jellyfin, Emby, Audiobookshelf, the arr stack, Seerr, [Homepage](https://start.oci.fossindia.ovh) and
   LibreSpeed.
 
 ## Tech stack
