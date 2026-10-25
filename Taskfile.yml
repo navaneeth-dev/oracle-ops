@@ -120,4 +120,11 @@ tasks:
           --set hubble.relay.resources.requests.cpu=100m \
           --set hubble.relay.resources.requests.memory=256Mi \
           --set hubble.relay.resources.limits.memory=256Mi \
+          --set hubble.ui.enabled=true \
+          --set hubble.ui.backend.resources.requests.cpu=50m \
+          --set hubble.ui.backend.resources.requests.memory=128Mi \
+          --set hubble.ui.backend.resources.limits.memory=128Mi \
+          --set hubble.ui.frontend.resources.requests.cpu=10m \
+          --set hubble.ui.frontend.resources.requests.memory=64Mi \
+          --set hubble.ui.frontend.resources.limits.memory=64Mi \
           --set operator.replicas=1 > .cilium.yaml

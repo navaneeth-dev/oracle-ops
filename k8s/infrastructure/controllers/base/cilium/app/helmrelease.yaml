@@ -31,6 +31,23 @@ spec:
             memory: 256Mi
           limits:
             memory: 256Mi
+      ui:
+        enabled: true
+        # Initial reservations; tune from observed peaks after deployment.
+        backend:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 128Mi
+        frontend:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 64Mi
     ipam:
       mode: kubernetes
     kubeProxyReplacement: false
