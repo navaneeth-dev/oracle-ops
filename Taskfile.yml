@@ -55,6 +55,7 @@ tasks:
           --config-patch @patches/cilium.yaml \
           --config-patch @multidoc/volume.yaml \
           --config-patch-control-plane @patches/monitoring.yaml \
+          --config-patch-control-plane @patches/service-account-issuer.yaml \
           --config-patch @tailscale.yaml \
           --additional-sans {{.LB_IP}} --force
       # The node's private IP serves the node itself and admins, who reach it

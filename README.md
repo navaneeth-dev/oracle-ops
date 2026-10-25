@@ -66,5 +66,5 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 The prod Talos node has an ephemeral public IP and shares a public subnet with
 both Network Load Balancers. See [OCI Bastion](docs/experiments/oci-bastion.md)
 for why Bastion is not used for API access. The Talos and Kubernetes APIs are
-reachable over Tailscale at `oracle-prod.tail64b5f.ts.net`, through the Talos
-`siderolabs/tailscale` system extension.
+reachable at the node private IP `10.0.0.11`, which the Talos
+`siderolabs/tailscale` system extension advertises as a Tailscale subnet route.
