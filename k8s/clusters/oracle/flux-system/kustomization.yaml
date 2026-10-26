@@ -1,63 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- gotk-components.yaml
-- gotk-sync.yaml
+  - ../../../flux/base
 
-# Keep sizing separate from the generated Flux installation manifest.
 patches:
-- target:
-    kind: Deployment
-    name: helm-controller
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/cpu
-      value: 50m
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/memory
-      value: 256Mi
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/limits/memory
-      value: 256Mi
-
-- target:
-    kind: Deployment
-    name: kustomize-controller
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/cpu
-      value: 50m
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/memory
-      value: 256Mi
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/limits/memory
-      value: 256Mi
-
-- target:
-    kind: Deployment
-    name: notification-controller
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/cpu
-      value: 20m
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/memory
-      value: 96Mi
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/limits/memory
-      value: 96Mi
-
-- target:
-    kind: Deployment
-    name: source-controller
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/cpu
-      value: 20m
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/requests/memory
-      value: 128Mi
-    - op: replace
-      path: /spec/template/spec/containers/0/resources/limits/memory
-      value: 128Mi
+  - target:
+      kind: HelmRelease
+      name: flux-instance
+    patch: |-
+      - op: add
+        path: /spec/values/instance/sync/path
+        value: ./k8s/clusters/oracle

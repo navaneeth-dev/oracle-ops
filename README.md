@@ -14,9 +14,10 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 ## Overview
 
 - **Cluster:** a single Talos Linux control-plane node (Ampere A1) on Oracle
-  Cloud, plus a separate dev cluster for testing changes.
-- **GitOps:** Flux reconciles everything under [`k8s/`](k8s/). Renovate keeps
-  charts and images up to date.
+  Cloud.
+- **GitOps:** Flux reconciles everything under [`k8s/`](k8s/), with
+  [Flux Operator](https://fluxoperator.dev) managing the controller lifecycle.
+  Renovate keeps charts and images up to date.
 - **Ingress:** OCI Network Load Balancer → Envoy Gateway, with CrowdSec WAF on
   every route and authentik for single sign-on.
 - **Storage:** TopoLVM local volumes, CloudNativePG for databases, VolSync

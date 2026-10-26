@@ -1,5 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- gotk-components.yaml
-- gotk-sync.yaml
+  - ../../../flux/base
+
+patches:
+  - target:
+      kind: HelmRelease
+      name: flux-instance
+    patch: |-
+      - op: add
+        path: /spec/values/instance/sync/path
+        value: ./k8s/clusters/rizexor-oracle-dev

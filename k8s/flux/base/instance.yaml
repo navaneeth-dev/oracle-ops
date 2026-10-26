@@ -1,0 +1,120 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: flux-instance
+  namespace: flux-system
+spec:
+  interval: 1h
+  releaseName: flux-instance
+  dependsOn:
+    - name: flux-operator
+  chartRef:
+    kind: OCIRepository
+    name: flux-instance
+  values:
+    instance:
+      distribution:
+        # Keep ownership migration separate from a Flux version upgrade.
+        version: 2.9.6
+        registry: ghcr.io/fluxcd
+      components:
+        - source-controller
+        - kustomize-controller
+        - helm-controller
+        - notification-controller
+        - image-reflector-controller
+        - image-automation-controller
+      cluster:
+        type: kubernetes
+        domain: cluster.local
+        networkPolicy: true
+        multitenant: false
+      sync:
+        kind: GitRepository
+        name: flux-system
+        url: ssh://git@github.com/navaneeth-dev/oracle-ops
+        ref: refs/heads/main
+        pullSecret: flux-system
+        interval: 1m
+      kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: (helm-controller|kustomize-controller)
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: controller
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: manager
+                        resources:
+                          requests:
+                            cpu: 50m
+                            memory: 256Mi
+                          limits:
+                            cpu: null
+                            memory: 256Mi
+          - target:
+              kind: Deployment
+              name: notification-controller
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: controller
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: manager
+                        resources:
+                          requests:
+                            cpu: 20m
+                            memory: 128Mi
+                          limits:
+                            cpu: null
+                            memory: 128Mi
+          - target:
+              kind: Deployment
+              name: source-controller
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: controller
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: manager
+                        resources:
+                          requests:
+                            cpu: 20m
+                            memory: 160Mi
+                          limits:
+                            cpu: null
+                            memory: 160Mi
+          - target:
+              kind: Deployment
+              name: (image-reflector-controller|image-automation-controller)
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: controller
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: manager
+                        resources:
+                          requests:
+                            cpu: 100m
+                            memory: 256Mi
+                          limits:
+                            cpu: null
+                            memory: 256Mi
