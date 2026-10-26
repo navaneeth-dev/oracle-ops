@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - victoria-metrics
   - cert-manager
+  - cilium
   - envoy-gateway-system
   - flux
   - grafana

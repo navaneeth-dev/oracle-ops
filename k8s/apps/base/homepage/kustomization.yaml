@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - configuration.yaml
   - helmrelease.yaml
+  - networkpolicy.yaml

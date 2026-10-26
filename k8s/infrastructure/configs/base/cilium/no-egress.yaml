@@ -1,0 +1,12 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: no-egress
+spec:
+  endpointSelector:
+    matchLabels:
+      netpol.fossindia.ovh/egress: none
+  # Default-deny all new outbound connections, including DNS.
+  # Other allow policies can grant exceptions; this is not an explicit deny.
+  egress:
+    - {}
