@@ -1,0 +1,29 @@
+{{- $fluxDir := "../k8s/infrastructure/controllers/base/flux" -}}
+{{- $operatorSource := readFile (printf "%s/operator-ocirepository.yaml" $fluxDir) | fromYaml -}}
+{{- $instanceSource := readFile (printf "%s/instance-ocirepository.yaml" $fluxDir) | fromYaml -}}
+{{- $operatorRelease := readFile (printf "%s/operator-helmrelease.yaml" $fluxDir) | fromYaml -}}
+{{- $instanceRelease := readFile (printf "%s/instance-helmrelease.yaml" $fluxDir) | fromYaml -}}
+
+helmDefaults:
+  wait: true
+  timeout: 300
+
+releases:
+  - name: flux-operator
+    namespace: flux-system
+    chart: {{ $operatorSource.spec.url }}
+    version: {{ $operatorSource.spec.ref.tag | quote }}
+    values:
+      - {{ $operatorRelease.spec.values | toYaml | nindent 8 }}
+
+  - name: flux-instance
+    namespace: flux-system
+    chart: {{ $instanceSource.spec.url }}
+    version: {{ $instanceSource.spec.ref.tag | quote }}
+    needs:
+      - flux-system/flux-operator
+    values:
+      - {{ $instanceRelease.spec.values | toYaml | nindent 8 }}
+      - instance:
+          sync:
+            path: {{ printf "./k8s/clusters/%s" .Values.clusterPath | quote }}

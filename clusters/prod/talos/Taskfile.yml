@@ -5,6 +5,7 @@ includes:
     taskfile: ../../../Taskfile.yml
     dir: .
     vars:
+      FLUX_CLUSTER_PATH: oracle
       KUBERNETES_VERSION: "1.36.5"
       TALOS_VERSION: "v1.13.12"
       NODE_IP: "10.0.0.11"

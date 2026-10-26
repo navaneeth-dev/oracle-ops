@@ -8,15 +8,8 @@ vars:
 tasks:
   bootstrap-flux:
     desc: Bootstrap Flux Operator and its instance using an existing Git deploy key
-    vars:
-      CLUSTER_PATH:
-        sh: |
-          case "${TF_VAR_cluster_name:-}" in
-            rizexor-oracle-dev) echo rizexor-oracle-dev ;;
-            oracle-hyd-cluster) echo oracle ;;
-            *) echo "Unknown TF_VAR_cluster_name; use the cluster mise environment" >&2; exit 1 ;;
-          esac
-      FLUX_PATH: '{{.TASKFILE_DIR}}/k8s/clusters/{{.CLUSTER_PATH}}/flux-system'
+    requires:
+      vars: [FLUX_CLUSTER_PATH]
     preconditions:
       - sh: kubectl -n flux-system get secret flux-system --request-timeout=10s >/dev/null
         msg: Cannot read flux-system/flux-system; check cluster access and provision the repository SSH deploy key secret first
@@ -25,18 +18,9 @@ tasks:
         kubectl -n flux-system get secret sops-age || kubectl create secret generic sops-age \
           --namespace=flux-system \
           --from-literal=age.agekey="$(infisical secrets get TF_VAR_SOPS_AGEKEY --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 --plain)"
-      - |
-        set -euo pipefail
-        manifests="$(kubectl kustomize "{{.FLUX_PATH}}")"
-        for release in flux-operator flux-instance; do
-          export release
-          chart="$(printf '%s\n' "$manifests" | yq 'select(.kind == "OCIRepository" and .metadata.name == strenv(release)) | .spec.url')"
-          version="$(printf '%s\n' "$manifests" | yq 'select(.kind == "OCIRepository" and .metadata.name == strenv(release)) | .spec.ref.tag')"
-          printf '%s\n' "$manifests" | \
-            yq 'select(.kind == "HelmRelease" and .metadata.name == strenv(release)) | .spec.values' | \
-            helm upgrade --install "$release" "$chart" \
-              --version "$version" --namespace flux-system --values - --wait --timeout 5m
-        done
+      - >-
+        helmfile --file "{{.TASKFILE_DIR}}/bootstrap/helmfile.yaml.gotmpl"
+        --state-values-set clusterPath={{.FLUX_CLUSTER_PATH}} sync --hide-notes
       - kubectl -n flux-system wait fluxinstance/flux --for=condition=Ready --timeout=5m
 
   genconfig:
