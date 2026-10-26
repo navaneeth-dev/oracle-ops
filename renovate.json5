@@ -42,7 +42,23 @@
       ignoreTests: true,
     },
     {
-      description: 'Auto-merge non-major sonarr, radarr, and prowlarr updates',
+      description: 'Auto-merge home-operations digest updates through checked PRs',
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/home-operations/**',
+      ],
+      matchUpdateTypes: [
+        'digest',
+      ],
+      automerge: true,
+      automergeType: 'pr',
+      platformAutomerge: false,
+      ignoreTests: false,
+    },
+    {
+      description: 'Auto-merge stable docker packages after seven days',
       matchDatasources: [
         'docker',
       ],
@@ -50,15 +66,18 @@
         'ghcr.io/home-operations/sonarr',
         'ghcr.io/home-operations/radarr',
         'ghcr.io/home-operations/prowlarr',
+        'ghcr.io/home-operations/qbittorrent',
+        'ghcr.io/advplyr/audiobookshelf',
       ],
       matchUpdateTypes: [
         'minor',
         'patch',
-        'digest',
       ],
+      minimumReleaseAge: '7 days',
       automerge: true,
-      automergeType: 'branch',
-      ignoreTests: true,
+      automergeType: 'pr',
+      platformAutomerge: false,
+      ignoreTests: false,
     },
     {
       description: 'Auto-merge non-major create-github-app-token updates',
