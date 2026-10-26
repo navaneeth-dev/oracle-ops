@@ -12,11 +12,9 @@ spec:
     kind: OCIRepository
     name: flux-instance
   values:
+    commonAnnotations:
+      fluxcd.controlplane.io/reconcileArtifactEvery: 1h
     instance:
-      distribution:
-        # Keep ownership migration separate from a Flux version upgrade.
-        version: 2.9.6
-        registry: ghcr.io/fluxcd
       components:
         - source-controller
         - kustomize-controller

@@ -1,6 +1,5 @@
 version: '3'
 
-# Base tasks - all variables provided by overlay files (dev/prod)
 vars:
   # Image Factory schematic (system extensions) shared by every cluster.
   TALOS_SCHEMATIC_FILE: '{{.TASKFILE_DIR}}/talos-schematic.yaml'
