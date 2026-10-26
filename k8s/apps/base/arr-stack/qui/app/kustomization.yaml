@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: homelab
 resources:
   - helmrelease.yaml
+  - networkpolicy.yaml
   - ocirepository.yaml
   - secret-oidc.yaml
   - vmprobe.yaml

@@ -1,0 +1,50 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: recyclarr
+  namespace: homelab
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: recyclarr
+      app.kubernetes.io/instance: recyclarr
+  # Recyclarr initiates scheduled syncs and has no inbound application service.
+  ingress:
+    - {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+          rules:
+            dns:
+              - matchPattern: "*"
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: sonarr
+            app.kubernetes.io/instance: sonarr
+      toPorts:
+        - ports:
+            - port: "8989"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: radarr
+            app.kubernetes.io/instance: radarr
+      toPorts:
+        - ports:
+            - port: "7878"
+              protocol: TCP
+    # Both official resource providers fetch Git repositories from github.com.
+    - toFQDNs:
+        - matchName: github.com
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP

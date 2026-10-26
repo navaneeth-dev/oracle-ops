@@ -4,3 +4,4 @@ namespace: homelab
 resources:
   - recyclarr-config.yaml
   - helmrelease.yaml
+  - networkpolicy.yaml
