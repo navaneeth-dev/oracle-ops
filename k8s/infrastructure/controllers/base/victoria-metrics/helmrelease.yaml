@@ -16,6 +16,11 @@ spec:
     fullnameOverride: stack
 
     defaultRules:
+      rules:
+        KubeClientCertificateExpiration:
+          spec:
+            # Ignore brief bursts of Talos's temporary client certificates during backups.
+            for: 15m
       groups:
         kubeScheduler:
           create: false
