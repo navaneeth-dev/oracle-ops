@@ -25,16 +25,17 @@ included in those configuration backups; RAID is not a backup.
 - Use a static `hostdzire` PV/PVC with `Retain`, `ReadWriteMany`,
   no dynamic storage class, and mount options `nfsvers=4.2,hard,noatime`.
   The PV's advertised capacity does not enforce a server-side quota.
-- The prepared shared application base mounts the whole claim at `/hostdzire` in
+- The deployed shared application base mounts the whole claim at `/hostdzire` in
   qBittorrent, Radarr, Sonarr, Emby, Jellyfin, Audiobookshelf, and Qui.
   Audiobookshelf's mount is read-only. The existing `/data` claim is retained.
 
-Initial application rollout is pending the GitOps delivery of the prepared
-mounts and subsequent application path settings. The server, export, and
-production PV/PVC are configured; NFS mount, hardlink, and synchronous-write
-checks have passed. The owner explicitly waived Instatus maintenance for this
-initial rollout; the
-repository's normal maintenance policy still applies to future operations.
+The production rollout is active. Flux and all consuming HelmReleases are
+Ready; Jellyfin remains intentionally scaled to zero. New downloads and
+movie/TV library roots use HostDZire; existing torrents and title paths were
+not moved. A real qBittorrent download, a Radarr hardlink import, and an Emby
+HTTP stream were verified using disposable content, then cleaned up. The owner
+explicitly waived Instatus maintenance for this initial rollout; the repository's
+normal maintenance policy still applies to future operations.
 
 ```text
 /hostdzire/
@@ -149,9 +150,51 @@ route qBittorrent traffic around its VPN: the node mounts NFS separately.
    this storage rollout; verify no stale `/nfs-data` path remains from earlier
    experimentation. Add corresponding library paths in Jellyfin and
    Audiobookshelf when those services should index new HostDZire content.
-9. Verify an actual completed download imports as a hardlink and is playable
-   through Emby before calling the integration ready. Do not silently migrate
-   or delete the existing local library or torrent payloads.
+9. Verify a completed qBittorrent download on NFS, an arr hardlink import, and
+   Emby streaming. The initial rollout used separate disposable fixtures for
+   these checks, as described below. Check the first normal automated arr import
+   too; manual import validation does not exercise automatic download matching.
+   Do not silently migrate or delete existing local media or torrent payloads.
+
+### Applied production settings
+
+- qBittorrent default save path: `/hostdzire/torrents`. Categories `movies`,
+  `tv`, and `audiobooks` use the corresponding children of that directory.
+  Its temporary path is `/hostdzire/torrents/temp`; temporary-folder use remains
+  disabled, preserving the previous preference.
+- Automatic torrent management remains enabled for new torrents. It was
+  disabled individually for the three existing torrents before changing paths;
+  their `/data/torrents/...` locations remain unchanged. Re-enable it for those
+  torrents only when intentionally relocating them.
+- Radarr root: `/hostdzire/media/movies` (ID 3); Sonarr root:
+  `/hostdzire/media/tv` (ID 2). Both retain their old `/data` roots and existing
+  title paths, with `copyUsingHardlinks=true`.
+- Seerr's existing Radarr and Sonarr server settings now select these HostDZire
+  roots for new requests. Other Seerr integration settings were left unchanged.
+- Emby's existing Movies and TV shows libraries include the new movie/TV roots
+  alongside their original `/data` paths. The stale `/nfs-data/movies` location
+  was removed. No config or transcode-temp path was relocated.
+- Jellyfin remains disabled. Audiobookshelf has read-only filesystem access;
+  no new Audiobookshelf library was created during this movie/TV rollout.
+
+### Application verification
+
+qBittorrent downloaded the official Debian 13.7 arm64 netinst image
+(735,358,976 bytes, 701.3 MiB) into its new default path in 89 seconds. Its
+SHA-256 matched Debian's published checksum. A hardlink from the completed
+download into `media/` shared the same inode with link count 2. No app restarts
+or OOM events occurred. The torrent and both file links were removed afterward.
+The VPN binding remained `tun0`; no firewall or VPN exception was introduced.
+
+Separately, a generated 120-second video was imported through Radarr's
+`ManualImport` command with copy mode and hardlinks enabled into a disposable,
+unmonitored movie entry on the new root. The source and imported 13,175,575-byte
+file had the same inode and link count 2. Emby indexed the imported file and
+served an authenticated static HTTP range; its first 1 MiB matched the file's
+SHA-256. Emby's decoder also decoded a generated NFS clip successfully.
+The temporary movie entry and generated content were removed and the library
+refreshed. This verifies storage/import/streaming primitives, not a browser
+playback session, Sonarr episode import, or a full automated torrent-to-arr flow.
 
 Production Kubernetes/Talos commands run from `clusters/prod` with mise:
 
@@ -190,7 +233,15 @@ Clean cache reached the cgroup limit and was reclaimed; dirty-page accumulation
 did not kill the pod. This validates the I/O primitive, not actual concurrent
 qBittorrent download throughput. WriteThrough trades throughput for bounded
 dirty data; torrent block sizes/concurrency differ from this fio workload.
-Validate actual downloads after the application mount rollout.
+
+The real Debian download above subsequently completed within the existing
+1 GiB limit, averaging about 7.9 MiB/s including startup. Five-second samples
+observed up to approximately 785 MiB total cgroup usage, including clean file
+cache and validation processes; all `memory.events` OOM counters remained zero.
+A mid-download snapshot had zero dirty bytes and 160 KiB in writeback. Keep
+request=limit **1 GiB** rather than increasing memory without evidence. This
+single-download result is not a concurrency or sustained-throughput guarantee;
+measure working set, dirty data, and OOM/restart counters under normal load.
 
 Restore/verify the setting through qBittorrent's preferences API or Advanced
 settings when restoring its configuration. Keep it in place before moving

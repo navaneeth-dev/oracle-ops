@@ -193,15 +193,45 @@ fsync only at the end and opening with `O_SYNC`.
 qBittorrent's installed libtorrent 2.0.15 Simple pread/pwrite backend maps
 WriteThrough to Linux `O_SYNC`. Its `disk_io_write_mode` has been changed to
 2 (WriteThrough) and confirmed through the API; the 1 GiB request/limit and
-existing download paths are unchanged. Actual torrent block sizes and
+existing torrents' download paths are unchanged. Actual torrent block sizes and
 concurrency differ from fio, so this is not a qBittorrent throughput result.
 See the [HostDZire runbook](hostdzire-storage.md#memory-and-bandwidth).
 
 The measured NFS sequential read rate has headroom over the earlier roughly
 3 MiB/s Emby direct-play stream, but write-tail latency reached seconds and
-single-worker random reads are latency-limited. Simultaneous download/import/
-playback behavior and actual application path settings still require rollout
-validation; local multi-GiB/s disk results do not imply WAN performance.
+single-worker random reads are latency-limited. Local multi-GiB/s disk results
+do not imply WAN performance or establish concurrent streaming capacity.
+
+### Production application validation
+
+After the shared-base mounts reconciled, new qBittorrent download paths,
+Radarr/Sonarr roots, Seerr request roots, and Emby movie/TV library paths were
+configured to use `/hostdzire`. Existing `/data` torrents and title paths were
+preserved. The following independent checks then passed:
+
+| Check | Result |
+| --- | --- |
+| Real qBittorrent download over its existing VPN | Official Debian 13.7 arm64 netinst ISO: 735,358,976 bytes in 89 seconds, about 7.9 MiB/s including startup |
+| Download integrity | SHA-256 `6e93fa1759bd9d4b0fc11e938987de6967ee7de5297dac1be27c3a75cc17024b`, matching Debian's published checksum |
+| qBittorrent memory | Existing 1 GiB limit, WriteThrough enabled; sampled total cgroup use up to about 785 MiB, no OOM events or restarts |
+| Cross-directory link of completed download | Same inode and link count 2 between `torrents/` and `media/` |
+| Actual Radarr import | A generated 120-second, 13,175,575-byte video imported in copy mode with hardlinks enabled; source/destination shared inode 546707 and link count 2 |
+| Emby indexing and HTTP serving | Imported video indexed; authenticated static HTTP range returned 1 MiB with matching SHA-256 |
+| Emby decode | Generated NFS clip decoded successfully with Emby's bundled ffmpeg |
+
+The measured rate includes startup and depends on the torrent's sources and
+VPN path; it is not a maximum-throughput claim. Five-second cgroup samples
+include clean file cache and validation processes, not just qBittorrent RSS;
+a mid-download snapshot showed zero dirty bytes and 160 KiB in writeback.
+This supports retaining the 1 GiB limit with
+WriteThrough, not assuming arbitrary concurrent downloads are safe.
+
+The download and generated media were separate disposable fixtures. Radarr's
+manual import was exercised, not automated torrent matching or Sonarr episode
+import. The HTTP range and decoder checks are not a browser playback session
+or a sustained simultaneous download/playback benchmark. All disposable
+torrents, media, and temporary movie entries were removed. See the
+[runbook](hostdzire-storage.md#application-verification) for the applied settings.
 
 ## Oracle production node — October 2025
 
