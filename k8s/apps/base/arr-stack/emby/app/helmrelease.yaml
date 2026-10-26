@@ -110,6 +110,11 @@ spec:
         globalMounts:
           - path: /data
 
+      hostdzire:
+        existingClaim: hostdzire
+        globalMounts:
+          - path: /hostdzire
+
       tmpfs:
         type: emptyDir
         advancedMounts:

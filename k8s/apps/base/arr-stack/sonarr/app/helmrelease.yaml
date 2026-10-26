@@ -114,6 +114,10 @@ spec:
         existingClaim: data
         globalMounts:
           - path: /data
+      hostdzire:
+        existingClaim: hostdzire
+        globalMounts:
+          - path: /hostdzire
       # scripts:
       #   type: configMap
       #   name: sonarr-ovh-upload-script

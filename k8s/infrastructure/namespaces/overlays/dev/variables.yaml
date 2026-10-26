@@ -6,3 +6,4 @@ metadata:
 data:
   DOMAIN: "fossindia.ovh"
   TZ: "Asia/Kolkata"
+  HOSTDZIRE_EXPORT_PATH: "/srv/nfs-data/oracle-dev"

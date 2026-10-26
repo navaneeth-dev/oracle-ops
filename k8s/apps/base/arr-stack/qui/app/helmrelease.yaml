@@ -127,5 +127,9 @@ spec:
         existingClaim: data
         globalMounts:
           - path: /data
+      hostdzire:
+        existingClaim: hostdzire
+        globalMounts:
+          - path: /hostdzire
       tmp:
         type: emptyDir

@@ -104,6 +104,11 @@ spec:
         globalMounts:
           - path: /data
             readOnly: true
+      hostdzire:
+        existingClaim: hostdzire
+        globalMounts:
+          - path: /hostdzire
+            readOnly: true
       tmpfs:
         type: emptyDir
         globalMounts:
