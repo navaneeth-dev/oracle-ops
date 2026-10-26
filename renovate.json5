@@ -108,11 +108,12 @@
       ignoreTests: true,
     },
     {
-      description: 'Auto-merge non-major yq updates',
+      description: 'Auto-merge non-major Mise updates',
       matchManagers: [
         'mise',
       ],
       matchDepNames: [
+        'terraform',
         'yq',
       ],
       matchUpdateTypes: [
