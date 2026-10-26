@@ -1,0 +1,7 @@
+{
+  "amp.mcpServers": {
+    "grafana": {
+      "command": ".mcp/grafana.sh"
+    }
+  }
+}
