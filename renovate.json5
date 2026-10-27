@@ -176,30 +176,23 @@
       customType: 'regex',
       description: 'Process annotated container image dependencies (repo:tag@digest)',
       managerFilePatterns: [
-        '/\\.yaml(?:\\.j2)?$/',
+        '/\\.yaml$/',
       ],
       matchStrings: [
         '# renovate-image: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+[\\w.-]+:\\s*[^:\\s]+:(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)',
       ],
-      datasourceTemplate: '{{#if datasource}}{{{datasource}}}{{else}}docker{{/if}}',
     },
     {
       customType: 'regex',
+      description: 'Process annotated plain version dependencies (key: version)',
       managerFilePatterns: [
-        '/bootstrap/talos/talenv.yaml/',
+        '/\\.yaml$/',
       ],
       matchStrings: [
-        '# renovate: datasource=(?<datasource>[\\w-]+?) depName=(?<depName>[^\\s]+?)\\s+\\w+: (?<currentValue>.*)\\s',
+        '# renovate-semver: datasource=(?<datasource>\\S+) (?:depName|packageName)=(?<packageName>\\S+)\\s+[\\w.-]+:\\s*"?(?<currentValue>[^"\\s]+)"?',
       ],
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/k8s/infrastructure/configs/victoria-metrics/grafanadatasource-victoria-logs.yaml/"
-      ],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?) packageName=(?<packageName>[^\\s]+?)\\s+\\w+: (?<currentValue>.*)\\s"
-      ],
+      depNameTemplate: '{{{packageName}}}',
+      extractVersionTemplate: '^v?(?<version>.+)$',
     },
   ],
 }
