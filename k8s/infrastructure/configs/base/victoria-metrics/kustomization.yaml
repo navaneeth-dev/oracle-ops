@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - vmrule-blackbox.yaml
   - vmrule-restic.yaml
+  - vmstaticscrape-hostdzire.yaml
   - grafanadatasource-victoria-logs.yaml

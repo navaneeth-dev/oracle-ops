@@ -1,0 +1,15 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMStaticScrape
+metadata:
+  name: hostdzire
+  namespace: observability
+spec:
+  # Reuse the stack's node-exporter alerts and dashboards.
+  jobName: node-exporter
+  targetEndpoints:
+    # prometheus-node-exporter (Ubuntu package) on the HostDZire NFS VPS,
+    # listening only on its Tailscale address.
+    - targets:
+        - 100.125.227.18:9100
+      labels:
+        node: hostdzire
