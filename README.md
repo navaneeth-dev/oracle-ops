@@ -24,7 +24,7 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
   for media, CloudNativePG for databases, and VolSync restic configuration backups.
 - **Observability:** VictoriaMetrics, Grafana and Fluent Bit. Public status at
   [rizexor.instatus.com](https://rizexor.instatus.com).
-- **Apps:** Jellyfin, Emby, Audiobookshelf, the arr stack, Seerr, [Homepage](https://start.oci.fossindia.ovh) and
+- **Apps:** Emby, Audiobookshelf, the arr stack, Seerr, [Homepage](https://start.oci.fossindia.ovh) and
   LibreSpeed.
 
 ## Tech stack

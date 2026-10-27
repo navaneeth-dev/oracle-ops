@@ -26,13 +26,12 @@ included in those configuration backups; RAID is not a backup.
   no dynamic storage class, and mount options `nfsvers=4.2,hard,noatime`.
   The PV's advertised capacity does not enforce a server-side quota.
 - The deployed shared application base mounts the whole claim at `/hostdzire` in
-  qBittorrent, Radarr, Sonarr, Emby, Jellyfin, Audiobookshelf, and Qui.
+  qBittorrent, Radarr, Sonarr, Emby, Audiobookshelf, and Qui.
   Audiobookshelf's mount is read-only. The existing `/data` claim is retained.
 
 The production rollout is active. Flux and all consuming HelmReleases are
-Ready; Jellyfin remains intentionally scaled to zero. New downloads and
-movie/TV library roots use HostDZire; existing torrents and title paths were
-not moved. A real qBittorrent download, a Radarr hardlink import, and an Emby
+Ready. New downloads and movie/TV library roots use HostDZire; existing torrents
+and title paths were not moved. A real qBittorrent download, a Radarr hardlink import, and an Emby
 HTTP stream were verified using disposable content, then cleaned up. The owner
 explicitly waived Instatus maintenance for this initial rollout; the repository's
 normal maintenance policy still applies to future operations.
@@ -148,8 +147,8 @@ route qBittorrent traffic around its VPN: the node mounts NFS separately.
    Retain current `/data` library paths until existing media is explicitly
    migrated. Keep Emby's config and transcode-temp settings unchanged during
    this storage rollout; verify no stale `/nfs-data` path remains from earlier
-   experimentation. Add corresponding library paths in Jellyfin and
-   Audiobookshelf when those services should index new HostDZire content.
+   experimentation. Add corresponding library paths in Audiobookshelf when
+   it should index new HostDZire content.
 9. Verify a completed qBittorrent download on NFS, an arr hardlink import, and
    Emby streaming. The initial rollout used separate disposable fixtures for
    these checks, as described below. Check the first normal automated arr import
@@ -174,7 +173,7 @@ route qBittorrent traffic around its VPN: the node mounts NFS separately.
 - Emby's existing Movies and TV shows libraries include the new movie/TV roots
   alongside their original `/data` paths. The stale `/nfs-data/movies` location
   was removed. No config or transcode-temp path was relocated.
-- Jellyfin remains disabled. Audiobookshelf has read-only filesystem access;
+- Audiobookshelf has read-only filesystem access;
   no new Audiobookshelf library was created during this movie/TV rollout.
 
 ### Application verification
@@ -292,3 +291,42 @@ Deployment patch when Helm sees no release change. Revert such patches
 explicitly or force a Helm upgrade, then inspect the rendered pod mounts and
 confirm the HelmRelease is Ready. Prefer deploying the actual HelmRelease
 values rather than patching the Deployment directly.
+
+### Retiring the old Jellyfin deployment
+
+Jellyfin is no longer declared in the shared application base. Removing its Git
+reference alone does not uninstall the existing release: the parent `apps`
+Kustomization has `prune: false`. The retired child Kustomization must be deleted
+after the removal is published and reconciled. Its own inventory includes the
+3 GiB configuration PVC, whose PV has a `Delete` reclaim policy. The owner
+explicitly authorized deleting this configuration volume on October 27, 2026;
+do not retain or restore it as part of this retirement.
+
+After publishing the removal, reconcile the source and parent, confirm the
+parent no longer declares Jellyfin, and delete only the retired child. Run
+from `clusters/prod`:
+
+```bash
+mise exec -- flux reconcile source git flux-system
+mise exec -- flux reconcile kustomization apps
+mise exec -- kubectl -n flux-system delete kustomization jellyfin --wait=true --timeout=5m
+```
+
+Verify its HelmRelease, Deployment, Service, HTTPRoute, backup resources and
+monitoring probe are gone. Confirm no pod or mover job still uses either
+Jellyfin PVC, then remove any leftovers, including the disposable VolSync cache:
+
+```bash
+mise exec -- kubectl -n homelab delete pvc jellyfin volsync-src-jellyfin-cache --ignore-not-found --wait=true --timeout=5m
+```
+
+Verify both PVCs and their backing PVs are gone. Do not delete remote backups;
+the authorization covers the live configuration volume and disposable cache,
+not backup retention. The shared `data` and `hostdzire` claims are still used
+by Emby and the arr stack and must not be removed.
+
+Seerr's pre-existing media-server integration still points at Jellyfin. Moving
+that integration and its user associations to Emby is a separate migration;
+do not reset Seerr's configuration or database as part of uninstalling Jellyfin.
+The public Instatus component is already named Emby; private monitor targets
+must also be checked in the Instatus console if API access is unavailable.
