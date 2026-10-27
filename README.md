@@ -20,7 +20,7 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
   Renovate keeps charts and images up to date.
 - **Ingress:** OCI Network Load Balancer → Envoy Gateway, with CrowdSec WAF on
   every route and authentik for single sign-on.
-- **Storage:** TopoLVM local volumes, [HostDZire NFS over Tailscale](docs/operations/hostdzire-storage.md)
+- **Storage:** TopoLVM local volumes, [HostDZire NFS over Tailscale](docs/operations/storage-benchmark.md)
   for media, CloudNativePG for databases, and VolSync restic configuration backups.
 - **Observability:** VictoriaMetrics, Grafana and Fluent Bit. Public status at
   [rizexor.instatus.com](https://rizexor.instatus.com).

@@ -195,7 +195,6 @@ WriteThrough to Linux `O_SYNC`. Its `disk_io_write_mode` has been changed to
 2 (WriteThrough) and confirmed through the API; the 1 GiB request/limit and
 existing torrents' download paths are unchanged. Actual torrent block sizes and
 concurrency differ from fio, so this is not a qBittorrent throughput result.
-See the [HostDZire runbook](hostdzire-storage.md#memory-and-bandwidth).
 
 The measured NFS sequential read rate has headroom over the earlier roughly
 3 MiB/s Emby direct-play stream, but write-tail latency reached seconds and
@@ -230,8 +229,61 @@ The download and generated media were separate disposable fixtures. Radarr's
 manual import was exercised, not automated torrent matching or Sonarr episode
 import. The HTTP range and decoder checks are not a browser playback session
 or a sustained simultaneous download/playback benchmark. All disposable
-torrents, media, and temporary movie entries were removed. See the
-[runbook](hostdzire-storage.md#application-verification) for the applied settings.
+torrents, media, and temporary movie entries were removed.
+
+### Scheduled concurrency validation — October 27, 2026
+
+The bounded production run used qBittorrent's existing VPN, WriteThrough and
+1 GiB memory request/limit without changing global preferences. The download,
+checksum and recheck phases ran from 00:05:31 to 00:15:39 UTC (608 seconds),
+using two official Debian 13.7 netinst torrents: arm64 (735,358,976 bytes) and
+amd64 (792,723,456 bytes), **1.423 GiB combined**, in an isolated category.
+
+- Both torrents downloaded concurrently, paused/resumed successfully, matched
+  Debian's published SHA-256 checksums and passed forced rechecks. Samples
+  captured `checkingUP` before completion, not just an accepted API request.
+  Each completed file could be hardlinked from `torrents/` into `media/`, with
+  identical source/destination inode and link count 2.
+- Two-second cgroup samples reached approximately **1 GiB total usage**, mostly
+  clean file cache. Sampled anonymous memory peaked at **120.95 MiB**, dirty
+  pages at **20 KiB**, and writeback at **160 KiB**. The reclaim counter
+  `pgsteal` rose from 10,496 to 811,214 pages while all OOM counters stayed zero.
+  All media pods remained Ready with zero restarts. A process snapshot showed
+  qBittorrent RSS around 83 MiB; its process-lifetime RSS high-water mark was
+  147.7 MiB, not necessarily reached during this run.
+- Per-fixture download caps were 6/3 MiB/s. The initial 1 KiB/s upload caps
+  coincided with very slow downloads; raising each fixture's upload cap to
+  64 KiB/s restored progress. Global limits and existing torrents were not
+  changed. The maximum sampled aggregate download rate was **8.45 MiB/s**;
+  capped, peer-dependent rates are not maximum storage-throughput measurements.
+- While the second torrent was still downloading, an `O_DIRECT` probe read
+  64 MiB sequentially at **17.93 MiB/s**, then made 32 random 128 KiB reads:
+  **22.71 ms median**, **25.14 ms p95**. This short single-worker probe is not
+  directly comparable to the earlier queue-depth-8 fio sequential result.
+- During the download phase, Emby indexed a generated 120-second clip, served
+  30 authenticated 128 KiB ranges matching the source bytes, and its bundled
+  ffmpeg decoded 30 seconds at real-time input pacing without errors. HTTP
+  range timings were 803 ms median / 1,083 ms maximum **including kubectl exec
+  overhead**. This was low-bitrate generated media, not browser playback or a
+  high-bitrate/multiple-stream capacity check; one torrent was slow during
+  part of this overlap.
+
+These observations support retaining **1 GiB with WriteThrough**, rather than
+raising memory solely because clean cache fills the limit. They do not prove
+arbitrary concurrency, outage recovery, automatic arr matching/import, or
+long-term shared-storage performance. Existing torrents' paths and automatic
+management settings were checked unchanged. Raw two-second samples and Emby
+results are retained under ignored `.amp/in/artifacts/scheduled-*-20261027.*`.
+
+Cleanup initially raced qBittorrent's asynchronous file deletion: torrents and
+category were already gone, but removing their directory returned `ENOTEMPTY`.
+After confirming that only the now-empty owned directory remained, `rmdir`
+succeeded. Independent checks found no owned torrents, categories, media or
+links remaining; all three original torrents still used `/data`. Temporary
+credential copies and validation scripts were removed. Server interface
+counters increased by **4.68 GiB ingress plus egress** across the run, including
+background traffic, below the approximately 10 GiB budget; filesystem use
+returned to 2.7 GiB with 967 GiB available. No outages or restarts were induced.
 
 ## Oracle production node — October 2025
 
