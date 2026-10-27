@@ -11,6 +11,10 @@ spec:
   config:
     log:
       mode: "console"
+    plugins:
+      # Updating bundled plugins such as prometheus fails on the read-only
+      # plugins-bundled dir and leaves them unregistered. Renovate updates the image.
+      preinstall_auto_update: "false"
     auth:
       disable_login_form: "false"
       signout_redirect_url: "https://authentik.${DOMAIN}/application/o/grafana/end-session/"
