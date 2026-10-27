@@ -3,6 +3,21 @@
 Always use Conventional Commits for commit messages, including amended commits
 (for example, `fix(cpu): right-size workload reservations`).
 
+# Node tooling
+
+Use `pnx` instead of `npx` to run Node package binaries.
+
+# Renovate configuration
+
+Always validate `renovate.json5` after changing it, and fix any errors before
+finishing:
+
+```sh
+pnx --allow-build=re2 --allow-build=core-js-pure --allow-build=dtrace-provider \
+  --allow-build=protobufjs --package renovate \
+  renovate-config-validator --strict renovate.json5
+```
+
 # Shared cluster application configuration
 
 Oracle and Oracle-dev should run the same applications and normal application
