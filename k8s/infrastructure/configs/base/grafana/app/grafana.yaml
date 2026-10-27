@@ -38,10 +38,10 @@ spec:
             - name: grafana
               resources:
                 limits:
-                  memory: 384Mi
+                  memory: 768Mi
                 requests:
                   cpu: 25m
-                  memory: 384Mi
+                  memory: 768Mi
               readinessProbe:
                 failureThreshold: 3
               env:
