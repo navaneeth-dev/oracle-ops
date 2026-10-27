@@ -16,4 +16,4 @@ spec:
   plugins:
     - name: victoriametrics-logs-datasource
       # renovate-semver: datasource=github-releases packageName=VictoriaMetrics/victorialogs-datasource
-      version: 0.26.3
+      version: 0.33.1
