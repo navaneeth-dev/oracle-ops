@@ -1,3 +1,6 @@
+{{- $ciliumDir := "../k8s/infrastructure/controllers/base/cilium/app" -}}
+{{- $ciliumSource := readFile (printf "%s/ocirepository.yaml" $ciliumDir) | fromYaml -}}
+{{- $ciliumRelease := readFile (printf "%s/helmrelease.yaml" $ciliumDir) | fromYaml -}}
 {{- $fluxDir := "../k8s/infrastructure/controllers/base/flux" -}}
 {{- $operatorSource := readFile (printf "%s/operator-ocirepository.yaml" $fluxDir) | fromYaml -}}
 {{- $instanceSource := readFile (printf "%s/instance-ocirepository.yaml" $fluxDir) | fromYaml -}}
@@ -9,10 +12,21 @@ helmDefaults:
   timeout: 300
 
 releases:
+  # Talos runs without a CNI, so pods (including Flux) stay Pending until
+  # Cilium is installed. Flux adopts this release afterwards.
+  - name: cilium
+    namespace: kube-system
+    chart: {{ $ciliumSource.spec.url }}
+    version: {{ $ciliumSource.spec.ref.tag | quote }}
+    values:
+      - {{ $ciliumRelease.spec.values | toYaml | nindent 8 }}
+
   - name: flux-operator
     namespace: flux-system
     chart: {{ $operatorSource.spec.url }}
     version: {{ $operatorSource.spec.ref.tag | quote }}
+    needs:
+      - kube-system/cilium
     values:
       - {{ $operatorRelease.spec.values | toYaml | nindent 8 }}
 
