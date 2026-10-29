@@ -1,6 +1,5 @@
 # Roadmap
 
-- [ ] Migrate all helm repo app-template to oci
 - [ ] Monitor authentik uptime either VMServiceScrape or VMProbe
 - [ ] OPA to prevent accidental deletion of critical resources
 - [ ] Create a github action to update talosctl & kubernetes version
