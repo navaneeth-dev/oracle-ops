@@ -4,6 +4,7 @@
 - [ ] Create a github action to update talosctl & kubernetes version
 - [ ] Security, dont allow namespaces to talk to each other
 - [ ] One more backup site / copy to achieve 3-2-1
+- [ ] Import prod oracle into Terraform
 - [ ] grafana perms on restore 10001
 
 ## Low priority
