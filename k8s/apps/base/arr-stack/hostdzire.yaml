@@ -17,7 +17,7 @@ spec:
     - hard
     - noatime
   nfs:
-    server: 100.125.227.18
+    server: 100.124.57.7
     path: ${HOSTDZIRE_EXPORT_PATH}
 ---
 apiVersion: v1
