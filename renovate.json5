@@ -6,6 +6,12 @@
     ':semanticCommits',
   ],
   timezone: 'Asia/Kolkata',
+  nix: {
+    enabled: true,
+    lockFileMaintenance: {
+      enabled: true,
+    },
+  },
   'helm-values': {
     managerFilePatterns: [
       '/k8s/.+\\.yaml$/',
@@ -31,6 +37,18 @@
     'prIgnoreNotification',
   ],
   packageRules: [
+    {
+      description: 'Update Tdarr server and node together for manual review',
+      groupName: 'tdarr',
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/haveagitgat/tdarr',
+        'ghcr.io/haveagitgat/tdarr_node',
+      ],
+      automerge: false,
+    },
     {
       description: 'Flux Operator Group',
       groupName: 'flux-operator',
@@ -172,6 +190,17 @@
     },
   ],
   customManagers: [
+    {
+      customType: 'regex',
+      description: 'Track NixOS OCI container image tags and digests',
+      managerFilePatterns: [
+        '/^nixos/.+\\.nix$/',
+      ],
+      matchStrings: [
+        'image\\s*=\\s*"(?<depName>[^"\\s]+):(?<currentValue>[^"@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"',
+      ],
+      datasourceTemplate: 'docker',
+    },
     {
       customType: 'regex',
       description: 'Process annotated container image dependencies (repo:tag@digest)',

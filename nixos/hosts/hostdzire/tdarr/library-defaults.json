@@ -1,0 +1,136 @@
+{
+ "name": "Library Name",
+ "folder": "",
+ "foldersToIgnore": "",
+ "foldersToIgnoreCaseInsensitive": false,
+ "folderWatchScanInterval": 30,
+ "scannerThreadCount": 2,
+ "cache": "",
+ "output": "",
+ "folderToFolderConversion": false,
+ "folderToFolderConversionDeleteSource": false,
+ "folderToFolderRecordHistory": true,
+ "copyIfConditionsMet": false,
+ "container": ".mkv",
+ "containerFilter": "mkv,mp4,mov,m4v,mpg,mpeg,avi,flv,webm,wmv,vob,evo,iso,m2ts,ts",
+ "createdAt": 1675837380368,
+ "folderWatching": false,
+ "useFsEvents": false,
+ "scheduledScanFindNew": false,
+ "processLibrary": true,
+ "processTranscodes": true,
+ "processHealthChecks": true,
+ "scanOnStart": false,
+ "exifToolScan": true,
+ "mediaInfoScan": true,
+ "ffprobeShowData": false,
+ "isDirectoryLibrary": false,
+ "closedCaptionScan": false,
+ "scanButtons": true,
+ "scanFound": "",
+ "navItemSelected": "navSourceFolder",
+ "pluginIDs": [
+  {
+   "_id": "plugin1",
+   "id": "Tdarr_Plugin_MC93_MigzImageRemoval",
+   "checked": true,
+   "source": "Community",
+   "priority": 0,
+   "InputsDB": {}
+  },
+  {
+   "_id": "plugin2",
+   "id": "Tdarr_Plugin_lmg1_Reorder_Streams",
+   "checked": true,
+   "source": "Community",
+   "priority": 1,
+   "InputsDB": {}
+  },
+  {
+   "_id": "plugin3",
+   "id": "Tdarr_Plugin_MC93_Migz1FFMPEG_CPU",
+   "checked": true,
+   "source": "Community",
+   "priority": 2,
+   "InputsDB": {}
+  },
+  {
+   "_id": "plugin4",
+   "id": "Tdarr_Plugin_MC93_Migz1FFMPEG",
+   "checked": false,
+   "source": "Community",
+   "priority": 3,
+   "InputsDB": {}
+  },
+  {
+   "_id": "plugin5",
+   "id": "Tdarr_Plugin_a9he_New_file_size_check",
+   "checked": true,
+   "source": "Community",
+   "priority": 4,
+   "InputsDB": {}
+  }
+ ],
+ "pluginCommunity": true,
+ "handbrake": true,
+ "ffmpeg": false,
+ "handbrakescan": true,
+ "ffmpegscan": false,
+ "preset": "-Z \"Very Fast 1080p30\"",
+ "decisionMaker": {
+  "settingsPlugin": true,
+  "settingsFlows": false,
+  "settingsVideo": false,
+  "videoExcludeSwitch": true,
+  "video_codec_names_exclude": [
+   {
+    "codec": "hevc",
+    "checked": false
+   },
+   {
+    "codec": "h264",
+    "checked": true
+   }
+  ],
+  "video_size_range_include": {
+   "min": 0,
+   "max": 100000
+  },
+  "video_height_range_include": {
+   "min": 0,
+   "max": 3000
+  },
+  "video_width_range_include": {
+   "min": 0,
+   "max": 4000
+  },
+  "settingsAudio": false,
+  "audioExcludeSwitch": true,
+  "audio_codec_names_exclude": [
+   {
+    "codec": "mp3",
+    "checked": true
+   },
+   {
+    "codec": "aac",
+    "checked": false
+   }
+  ],
+  "audio_size_range_include": {
+   "min": 0,
+   "max": 10
+  }
+ },
+ "totalHealthCheckCount": 0,
+ "totalTranscodeCount": 0,
+ "sizeDiff": 0,
+ "holdNewFiles": false,
+ "holdFor": 3600,
+ "holdForDisplayUnit": "hours",
+ "pluginStackOverview": true,
+ "filterResolutionsSkip": "",
+ "filterCodecsSkip": "",
+ "filterContainersSkip": "",
+ "filterHardlinked": false,
+ "processPluginsSequentially": true
+}
