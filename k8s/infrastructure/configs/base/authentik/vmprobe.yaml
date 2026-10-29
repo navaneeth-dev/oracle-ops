@@ -1,0 +1,20 @@
+kind: VMProbe
+apiVersion: operator.victoriametrics.com/v1beta1
+metadata:
+  name: authentik
+  namespace: homelab
+spec:
+  interval: "30s"
+  module: http_2xx
+  jobName: authentik
+  vmProberSpec:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+    path: /probe
+    scheme: http
+  targets:
+    staticConfig:
+      targets:
+        - http://authentik-server.authentik.svc.cluster.local/-/health/live/
+      labels:
+        name: Authentik
+        category: Security
