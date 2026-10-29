@@ -43,7 +43,11 @@ affected components and the expected window, and complete it once services
 are verified healthy. If you cannot create it yourself, ask the user to do it
 and wait for confirmation before starting.
 
-Create another thread with low dial for this.
+Create one separate thread for Instatus maintenance coordination with explicit
+`agent_mode: "low"`. This maintenance-specific requirement takes precedence
+over general preferences for medium or other modes in new threads. Use another
+mode only if the user explicitly overrides the mode for the Instatus thread;
+do not treat a handoff's inferred preference as an override.
 
 # Documentation
 
