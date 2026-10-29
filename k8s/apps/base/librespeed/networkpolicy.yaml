@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: librespeed
+  namespace: homelab
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: librespeed
+      app.kubernetes.io/instance: librespeed
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: envoy-gateway-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: envoy
+              gateway.envoyproxy.io/owning-gateway-name: reverse-proxy
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus-blackbox-exporter
+              app.kubernetes.io/instance: blackbox-exporter
+      ports:
+        # Container port; the Service exposes it as 8080.
+        - protocol: TCP
+          port: 80
