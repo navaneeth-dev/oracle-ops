@@ -30,4 +30,3 @@ spec:
     keepHistory: false
   maxHistory: 3
   timeout: 5m
-

@@ -12,11 +12,10 @@ spec:
     - "webhook-receiver.${DOMAIN}"
   rules:
     - matches:
-      - path:
-          type: PathPrefix
-          value: /
+        - path:
+            type: PathPrefix
+            value: /
       backendRefs:
         - name: webhook-receiver
           namespace: flux-system
           port: 80
-

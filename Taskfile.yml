@@ -6,29 +6,43 @@ vars:
 
 tasks:
   bootstrap-flux:
-    desc: Bootstrap Flux Operator and its instance using an existing Git deploy key
+    desc: >-
+      Bootstrap Flux Operator and its instance using an existing Git deploy key
     requires:
       vars: [FLUX_CLUSTER_PATH]
     preconditions:
-      - sh: kubectl -n flux-system get secret flux-system --request-timeout=10s >/dev/null
-        msg: Cannot read flux-system/flux-system; check cluster access and provision the repository SSH deploy key secret first
+      - sh: >-
+          kubectl -n flux-system get secret flux-system
+          --request-timeout=10s >/dev/null
+        msg: >-
+          Cannot read flux-system/flux-system; check cluster access and
+          provision the repository SSH deploy key secret first
     cmds:
       - |
-        kubectl -n flux-system get secret sops-age || kubectl create secret generic sops-age \
+        kubectl -n flux-system get secret sops-age ||
+          kubectl create secret generic sops-age \
           --namespace=flux-system \
-          --from-literal=age.agekey="$(infisical secrets get TF_VAR_SOPS_AGEKEY --env=prod --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 --plain)"
+          --from-literal=age.agekey="$(infisical secrets get \
+            TF_VAR_SOPS_AGEKEY --env=prod \
+            --projectId=201b912b-40de-44bf-bb83-ab1bc77554b7 --plain)"
       - >-
         helmfile --file "{{.TASKFILE_DIR}}/bootstrap/helmfile.yaml.gotmpl"
         --state-values-set clusterPath={{.FLUX_CLUSTER_PATH}} sync --hide-notes
-      - kubectl -n flux-system wait fluxinstance/flux --for=condition=Ready --timeout=5m
+      - >-
+        kubectl -n flux-system wait fluxinstance/flux
+        --for=condition=Ready --timeout=5m
 
   genconfig:
     desc: Generate Talos configuration
     vars:
       # Content-addressed: the factory returns the same ID for the same file.
       TALOS_SCHEMATIC_ID:
-        sh: curl -fsS --retry 3 -X POST --data-binary @{{.TALOS_SCHEMATIC_FILE}} https://factory.talos.dev/schematics | jq -er .id
-      TALOS_INSTALLER_IMAGE: 'factory.talos.dev/oracle-installer/{{.TALOS_SCHEMATIC_ID}}:{{.TALOS_VERSION}}'
+        sh: >-
+          curl -fsS --retry 3 -X POST
+          --data-binary @{{.TALOS_SCHEMATIC_FILE}}
+          https://factory.talos.dev/schematics | jq -er .id
+      TALOS_INSTALLER_IMAGE: "factory.talos.dev/oracle-installer/\
+        {{.TALOS_SCHEMATIC_ID}}:{{.TALOS_VERSION}}"
     cmds:
       - sops -d secrets.sops.yaml > secrets.yaml
       - sops -d multidoc/tailscale.sops.yaml > tailscale.yaml
@@ -75,10 +89,16 @@ tasks:
     vars:
       # Content-addressed: the factory returns the same ID for the same file.
       TALOS_SCHEMATIC_ID:
-        sh: curl -fsS --retry 3 -X POST --data-binary @{{.TALOS_SCHEMATIC_FILE}} https://factory.talos.dev/schematics | jq -er .id
-      TALOS_INSTALLER_IMAGE: 'factory.talos.dev/oracle-installer/{{.TALOS_SCHEMATIC_ID}}:{{.TALOS_VERSION}}'
+        sh: >-
+          curl -fsS --retry 3 -X POST
+          --data-binary @{{.TALOS_SCHEMATIC_FILE}}
+          https://factory.talos.dev/schematics | jq -er .id
+      TALOS_INSTALLER_IMAGE: "factory.talos.dev/oracle-installer/\
+        {{.TALOS_SCHEMATIC_ID}}:{{.TALOS_VERSION}}"
     cmds:
-      - talosctl -n {{.NODE_IP}} upgrade --image {{.TALOS_INSTALLER_IMAGE}} --debug
+      - >-
+        talosctl -n {{.NODE_IP}} upgrade
+        --image {{.TALOS_INSTALLER_IMAGE}} --debug
 
   upgrade-k8s:
     desc: Upgrade Talos cluster
@@ -88,12 +108,17 @@ tasks:
   kubeconfig:
     desc: Get kubeconfig
     cmds:
-      - talosctl kubeconfig ./kubeconfig --nodes {{.NODE_IP}} --merge=false --force
+      - >-
+        talosctl kubeconfig ./kubeconfig --nodes {{.NODE_IP}}
+        --merge=false --force
 
   cilium-install:
     desc: Generate Cilium installation manifest (for documentation)
     cmds:
       - |
+        agent_caps=CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN
+        agent_caps=$agent_caps,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID
+        clean_caps=NET_ADMIN,SYS_ADMIN,SYS_RESOURCE
         helm template \
           cilium \
           cilium/cilium \
@@ -101,8 +126,8 @@ tasks:
           --namespace kube-system \
           --set ipam.mode=kubernetes \
           --set kubeProxyReplacement=false \
-          --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}" \
-          --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}" \
+          --set securityContext.capabilities.ciliumAgent="{$agent_caps}" \
+          --set securityContext.capabilities.cleanCiliumState="{$clean_caps}" \
           --set cgroup.autoMount.enabled=false \
           --set cgroup.hostRoot=/sys/fs/cgroup \
           --set envoy.enabled=false \

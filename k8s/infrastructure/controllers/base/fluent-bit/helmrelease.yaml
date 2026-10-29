@@ -95,7 +95,7 @@ spec:
           rename k_container_name app
 
       ## https://docs.fluentbit.io/manual/pipeline/outputs
-      outputs: |
+      outputs: |-
         [OUTPUT]
           Name http
           Match kubernetes.*

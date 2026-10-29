@@ -33,4 +33,3 @@ spec:
   values:
     crds:
       immutable: false
-

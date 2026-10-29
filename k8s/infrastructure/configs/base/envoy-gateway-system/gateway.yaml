@@ -20,9 +20,9 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-        - kind: Secret
-          group: ""
-          name: homelab-cert-private-keys
+          - kind: Secret
+            group: ""
+            name: homelab-cert-private-keys
       allowedRoutes:
         kinds:
           - kind: HTTPRoute

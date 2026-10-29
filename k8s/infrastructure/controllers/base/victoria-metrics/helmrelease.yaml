@@ -482,7 +482,7 @@ spec:
                    {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
                   ]
                   {{ if ne .Status "firing" -}}
-                  :white_check_mark: 
+                  :white_check_mark:
                   {{- else if eq .CommonLabels.severity "critical" -}}
                   :x:
                   {{- else if eq .CommonLabels.severity "warning" -}}
@@ -511,7 +511,7 @@ spec:
                    {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
                   ]
                   {{ if ne .Status "firing" -}}
-                  :white_check_mark: 
+                  :white_check_mark:
                   {{- else if eq .CommonLabels.severity "critical" -}}
                   :x:
                   {{- else if eq .CommonLabels.severity "warning" -}}

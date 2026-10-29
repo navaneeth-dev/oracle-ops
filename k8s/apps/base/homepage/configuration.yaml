@@ -63,7 +63,7 @@ data:
             href: 'https://speed.${DOMAIN}'
             icon: librespeed
             description: Speedtest
-    
+
     - 'Arr Stack':
         - Prowlarr:
             href: 'https://prowlarr.${DOMAIN}'

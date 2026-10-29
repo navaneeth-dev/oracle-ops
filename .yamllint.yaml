@@ -1,0 +1,22 @@
+extends: default
+
+ignore: |
+  .amp/
+  *.sops.yaml
+
+rules:
+  braces:
+    max-spaces-inside: 1
+  brackets:
+    max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1
+  document-start: disable
+  line-length:
+    level: warning
+    # SOPS ciphertext can't be wrapped.
+    ignore: |
+      *secret*.yaml
+      *-secrets/
+  truthy:
+    check-keys: false

@@ -4,4 +4,3 @@ namespace: homelab
 resources:
   - helmrelease.yaml
   - vmprobe.yaml
-

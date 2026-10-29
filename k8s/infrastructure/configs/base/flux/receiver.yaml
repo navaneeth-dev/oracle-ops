@@ -13,4 +13,3 @@ spec:
   resources:
     - kind: GitRepository
       name: flux-system
-
