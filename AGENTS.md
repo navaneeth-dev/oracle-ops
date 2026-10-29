@@ -28,6 +28,8 @@ settings that must differ between clusters. Running different application
 software is an exception reserved for rare, explicitly intended testing; do not
 introduce dev-only application differences by default.
 
+Right now dev cluster is not active, so forget it.
+
 # Status page and README
 
 The public status page is Instatus at https://rizexor.instatus.com. When a
@@ -40,6 +42,8 @@ reboot or prod network change, schedule an Instatus maintenance covering the
 affected components and the expected window, and complete it once services
 are verified healthy. If you cannot create it yourself, ask the user to do it
 and wait for confirmation before starting.
+
+Create another thread with low dial for this.
 
 # Documentation
 
