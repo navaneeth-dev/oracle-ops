@@ -1,10 +1,8 @@
 # Roadmap
 
-- [ ] Monitor authentik uptime either VMServiceScrape or VMProbe
 - [ ] OPA to prevent accidental deletion of critical resources
 - [ ] Create a github action to update talosctl & kubernetes version
 - [ ] Security, dont allow namespaces to talk to each other
-- [ ] Trivy scan k8s, terraform everything
 - [ ] One more backup site / copy to achieve 3-2-1
 - [ ] grafana perms on restore 10001
 
