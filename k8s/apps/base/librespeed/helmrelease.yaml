@@ -24,6 +24,13 @@ spec:
   values:
     controllers:
       librespeed:
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 33 # www-data
+            runAsGroup: 33
+            fsGroup: 33
+            seccompProfile: { type: RuntimeDefault }
         containers:
           app:
             image:
@@ -31,6 +38,9 @@ spec:
               tag: latest@sha256:c0b5192262a5cdf8802fd0d0876aa4909789c3db5799b987aeed5515ae0faf16
             env:
               MODE: standalone
+              # Keep the image's Listen 80; the entrypoint can only rewrite
+              # /etc/apache2 as root. Pods may bind low ports unprivileged.
+              WEBPORT: "80"
             probes:
               liveness: &probes
                 enabled: true
@@ -38,7 +48,7 @@ spec:
                 spec:
                   httpGet:
                     path: /
-                    port: &port 8080
+                    port: &containerPort 80
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 3
@@ -56,13 +66,18 @@ spec:
               requests:
                 cpu: 10m
                 memory: 64Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
     service:
       app:
         primary: true
         controller: *name
         ports:
           http:
-            port: *port
+            port: 8080
+            targetPort: *containerPort
 
     route:
       main:
@@ -74,3 +89,16 @@ spec:
             namespace: envoy-gateway-system
         hostnames:
           - 'speed.${DOMAIN}'
+
+    persistence:
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /var/www/html
+            subPath: html
+          - path: /var/run/apache2
+            subPath: run
+          - path: /var/lock/apache2
+            subPath: lock
+          - path: /tmp
+            subPath: tmp

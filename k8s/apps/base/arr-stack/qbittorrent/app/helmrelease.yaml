@@ -19,6 +19,9 @@ spec:
   values:
     controllers:
       qbittorrent:
+        pod:
+          securityContext:
+            seccompProfile: { type: RuntimeDefault }
         containers:
           gluetun:
             resources:
@@ -30,10 +33,14 @@ spec:
             image:
               repository: qmcgaw/gluetun
               tag: v3.41.3
+            # The only privileged-level exception in homelab: gluetun must run
+            # as root with NET_ADMIN to create the WireGuard interface, routes
+            # and kill-switch firewall rules. Every other capability is dropped.
             securityContext:
+              allowPrivilegeEscalation: false
               capabilities:
-                add:
-                  - NET_ADMIN
+                drop: ["ALL"]
+                add: ["NET_ADMIN"]
             envFrom:
               - secretRef:
                   name: wireguard-secrets
@@ -46,6 +53,11 @@ spec:
               FIREWALL_INPUT_PORTS: "80,8888"
 
               HTTPPROXY: "on"
+              # Without DAC_OVERRIDE and CHOWN, gluetun cannot use its 0644
+              # /tmp/gluetun directory or chown files to the default UID 1000.
+              PUBLICIP_FILE: /tmp/gluetun-ip
+              PUID: "0"
+              PGID: "0"
           app:
             image:
               repository: ghcr.io/home-operations/qbittorrent
