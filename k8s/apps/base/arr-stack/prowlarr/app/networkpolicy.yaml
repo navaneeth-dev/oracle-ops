@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prowlarr
+  namespace: homelab
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: prowlarr
+      app.kubernetes.io/instance: prowlarr
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        # Radarr and Sonarr search through Prowlarr's per-indexer endpoints.
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: radarr
+              app.kubernetes.io/instance: radarr
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: sonarr
+              app.kubernetes.io/instance: sonarr
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus-blackbox-exporter
+              app.kubernetes.io/instance: blackbox-exporter
+      ports:
+        - protocol: TCP
+          port: 9696
