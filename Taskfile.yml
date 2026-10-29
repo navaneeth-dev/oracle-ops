@@ -6,8 +6,7 @@ vars:
 
 tasks:
   bootstrap-flux:
-    desc: >-
-      Bootstrap Flux Operator and its instance using an existing Git deploy key
+    desc: Bootstrap Flux using an existing Git deploy key
     requires:
       vars: [FLUX_CLUSTER_PATH]
     preconditions:
