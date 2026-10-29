@@ -1,11 +1,11 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: authentik-outpost-mgmt-binding
+  name: authentik-outpost-mgmt
   namespace: authentik
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
+  kind: Role
   name: authentik-outpost-mgmt
 subjects:
   - kind: ServiceAccount

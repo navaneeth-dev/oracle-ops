@@ -9,6 +9,6 @@ resources:
   - cluster.yaml
   - helmrepository.yaml
   - helmrelease.yaml
-  - clusterrole.yaml
-  - clusterrolebinding.yaml
+  - role.yaml
+  - rolebinding.yaml
   - scheduledbackup.yaml
