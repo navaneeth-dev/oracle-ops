@@ -21,6 +21,20 @@ spec:
             matchLabels:
               app.kubernetes.io/name: sonarr
               app.kubernetes.io/instance: sonarr
+        # Radarr and Sonarr use gluetun's HTTP proxy (port 8888), so their
+        # requests arrive from the qbittorrent pod.
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: qbittorrent
+              app.kubernetes.io/instance: qbittorrent
+        # authentik's embedded proxy outpost serves the Prowlarr web UI.
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: authentik
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: authentik
+              app.kubernetes.io/component: server
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: observability
