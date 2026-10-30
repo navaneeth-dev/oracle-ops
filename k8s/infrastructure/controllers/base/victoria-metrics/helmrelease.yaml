@@ -397,6 +397,17 @@ spec:
 
     kubeApiServer:
       enabled: true
+      vmScrape:
+        spec:
+          endpoints:
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: https
+              scheme: https
+              tlsConfig:
+                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                serverName: kubernetes
+              # apiserver histograms exceed vmagent's 16MiB default.
+              max_scrape_size: 32MiB
 
     kubeProxy:
       enabled: false
