@@ -6,7 +6,7 @@ let
     TZ = "Asia/Kolkata";
     PUID = "1000"; # rize, the owner of the media
     PGID = "1000";
-    UMASK_SET = "022";
+    UMASK = "022";
     ffmpegVersion = "7";
     inContainer = "true";
   };
