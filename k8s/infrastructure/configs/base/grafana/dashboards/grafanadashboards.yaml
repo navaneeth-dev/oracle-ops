@@ -1,0 +1,28 @@
+# Our own dashboards. Edit them in Grafana to try changes, then export the
+# JSON (without "id" and "version") into this directory; the operator
+# overwrites UI edits on its next resync.
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: service-overview
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  folder: Overview
+  configMapRef:
+    name: grafana-dashboard-service-overview
+    key: service-overview.json
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: service-red
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  folder: Overview
+  configMapRef:
+    name: grafana-dashboard-service-red
+    key: service-red.json
