@@ -100,11 +100,10 @@ spec:
             resources:
               requests:
                 cpu: 50m
-                # Peak working set was 171Mi; the rest is page cache that lets the
-                # kernel batch NFS writes (qBittorrent disk IO write mode: OS cache).
-                memory: 2048Mi
+                # Peak working set was 171Mi; the old 4Gi usage was mostly file cache.
+                memory: 1024Mi
               limits:
-                memory: 2048Mi
+                memory: 1024Mi
     service:
       app:
         primary: true
