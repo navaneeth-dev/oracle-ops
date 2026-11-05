@@ -12,10 +12,11 @@ spec:
   claimRef:
     name: hostdzire
     namespace: homelab
-  # soft lets NFS calls fail after about 2.5 minutes (15+30+45+60 s of linear
-  # backoff) instead of retrying forever. The server is reached over Tailscale,
-  # which Talos stops before unmounting pod volumes, so a hard mount hangs node
-  # shutdown indefinitely.
+  # soft makes each NFS call fail after timeo × (retrans + 1) = 15 s × 4 = 60 s
+  # instead of retrying forever. The server is reached over Tailscale, which
+  # Talos stops before unmounting pod volumes, so a hard mount hangs node
+  # shutdown indefinitely. Tested on the prod kernel with the server blocked:
+  # unmount finished in 0 s with no unwritten data and in 120 s with some.
   mountOptions:
     - nfsvers=4.2
     - soft
