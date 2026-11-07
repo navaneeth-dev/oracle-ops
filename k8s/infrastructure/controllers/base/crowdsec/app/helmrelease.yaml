@@ -108,3 +108,50 @@ spec:
         limits:
           cpu: null
           memory: 512Mi
+
+  # Agent and AppSec pods keep their names across a node reboot, so the chart's
+  # init container registers the same machine name again and LAPI rejects it
+  # with "user already exist" (crowdsecurity/helm-charts#252). autodelete never
+  # removes machines that own alerts, and unregister_on_exit loses the race
+  # when LAPI stops first on the same node. Reuse the credentials kept in the
+  # pod's emptyDir while they still log in, as in helm-charts#361. Drop this
+  # once the chart registers idempotently.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              name: crowdsec-(agent|appsec)
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: crowdsec
+              spec:
+                template:
+                  spec:
+                    initContainers:
+                      - name: wait-for-lapi-and-register
+                        command:
+                          - sh
+                          - -c
+                          - |
+                            set -eu
+                            until nc "$LAPI_HOST" "$LAPI_PORT" -z; do
+                              echo waiting for lapi to start
+                              sleep 5
+                            done
+                            ln -s /staging/etc/crowdsec /etc/crowdsec
+                            saved=/tmp_config/local_api_credentials.yaml
+                            if [ -f "$saved" ] &&
+                              grep -qx "login: $USERNAME" "$saved"; then
+                              cp "$saved" /etc/crowdsec/
+                              if cscli lapi status; then
+                                echo "reusing LAPI credentials for $USERNAME"
+                                exit 0
+                              fi
+                              rm -f /etc/crowdsec/local_api_credentials.yaml
+                            fi
+                            cscli lapi register --machine "$USERNAME" \
+                              -u "$LAPI_URL" --token "$REGISTRATION_TOKEN"
+                            cp /etc/crowdsec/local_api_credentials.yaml "$saved"
