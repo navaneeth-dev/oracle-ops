@@ -285,6 +285,61 @@ counters increased by **4.68 GiB ingress plus egress** across the run, including
 background traffic, below the approximately 10 GiB budget; filesystem use
 returned to 2.7 GiB with 967 GiB available. No outages or restarts were induced.
 
+### qBittorrent write modes and NFS read-modify-write — November 8, 2026
+
+Two private-tracker torrents ran at about 0.7 MB/s each while hostdzire6tb,
+the VPN (50 MB in about 1 s through gluetun) and the direct 15 ms Tailscale
+path were all healthy. qBittorrent reported 242 queued disk jobs, 84 s average
+queue time and 94.7% write-cache overload.
+
+**Write mode numbering.** In qBittorrent 5.2.4, `disk_io_write_mode` is
+0 = disable OS cache, 1 = enable OS cache, 2 = write-through, and
+`disk_io_read_mode` is 0 = disable, 1 = enable. libtorrent 2.0.8+ opens
+no-cache files with `O_SYNC`, so mode 0 behaves like write-through. The
+November 3 "OS cache" test set mode 0 and never ran without `O_SYNC`. Always
+confirm with the open file flags in `/proc/<pid>/fdinfo` (`07410002` has
+`O_SYNC|O_DSYNC`; `03400002` does not). A changed mode applies when the torrent's
+files are reopened, for example after stopping and starting the torrent.
+
+**Fresh single-file torrent** (Ubuntu 26.04.1 desktop ISO, 6.48 GB):
+
+| | Write-through (2) | OS cache (1), 4 GiB pod |
+| --- | --- | --- |
+| Download rate | about 10 MB/s | 58–71 MB/s, then about 9 MB/s when the node dirty limit throttled |
+| NFS writes | about 620/s of 16 KiB, no COMMITs | about 22/s of about 800 KiB, flushed at 25–35 MB/s |
+| Disk queue | 1,500–2,800 jobs, 55–76% overload | empty until throttled |
+
+The OS-cache run downloaded the whole ISO in about 2 minutes and drained to NFS
+about 60 seconds later. The file's SHA-256 on hostdzire6tb's disk, after
+dropping its page cache, matched Ubuntu's published `601e30fb…1bda1f`, and a
+forced recheck passed. The pod peaked at its 4 GiB limit with 2.2 GiB dirty
+and 0.5 GiB in writeback; the cgroup recorded no OOM events or kills. Dune, a
+real single-file torrent, went from about 0.7 MB/s to about 6 MB/s and finished.
+
+**Dirty-page budget.** Buffered NFS writes are not throttled per cgroup;
+cgroup writeback needs filesystem support that NFS lacks. Only the node-wide
+dirty threshold applies, measured at 739,007 pages (2.82 GiB). The pod
+therefore needs memory above that plus its about 170 MiB heap, which is why it
+runs with 4 GiB.
+
+**Multi-file torrents stay slow.** MobLand, a season pack whose episodes start
+at offsets such as 59 mod 4096, stayed at about 1 MB/s with OS cache. Its NFS
+traffic was about 65 READs/s of about 11 KiB and no writes, and the disk
+threads waited in `nfs_start_io_write` and `folio_wait_bit_common`. Linux 6.18's
+`nfs_want_read_modify_write()` reads a folio from the server before a partial
+write whenever the file is open for reading, which libtorrent always does. Each
+unaligned 16 KiB block then waits one synchronous WAN round trip under the
+inode lock. A controlled fio run on the same mount (buffered 16 KiB random
+writes, 10 threads, sparse 1 GiB file, 30 s) isolates it:
+
+| Offset | Application write rate | Mean latency | NFS READs |
+| --- | --- | --- | --- |
+| 0 (page-aligned) | 1,000.94 MiB/s | 0.14 ms | 0 |
+| 59 | 0.51 MiB/s | 301.39 ms | 2,012 |
+
+Neither write mode nor more memory avoids this, because the pages were never
+cached. Downloading onto a local filesystem avoids it.
+
 ## Oracle production node — October 2025
 
 fio results from the prod node (`/mnt/data`), October 2025.
