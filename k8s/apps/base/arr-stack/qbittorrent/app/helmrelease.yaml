@@ -100,10 +100,12 @@ spec:
             resources:
               requests:
                 cpu: 50m
-                # Peak working set was 171Mi; the old 4Gi usage was mostly file cache.
-                memory: 1024Mi
+                # Buffered (OS cache) writes to NFS are not throttled per cgroup,
+                # only by the node-wide dirty limit (about 2.8Gi). 4Gi covers that
+                # plus the 171Mi peak heap, so dirty pages cannot OOM the pod.
+                memory: 4096Mi
               limits:
-                memory: 1024Mi
+                memory: 4096Mi
     service:
       app:
         primary: true
