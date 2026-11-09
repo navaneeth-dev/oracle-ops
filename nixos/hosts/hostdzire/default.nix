@@ -1,11 +1,13 @@
 # hostdzire6tb: HostDZire StorageVPS (WebWerks Mumbai). NFS storage for the
-# Oracle cluster, reached over Tailscale, plus Tdarr. VMware ESXi guest,
-# 4 vCPU, 8 GiB RAM, 6 TB, BIOS boot, LSI Logic SCSI, vmxnet3. No swap.
+# Oracle cluster, reached over Tailscale, plus Tdarr and qBittorrent. VMware
+# ESXi guest, 4 vCPU, 8 GiB RAM, 6 TB, BIOS boot, LSI Logic SCSI, vmxnet3.
+# No swap.
 { lib, pkgs, ... }:
 {
   imports = [
     ./disko.nix
     ./tdarr.nix
+    ./qbittorrent.nix
   ];
 
   system.stateVersion = "26.05";

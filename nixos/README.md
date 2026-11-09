@@ -2,7 +2,8 @@
 
 Declarative config for machines outside the Kubernetes clusters. For now that
 is only `hostdzire6tb` (`hostdzire6tb.fossindia.ovh`, 163.61.31.213), the
-HostDZire 6 TB storage VPS serving Oracle prod's NFS media storage and Tdarr.
+HostDZire 6 TB storage VPS serving Oracle prod's NFS media storage, Tdarr and
+qBittorrent.
 It was installed with `nixos-anywhere` on 2026-10-29.
 
 | Path | What it is |
@@ -12,6 +13,7 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 | `hosts/hostdzire/disko.nix` | Disk layout: GPT, 1 MiB BIOS boot, LVM `vg0` with 64 GiB ext4 `/`, 4 TiB ext4 `/srv`, about 1.8 TiB left free |
 | `hosts/hostdzire/tdarr.nix` | Tdarr server + node as Podman containers, plus `tdarr-configure` |
 | `hosts/hostdzire/tdarr/` | The flow script, `configure.py`, library defaults |
+| `hosts/hostdzire/qbittorrent.nix` | qBittorrent as a Podman container; see `docs/operations/qbittorrent-hostdzire.md` |
 
 ## Host configuration
 
