@@ -3,7 +3,12 @@ kind: GrafanaDatasource
 metadata:
   name: victoria-logs
   namespace: observability
+  annotations:
+    # spec.uid cannot be added to an existing CR; let Flux recreate it.
+    kustomize.toolkit.fluxcd.io/force: Enabled
 spec:
+  # Stable UID so dashboards survive this CR being recreated.
+  uid: VictoriaLogs
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
@@ -12,7 +17,6 @@ spec:
     type: victoriametrics-logs-datasource
     access: proxy
     url: http://victoria-logs-server.observability:9428
-    isDefault: true
   plugins:
     - name: victoriametrics-logs-datasource
       # renovate-semver: datasource=custom.grafana-plugins packageName=victoriametrics-logs-datasource

@@ -1034,7 +1034,7 @@
       {
         "current": {
           "text": "VictoriaMetrics",
-          "value": "4756d3a6-3f39-40a2-a80b-bea18adf1563"
+          "value": "VictoriaMetrics"
         },
         "name": "datasource",
         "query": "prometheus",

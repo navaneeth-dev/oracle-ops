@@ -1604,7 +1604,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "4756d3a6-3f39-40a2-a80b-bea18adf1563"
+        "uid": "VictoriaMetrics"
       },
       "fieldConfig": {
         "defaults": {
@@ -2842,7 +2842,7 @@
     {
       "datasource": {
         "type": "victoriametrics-logs-datasource",
-        "uid": "c73083dd-43a0-4f14-b502-7ea4e8648e3d"
+        "uid": "VictoriaLogs"
       },
       "gridPos": {
         "h": 14,
@@ -2869,7 +2869,7 @@
         {
           "datasource": {
             "type": "victoriametrics-logs-datasource",
-            "uid": "c73083dd-43a0-4f14-b502-7ea4e8648e3d"
+            "uid": "VictoriaLogs"
           },
           "direction": "desc",
           "editorMode": "code",
@@ -2891,7 +2891,7 @@
       {
         "current": {
           "text": "VictoriaMetrics",
-          "value": "4756d3a6-3f39-40a2-a80b-bea18adf1563"
+          "value": "VictoriaMetrics"
         },
         "hide": 2,
         "name": "datasource",
