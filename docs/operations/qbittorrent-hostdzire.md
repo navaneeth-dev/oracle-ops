@@ -75,7 +75,7 @@ beforehand with Set Location.
 
 | Where | Change |
 | --- | --- |
-| Sonarr, Radarr: download clients `HostDZire` and `qBittorrent` | Host `100.124.57.7`, port 8080 |
+| Sonarr, Radarr: download client `qBittorrent` | Host `100.124.57.7`, port 8080, categories `tv` / `movies`. The `HostDZire` clients, their `hostdzire` routing tag and auto-tagging rule, and the `hostdzire-tv` / `hostdzire-movies` categories were merged into it on November 9 |
 | Sonarr, Radarr: Settings → General → Proxy | Bypass filter `100.124.57.7`, otherwise their qBittorrent calls go into gluetun's tunnel and time out |
 | Prowlarr: download client `qBittorrent` (audiobooks) | Host `100.124.57.7`, port 8080 |
 | qui: instance "Oracle Qbit Prod" | URL `http://100.124.57.7:8080` |
