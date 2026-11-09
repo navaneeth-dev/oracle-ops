@@ -14,7 +14,8 @@ spec:
   targets:
     staticConfig:
       targets:
-        - http://qbittorrent.homelab.svc.cluster.local:80/api/v2/app/version
+        # qBittorrent on hostdzire6tb, over Tailscale.
+        - http://100.124.57.7:8080/api/v2/app/version
       labels:
         name: qBittorrent
         category: Arr Suite

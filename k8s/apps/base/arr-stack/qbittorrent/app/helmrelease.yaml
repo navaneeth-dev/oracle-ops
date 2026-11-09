@@ -1,4 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/helmrelease-helm-v2.json
+# qBittorrent itself runs on hostdzire6tb (nixos/hosts/hostdzire/qbittorrent.nix).
+# This pod is now only gluetun, kept as the HTTP proxy that Sonarr and Radarr
+# use to reach the internet through the WireGuard VPS, until they move off it
+# (docs/operations/qbittorrent-hostdzire.md, step 7).
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -51,9 +55,8 @@ spec:
               # The tunnel carries no IPv6, so route only IPv4 through it.
               WIREGUARD_ALLOWED_IPS: "0.0.0.0/0"
 
-              FIREWALL_VPN_INPUT_PORTS: "41047"
               FIREWALL_OUTBOUND_SUBNETS: "10.244.0.0/16,10.96.0.0/12"
-              FIREWALL_INPUT_PORTS: "80,8888"
+              FIREWALL_INPUT_PORTS: "8888"
 
               HTTPPROXY: "on"
               # Without DAC_OVERRIDE and CHOWN, gluetun cannot use its 0644
@@ -61,78 +64,14 @@ spec:
               PUBLICIP_FILE: /tmp/gluetun-ip
               PUID: "0"
               PGID: "0"
-          app:
-            image:
-              repository: ghcr.io/home-operations/qbittorrent
-              tag: 5.3.0@sha256:5a858e61f94cf2712391db32ed03556576c700858f3e62c4c6fcde262443ebd8
-            env:
-              TZ: "${TZ}"
-              QBT_TORRENTING_PORT: &bittorrent_port 41047
-              QBT_WEBUI_PORT: &port 80
-            dependsOn:
-              - gluetun
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /api/v2/app/version
-                    port: *port
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 6
-                  failureThreshold: 3
-              readiness: *probes
-              startup:
-                enabled: true
-                spec:
-                  initialDelaySeconds: 2
-                  failureThreshold: 10
-                  periodSeconds: 3
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 1000
-              runAsGroup: 1000
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
-            resources:
-              requests:
-                cpu: 50m
-                # Buffered (OS cache) writes to NFS are not throttled per cgroup,
-                # only by the node-wide dirty limit (about 2.8Gi). 4Gi covers that
-                # plus the 171Mi peak heap, so dirty pages cannot OOM the pod.
-                memory: 4096Mi
-              limits:
-                memory: 4096Mi
     service:
       app:
         primary: true
         controller: *name
         ports:
-          http:
-            port: *port
           proxy:
             port: 8888
 
     persistence:
-      config:
-        existingClaim: qbittorrent
-        advancedMounts:
-          qbittorrent:
-            app:
-              - path: /config
-                readOnly: false
-      data:
-        enabled: true
-        type: persistentVolumeClaim
-        existingClaim: data
-        globalMounts:
-          - path: /data
-      hostdzire:
-        existingClaim: hostdzire
-        globalMounts:
-          - path: /hostdzire
       tmp:
         type: emptyDir
