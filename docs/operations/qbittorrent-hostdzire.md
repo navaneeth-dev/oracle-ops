@@ -116,10 +116,10 @@ then deleted by hand. This kept the PVC: Flux removes a
 
 Still open:
 
-- **Keep:** the `qbittorrent` PVC (no longer managed by Flux) and its last
-  VolSync snapshot in the `qbittorrent-volsync` restic repository. Delete the
-  PVC with `kubectl -n homelab delete pvc qbittorrent` once the backup below
-  exists. Its PV has reclaim policy `Delete`, so that also removes the data.
+- **Keep:** the last VolSync snapshot (`4f896d5c`, November 9, 04:30 IST) in
+  the `qbittorrent` restic repository of the `oracle-volsync` bucket. Its
+  `torrents.db` passes an integrity check and holds 15 torrents. The
+  `qbittorrent` PVC was deleted on November 9.
 - **Back up:** add a Restic backup of `/srv/qbittorrent/config` to OVH S3,
   together with the Tdarr backup item in `docs/roadmap.md`.
 

@@ -9,8 +9,9 @@
 - [ ] Back up `hostdzire6tb` state to OVH S3 using native Restic, following the
   existing VolSync storage pattern:
   - qBittorrent: `/srv/qbittorrent/config` (torrent resume data). Until this
-    exists, the frozen Kubernetes `qbittorrent` PVC from the cutover is the
-    only copy; delete it once a restore has been tested.
+    exists, the only older copy is the last VolSync snapshot (November 9,
+    04:30 IST, before the cutover) in the `qbittorrent` restic repository of
+    the `oracle-volsync` bucket.
   - Tdarr: `/srv/tdarr/server` and `/srv/tdarr/configs`. Test a restore before
     considering replacing `configure.py`.
   - Take consistent copies (stop the container or snapshot first) and exclude
