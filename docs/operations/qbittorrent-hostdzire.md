@@ -79,6 +79,7 @@ beforehand with Set Location.
 | --- | --- |
 | Sonarr, Radarr: download client `qBittorrent` | Host `100.124.57.7`, port 8080, categories `tv` / `movies`. The `HostDZire` clients, their `hostdzire` routing tag and auto-tagging rule, and the `hostdzire-tv` / `hostdzire-movies` categories were merged into it on November 9 |
 | Sonarr, Radarr: Settings → General → Proxy | `100.124.57.7:8888` (tinyproxy, step 7), bypass `100.124.57.7,*.svc.cluster.local` |
+| Seerr: Settings → Network → Proxy | `100.124.57.7:8888` (tinyproxy, step 7), bypass `emby,*.cluster.local,*.svc`. Applies after a pod restart |
 | Prowlarr: download client `qBittorrent` (audiobooks) | Host `100.124.57.7`, port 8080 |
 | qui: instance "Oracle Qbit Prod" | URL `http://100.124.57.7:8080` |
 | authentik proxy provider 16 for `qbittorrent.oci.fossindia.ovh` | Internal host `http://100.124.57.7:8080` |
@@ -98,21 +99,24 @@ pods cannot resolve MagicDNS names.
 - **Back up:** add a Restic backup of `/srv/qbittorrent/config` to OVH S3,
   together with the Tdarr backup item in `docs/roadmap.md`.
 
-## 7. Sonarr/Radarr proxy
+## 7. Sonarr/Radarr/Seerr proxy
 
-Both used gluetun's proxy on `qbittorrent:8888`. They now use tinyproxy on
-`100.124.57.7:8888` ([`arr-proxy.nix`](../../nixos/hosts/hostdzire/arr-proxy.nix)):
+Sonarr, Radarr and Seerr used gluetun's proxy on `qbittorrent:8888`. They now
+use tinyproxy on `100.124.57.7:8888` ([`arr-proxy.nix`](../../nixos/hosts/hostdzire/arr-proxy.nix)):
 
 - Only oracle-prod (100.92.137.3) is allowed, and only on `tailscale0`.
 - Egress is bound to 163.61.31.213 (IPv4), and CONNECT is limited to port 443.
 - The bypass covers qBittorrent and `*.svc.cluster.local`. Indexer searches go
   to Prowlarr in-cluster, so only metadata, update checks and Discord use the
   proxy.
+- Prowlarr gets no proxy. No indexer carries the `gluetun` tag of its
+  indexer proxy, so tracker calls already leave from Oracle's IP. Step 6
+  deletes that unused proxy and tag.
 
 Verified on November 9: the egress IP through the proxy is 163.61.31.213;
 the proxy is closed on the public IP; series and movie lookups, indexer
 Test All, and the download client tests all pass; tinyproxy logs CONNECTs to
-`skyhook.sonarr.tv` and `api.radarr.video`.
+`skyhook.sonarr.tv`, `api.radarr.video` and, for Seerr, `api.themoviedb.org`.
 
 Gluetun now has no consumers, so step 6 can delete it, together with the
 qbittorrent rule in Prowlarr's NetworkPolicy and the `homelab` namespace's
