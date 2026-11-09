@@ -457,6 +457,65 @@ spec:
 
     alertmanager:
       enabled: true
+      templateFiles:
+        discord.tmpl: |-
+          {{/* Shared by every discord_configs receiver. */}}
+          {{ define "discord.emoji" -}}
+          {{ if eq . "critical" }}🔥{{ else if eq . "warning" }}⚠️{{ else if eq . "info" }}ℹ️{{ else }}❔{{ end }}
+          {{- end }}
+
+          {{/* Embed title, e.g. "⚠️ FIRING · 4 alerts in kubernetes-apps · observability". */}}
+          {{ define "discord.title" -}}
+          {{- $severity := "" -}}
+          {{- range .Alerts.Firing -}}
+            {{- if eq .Labels.severity "critical" -}}{{ $severity = "critical" }}
+            {{- else if and (eq .Labels.severity "warning") (ne $severity "critical") -}}{{ $severity = "warning" }}
+            {{- else if eq $severity "" -}}{{ $severity = .Labels.severity }}
+            {{- end -}}
+          {{- end -}}
+          {{- $count := len .Alerts -}}
+          {{- if eq .Status "firing" -}}
+            {{ template "discord.emoji" $severity }} FIRING
+            {{- $count = len .Alerts.Firing -}}
+          {{- else -}}
+            ✅ RESOLVED
+          {{- end }} ·
+          {{- if .CommonLabels.alertname }} {{ .CommonLabels.alertname }}{{ if gt $count 1 }} ×{{ $count }}{{ end }}
+          {{- else }} {{ $count }} alerts{{ with .CommonLabels.alertgroup }} in {{ . }}{{ end }}
+          {{- end }}
+          {{- with .CommonLabels.namespace }} · {{ . }}{{ end }}
+          {{- end }}
+
+          {{/* vmalert's Grafana Explore links contain raw JSON; encode it so Discord keeps the link. */}}
+          {{ define "discord.url" -}}
+          {{ . | reReplaceAll "\"" "%22" | reReplaceAll "[{]" "%7B" | reReplaceAll "[}]" "%7D" | reReplaceAll "\\[" "%5B" | reReplaceAll "\\]" "%5D" }}
+          {{- end }}
+
+          {{/*
+            Upstream rule descriptions end in "on cluster <cluster>", but our series have no cluster label.
+            Resources named "<namespace>/<name>" are shown as inline code.
+          */}}
+          {{ define "discord.text" -}}
+          {{- $text := or .Annotations.description .Annotations.summary | reReplaceAll " on cluster  " " " | reReplaceAll " on cluster [.]" "." -}}
+          {{- with .Labels.namespace }}{{ $text = reReplaceAll (printf "(%s/[a-z0-9]([-.a-z0-9]*[a-z0-9])?)" .) "`$1`" $text }}{{ end -}}
+          {{ $text }}
+          {{- end }}
+
+          {{ define "discord.alert" -}}
+          {{ if eq .Status "firing" }}{{ template "discord.emoji" .Labels.severity }}{{ else }}✅{{ end }} **{{ .Labels.alertname }}** · {{ if eq .Status "firing" }}since <t:{{ .StartsAt.Unix }}:R>{{ else }}resolved <t:{{ .EndsAt.Unix }}:R>{{ end }}
+          {{ template "discord.text" . }}
+          [Graph]({{ template "discord.url" .GeneratorURL }}){{ with .Annotations.runbook_url }} · [Runbook]({{ . }}){{ end }}
+          {{- end }}
+
+          {{ define "discord.message" -}}
+          {{- $first := true -}}
+          {{- range .Alerts.Firing -}}
+            {{ if not $first }}{{ "\n\n" }}{{ end }}{{ $first = false }}{{ template "discord.alert" . }}
+          {{- end -}}
+          {{- range .Alerts.Resolved -}}
+            {{ if not $first }}{{ "\n\n" }}{{ end }}{{ $first = false }}{{ template "discord.alert" . }}
+          {{- end -}}
+          {{- end }}
       spec:
         resources:
           limits:
@@ -488,59 +547,15 @@ spec:
             discord_configs:
               - webhook_url: 'replacedfromvalues'
                 username: '${DOMAIN}'
-                title: |-
-                  [{{ .Status | toUpper -}}
-                   {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
-                  ]
-                  {{ if ne .Status "firing" -}}
-                  :white_check_mark:
-                  {{- else if eq .CommonLabels.severity "critical" -}}
-                  :x:
-                  {{- else if eq .CommonLabels.severity "warning" -}}
-                  :warning:
-                  {{- else if eq .CommonLabels.severity "info" -}}
-                  :information_source:
-                  {{- else -}}
-                  :question:
-                  {{- end }}
-                message: |
-                  {{ range .Alerts }}
-                  {{- if .Annotations.summary }}
-                  Summary:  {{ .Annotations.summary }}
-                  {{- end }}
-                  {{- if .Annotations.description }}
-                  Description: {{ .Annotations.description }}
-                  {{- end }}
-                  {{- end }}
+                title: '{{ template "discord.title" . }}'
+                message: '{{ template "discord.message" . }}'
           - name: "null"
           - name: "discord-info"
             discord_configs:
               - webhook_url: 'replacedfromvalues'
                 username: '${DOMAIN}'
-                title: |-
-                  [{{ .Status | toUpper -}}
-                   {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
-                  ]
-                  {{ if ne .Status "firing" -}}
-                  :white_check_mark:
-                  {{- else if eq .CommonLabels.severity "critical" -}}
-                  :x:
-                  {{- else if eq .CommonLabels.severity "warning" -}}
-                  :warning:
-                  {{- else if eq .CommonLabels.severity "info" -}}
-                  :information_source:
-                  {{- else -}}
-                  :question:
-                  {{- end }}
-                message: |
-                  {{ range .Alerts }}
-                  {{- if .Annotations.summary }}
-                  Summary:  {{ .Annotations.summary }}
-                  {{- end }}
-                  {{- if .Annotations.description }}
-                  Description: {{ .Annotations.description }}
-                  {{- end }}
-                  {{- end }}
+                title: '{{ template "discord.title" . }}'
+                message: '{{ template "discord.message" . }}'
           - name: "healthchecksio"
             webhook_configs:
               - url: 'replacedfromvalues'
