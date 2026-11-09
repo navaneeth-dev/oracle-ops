@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: observability
 resources:
   - grafanadashboards.yaml
+  - grafanadashboard-etcd.yaml
 generatorOptions:
   disableNameSuffixHash: true
   annotations:
