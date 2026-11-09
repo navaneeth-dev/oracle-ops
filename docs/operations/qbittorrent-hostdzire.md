@@ -12,6 +12,7 @@ flowchart LR
   subgraph hd["hostdzire6tb · 163.61.31.213"]
     qbit["qBittorrent<br/>Podman, host network"] --> srv[("/srv/nfs-data/oracle<br/>mounted at /hostdzire")]
     nfsd[nfsd] --> srv
+    tp["tinyproxy :8888"]
   end
   subgraph oci["Oracle cluster"]
     arr["Sonarr · Radarr · Prowlarr · qui"]
@@ -21,6 +22,7 @@ flowchart LR
   arr -- "API :8080 over Tailscale" --> qbit
   ak -- "WebUI :8080 over Tailscale" --> qbit
   arr -- NFS --> nfsd
+  arr -- "metadata, updates :8888 over Tailscale" --> tp --> web((Internet))
   emby -- NFS --> nfsd
 ```
 
@@ -28,8 +30,8 @@ flowchart LR
   `ens160`). Tracker IPs, including MaM's dynamic seedbox, are updated by hand.
 - **Same paths.** The container mounts the NFS export at `/hostdzire`, like the
   pods do, so no remote path mappings are needed and hardlinks keep working.
-- **Sonarr/Radarr outbound proxy** stays on the Kubernetes gluetun for now and
-  moves last.
+- **Sonarr/Radarr outbound proxy** is tinyproxy on hostdzire6tb
+  (`arr-proxy.nix`), so their HTTP also leaves from 163.61.31.213.
 
 ## Status
 
@@ -41,7 +43,7 @@ flowchart LR
 | 4. Cut over the state, together with the nixpkgs update and Tdarr 3.06 | Done, November 9 |
 | 5. Repoint consumers | Done, November 9 |
 | 6. Remove the Kubernetes qBittorrent leftovers and add a backup | To do |
-| 7. Move the Sonarr/Radarr proxy off gluetun | Later |
+| 7. Move the Sonarr/Radarr proxy off gluetun | Done, November 9 |
 
 ## 4. Cut over the state
 
@@ -76,7 +78,7 @@ beforehand with Set Location.
 | Where | Change |
 | --- | --- |
 | Sonarr, Radarr: download client `qBittorrent` | Host `100.124.57.7`, port 8080, categories `tv` / `movies`. The `HostDZire` clients, their `hostdzire` routing tag and auto-tagging rule, and the `hostdzire-tv` / `hostdzire-movies` categories were merged into it on November 9 |
-| Sonarr, Radarr: Settings → General → Proxy | Bypass filter `100.124.57.7`, otherwise their qBittorrent calls go into gluetun's tunnel and time out |
+| Sonarr, Radarr: Settings → General → Proxy | `100.124.57.7:8888` (tinyproxy, step 7), bypass `100.124.57.7,*.svc.cluster.local` |
 | Prowlarr: download client `qBittorrent` (audiobooks) | Host `100.124.57.7`, port 8080 |
 | qui: instance "Oracle Qbit Prod" | URL `http://100.124.57.7:8080` |
 | authentik proxy provider 16 for `qbittorrent.oci.fossindia.ovh` | Internal host `http://100.124.57.7:8080` |
@@ -88,22 +90,33 @@ pods cannot resolve MagicDNS names.
 
 ## 6. Remove the Kubernetes qBittorrent
 
-- **Delete:** once step 7 no longer needs gluetun, the remaining gluetun-only
-  `qbittorrent` HelmRelease and its `ks.yaml` entry, the `apps.yaml` VolSync
-  regex entry, and both `secret-wireguard.yaml` files.
+- **Delete:** the remaining gluetun-only `qbittorrent` HelmRelease and its
+  `ks.yaml` entry, the `apps.yaml` VolSync regex entry, and both
+  `secret-wireguard.yaml` files.
 - **Keep:** the `qbittorrent` PVC and its last VolSync snapshot until
   hostdzire has run cleanly for a while.
 - **Back up:** add a Restic backup of `/srv/qbittorrent/config` to OVH S3,
   together with the Tdarr backup item in `docs/roadmap.md`.
 
-## 7. Sonarr/Radarr proxy (later)
+## 7. Sonarr/Radarr proxy
 
-Both send all HTTP through gluetun's proxy on `qbittorrent:8888`, which goes
-out through the WireGuard VPS. Before gluetun goes, either run a proxy on
-hostdzire6tb with a bypass for `*.svc,*.svc.cluster.local,prowlarr`, or switch
-the proxy off. Then remove the qbittorrent rule from Prowlarr's NetworkPolicy
-and drop the `homelab` namespace's privileged PSA exception, which exists only
-for gluetun.
+Both used gluetun's proxy on `qbittorrent:8888`. They now use tinyproxy on
+`100.124.57.7:8888` ([`arr-proxy.nix`](../../nixos/hosts/hostdzire/arr-proxy.nix)):
+
+- Only oracle-prod (100.92.137.3) is allowed, and only on `tailscale0`.
+- Egress is bound to 163.61.31.213 (IPv4), and CONNECT is limited to port 443.
+- The bypass covers qBittorrent and `*.svc.cluster.local`. Indexer searches go
+  to Prowlarr in-cluster, so only metadata, update checks and Discord use the
+  proxy.
+
+Verified on November 9: the egress IP through the proxy is 163.61.31.213;
+the proxy is closed on the public IP; series and movie lookups, indexer
+Test All, and the download client tests all pass; tinyproxy logs CONNECTs to
+`skyhook.sonarr.tv` and `api.radarr.video`.
+
+Gluetun now has no consumers, so step 6 can delete it, together with the
+qbittorrent rule in Prowlarr's NetworkPolicy and the `homelab` namespace's
+privileged PSA exception.
 
 ## Trade-offs
 

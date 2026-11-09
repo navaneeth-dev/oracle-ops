@@ -14,14 +14,17 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 | `hosts/hostdzire/tdarr.nix` | Tdarr server + node as Podman containers, plus `tdarr-configure` |
 | `hosts/hostdzire/tdarr/` | The flow script, `configure.py`, library defaults |
 | `hosts/hostdzire/qbittorrent.nix` | qBittorrent as a Podman container; see `docs/operations/qbittorrent-hostdzire.md` |
+| `hosts/hostdzire/arr-proxy.nix` | tinyproxy on `tailscale0:8888` for Sonarr and Radarr in oracle-prod |
 
 ## Host configuration
 
 - **Root SSH is refused** and only key logins work. `rize` (1000:1000, the
   owner of the media) has passwordless sudo. Users are immutable
   (`users.mutableUsers = false`).
-- **Firewall:** public TCP is 22 only, plus Tailscale's UDP 41641. NFS (2049),
-  node-exporter (9100) and the Tdarr UI (8265) are open only on `tailscale0`.
+- **Firewall:** public TCP is 22 and qBittorrent's 41047 (also UDP), plus
+  Tailscale's UDP 41641. NFS (2049), node-exporter (9100), the Tdarr UI
+  (8265), qBittorrent's WebUI (8080) and tinyproxy (8888) are open only on
+  `tailscale0`.
   Tailscale runs with `--netfilter-mode=nodivert`. Its default mode accepts
   everything on `tailscale0` before the NixOS firewall sees it, which left
   Tdarr's internal port 8266 reachable from the tailnet.

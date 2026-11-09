@@ -8,6 +8,7 @@
     ./disko.nix
     ./tdarr.nix
     ./qbittorrent.nix
+    ./arr-proxy.nix
   ];
 
   system.stateVersion = "26.05";
