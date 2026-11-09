@@ -37,43 +37,60 @@ flowchart LR
 | --- | --- |
 | 1. Deploy `nixos/hosts/hostdzire/qbittorrent.nix`, empty instance | Done, November 9 |
 | 2. Same-torrent comparison, hash check, NFS hardlink from Sonarr, pod → API reachability | Done, November 9 |
-| 3. Instatus maintenance for qBittorrent (separate low-mode thread) | To do |
-| 4. Cut over the state | To do |
-| 5. Repoint consumers | To do |
-| 6. Remove the Kubernetes qBittorrent | To do |
+| 3. Instatus maintenance (separate low-mode thread) | Done, November 9, 12:45 IST |
+| 4. Cut over the state, together with the nixpkgs update and Tdarr 3.06 | Done, November 9 |
+| 5. Repoint consumers | Done, November 9 |
+| 6. Remove the Kubernetes qBittorrent leftovers and add a backup | To do |
 | 7. Move the Sonarr/Radarr proxy off gluetun | Later |
 
 ## 4. Cut over the state
 
-1. Stop the Kubernetes qBittorrent: suspend its HelmRelease and scale it to 0.
-2. Stop `podman-qbittorrent` and copy the pod's `/config` (14 MB) to
-   `/srv/qbittorrent/config`, owned by `rize:rize`.
-3. Before starting, fix `qBittorrent.conf`:
-   - Network interface `tun0` → `ens160`, address `0.0.0.0`.
-   - WebUI port 80 → 8080.
-   - Auth bypass `0.0.0.0/0` → `100.92.137.3/32` (every pod reaches the tailnet as
-     oracle-prod), and set a WebUI password.
-4. Start it and check that every torrent resumes without errors. Move or delete
-   the one torrent still on `/data`.
+What was done:
+
+1. The Kubernetes `qbittorrent` HelmRelease was reduced to gluetun only, so
+   qBittorrent shut down cleanly while Sonarr and Radarr kept their proxy on
+   `qbittorrent:8888`.
+2. A throwaway pod mounted the `qbittorrent` PVC read-only and streamed
+   `/config/qBittorrent` (without `logs`, `lockfile`, `ipc-socket`) to
+   `/srv/qbittorrent/config/qBittorrent`, owned by `rize:rize`.
+3. `qBittorrent.conf` changes:
+   - `Session\Interface` and `Session\InterfaceName` `tun0` → `ens160`, plus
+     `Session\InterfaceAddress=0.0.0.0` (IPv4 only).
+   - WebUI settings must live under `[Preferences]` as `WebUI\…` keys.
+     qBittorrent 5.2.4 ignores the separate `[WebUI]` section the old file had,
+     and then answers every API call with `403 Forbidden`. Added
+     `WebUI\Port=8080`, `WebUI\LocalHostAuth=false`,
+     `WebUI\AuthSubnetWhitelistEnabled=true` and
+     `WebUI\AuthSubnetWhitelist=100.92.137.3/32` (every pod reaches the tailnet
+     as oracle-prod), plus CSRF and host-header validation off as before.
+4. The new system generation was staged with `switch-to-configuration boot`
+   and hostdzire6tb rebooted once (kernel 6.18.60). Tdarr 2.96 state was saved
+   first to `/srv/backup/tdarr-2.96.01-20261109.tar.gz`.
+
+Result: all 12 torrents seeding, none errored, external IP 163.61.31.213.
+The Odyssey had been moved from `/data` to `/hostdzire/torrents/audiobooks`
+beforehand with Set Location.
 
 ## 5. Repoint consumers
 
 | Where | Change |
 | --- | --- |
-| Sonarr, Radarr: download clients `HostDZire` and `qBittorrent` | Host `100.124.57.7`, port 8080 (or merge into one client) |
-| Prowlarr: download client `qBittorrent` (audiobooks) | Same |
-| qui | Instance URL `http://100.124.57.7:8080` |
-| authentik proxy provider for `qbittorrent.oci.fossindia.ovh` | Internal host `http://100.124.57.7:8080` |
+| Sonarr, Radarr: download clients `HostDZire` and `qBittorrent` | Host `100.124.57.7`, port 8080 |
+| Sonarr, Radarr: Settings → General → Proxy | Bypass filter `100.124.57.7`, otherwise their qBittorrent calls go into gluetun's tunnel and time out |
+| Prowlarr: download client `qBittorrent` (audiobooks) | Host `100.124.57.7`, port 8080 |
+| qui: instance "Oracle Qbit Prod" | URL `http://100.124.57.7:8080` |
+| authentik proxy provider 16 for `qbittorrent.oci.fossindia.ovh` | Internal host `http://100.124.57.7:8080` |
 | `qbittorrent/app/vmprobe.yaml` | Target `http://100.124.57.7:8080/api/v2/app/version` |
 
-Use IPs: pods cannot resolve MagicDNS names. Test each download client, then
-run one real grab, import and hardlink.
+All five download clients pass their Test, qui shows the instance connected,
+the public WebUI loads through authentik, and the VMProbe succeeds. Use IPs:
+pods cannot resolve MagicDNS names.
 
 ## 6. Remove the Kubernetes qBittorrent
 
-- **Delete:** the `qbittorrent` HelmRelease and its `ks.yaml` entry, the
-  `apps.yaml` VolSync regex entry, and both `secret-wireguard.yaml` files,
-  once step 7 no longer needs gluetun.
+- **Delete:** once step 7 no longer needs gluetun, the remaining gluetun-only
+  `qbittorrent` HelmRelease and its `ks.yaml` entry, the `apps.yaml` VolSync
+  regex entry, and both `secret-wireguard.yaml` files.
 - **Keep:** the `qbittorrent` PVC and its last VolSync snapshot until
   hostdzire has run cleanly for a while.
 - **Back up:** add a Restic backup of `/srv/qbittorrent/config` to OVH S3,
