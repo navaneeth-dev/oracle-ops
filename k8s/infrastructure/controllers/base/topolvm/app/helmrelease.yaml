@@ -29,6 +29,9 @@ spec:
 
     controller:
       replicaCount: 1
+      # disable anti-affinity so rolling updates can surge on a single node
+      # (the chart expects a string here; {} fails to render)
+      affinity: ""
       podDisruptionBudget:
         enabled: false
 
