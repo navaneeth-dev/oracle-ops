@@ -42,7 +42,7 @@ flowchart LR
 | 3. Instatus maintenance (separate low-mode thread) | Done, November 9, 12:45 IST |
 | 4. Cut over the state, together with the nixpkgs update and Tdarr 3.06 | Done, November 9 |
 | 5. Repoint consumers | Done, November 9 |
-| 6. Remove the Kubernetes qBittorrent leftovers and add a backup | To do |
+| 6. Remove the Kubernetes qBittorrent leftovers and add a backup | Leftovers removed November 9; backup to do |
 | 7. Move the Sonarr/Radarr proxy off gluetun | Done, November 9 |
 
 ## 4. Cut over the state
@@ -91,11 +91,35 @@ pods cannot resolve MagicDNS names.
 
 ## 6. Remove the Kubernetes qBittorrent
 
-- **Delete:** the remaining gluetun-only `qbittorrent` HelmRelease and its
-  `ks.yaml` entry, the `apps.yaml` VolSync regex entry, and both
-  `secret-wireguard.yaml` files.
-- **Keep:** the `qbittorrent` PVC and its last VolSync snapshot until
-  hostdzire has run cleanly for a while.
+Removed on November 9:
+
+- The gluetun-only `qbittorrent` HelmRelease, its Flux Kustomization, its
+  ReplicationSource and ReplicationDestination, and the `qbittorrent-volsync`
+  Secret.
+- `qbittorrent` from the VolSync regex in `k8s/clusters/*/apps.yaml`.
+- Both `secret-wireguard.yaml` files and the `wireguard-secrets` Secret.
+- The qbittorrent rule in Prowlarr's NetworkPolicy, and Prowlarr's unused
+  `gluetun` tag.
+- The `homelab` namespace's privileged exception. It enforces `restricted`
+  again.
+- The `wg-gluetun` tunnel on the jellyfin VPS (163.61.31.57), with UDP 51821
+  and the 41047 port forward (jellyfin repo).
+
+The VMProbe moved to
+[`arr-stack/qbittorrent-vmprobe.yaml`](../../k8s/apps/base/arr-stack/qbittorrent-vmprobe.yaml).
+
+`apps` runs with `prune: false`, so removing these manifests from git does
+not delete the live objects. The `qbittorrent` Flux Kustomization was set to
+`deletionPolicy: Orphan` before it was deleted, and its other objects were
+then deleted by hand. This kept the PVC: Flux removes a
+`kustomize.toolkit.fluxcd.io/prune: disabled` annotation added with kubectl.
+
+Still open:
+
+- **Keep:** the `qbittorrent` PVC (no longer managed by Flux) and its last
+  VolSync snapshot in the `qbittorrent-volsync` restic repository. Delete the
+  PVC with `kubectl -n homelab delete pvc qbittorrent` once the backup below
+  exists. Its PV has reclaim policy `Delete`, so that also removes the data.
 - **Back up:** add a Restic backup of `/srv/qbittorrent/config` to OVH S3,
   together with the Tdarr backup item in `docs/roadmap.md`.
 
@@ -118,9 +142,7 @@ the proxy is closed on the public IP; series and movie lookups, indexer
 Test All, and the download client tests all pass; tinyproxy logs CONNECTs to
 `skyhook.sonarr.tv`, `api.radarr.video` and, for Seerr, `api.themoviedb.org`.
 
-Gluetun now has no consumers, so step 6 can delete it, together with the
-qbittorrent rule in Prowlarr's NetworkPolicy and the `homelab` namespace's
-privileged PSA exception.
+This left gluetun with no consumers, so step 6 removed it.
 
 ## Trade-offs
 

@@ -3,6 +3,4 @@ kind: Namespace
 metadata:
   name: homelab
   labels:
-    # Only qbittorrent's gluetun sidecar needs this: it runs as root with
-    # NET_ADMIN, which Baseline rejects. Everything else meets Restricted.
-    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/enforce: restricted
