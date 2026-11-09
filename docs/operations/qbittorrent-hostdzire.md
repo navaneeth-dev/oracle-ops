@@ -134,8 +134,8 @@ use tinyproxy on `100.124.57.7:8888` ([`arr-proxy.nix`](../../nixos/hosts/hostdz
   to Prowlarr in-cluster, so only metadata, update checks and Discord use the
   proxy.
 - Prowlarr gets no proxy. No indexer carries the `gluetun` tag of its
-  indexer proxy, so tracker calls already leave from Oracle's IP. Step 6
-  deletes that unused proxy and tag.
+  indexer proxy, so tracker calls already leave from Oracle's IP. The unused
+  proxy was deleted by hand, and step 6 deleted the tag.
 
 Verified on November 9: the egress IP through the proxy is 163.61.31.213;
 the proxy is closed on the public IP; series and movie lookups, indexer
