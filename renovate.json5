@@ -32,6 +32,15 @@
       '/k8s/.+\\.yaml$/',
     ],
   },
+  customDatasources: {
+    'grafana-plugins': {
+      description: 'Grafana installs plugins from the grafana.com catalog, which can lag behind GitHub releases',
+      defaultRegistryUrlTemplate: 'https://grafana.com/api/plugins/{{packageName}}/versions',
+      transformTemplates: [
+        '{"releases": [items.{"version": version, "releaseTimestamp": createdAt}]}',
+      ],
+    },
+  },
   suppressNotifications: [
     'prEditedNotification',
     'prIgnoreNotification',

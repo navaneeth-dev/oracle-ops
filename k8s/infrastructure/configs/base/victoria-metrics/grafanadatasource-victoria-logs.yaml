@@ -15,5 +15,5 @@ spec:
     isDefault: true
   plugins:
     - name: victoriametrics-logs-datasource
-      # renovate-semver: datasource=github-releases packageName=VictoriaMetrics/victorialogs-datasource
-      version: 0.34.0
+      # renovate-semver: datasource=custom.grafana-plugins packageName=victoriametrics-logs-datasource
+      version: 0.33.1
