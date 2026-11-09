@@ -16,7 +16,8 @@ spec:
       # plugins-bundled dir and leaves them unregistered. Renovate updates the image.
       preinstall_auto_update: "false"
     auth:
-      disable_login_form: "false"
+      # Also rejects POST /login; API basic auth stays on for grafana-operator.
+      disable_login_form: "true"
       signout_redirect_url: "https://authentik.${DOMAIN}/application/o/grafana/end-session/"
       oauth_auto_login: "true"
     server:
