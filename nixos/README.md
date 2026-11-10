@@ -10,7 +10,7 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 | --- | --- |
 | `flake.nix` / `flake.lock` | Pins nixos-26.05, disko and sops-nix; exposes `nixosConfigurations.hostdzire6tb` and the `checks.x86_64-linux.garage` VM test |
 | `hosts/hostdzire/default.nix` | Network, users, SSH, firewall, Tailscale, NFS server, node-exporter |
-| `hosts/hostdzire/disko.nix` | Disk layout: GPT, 1 MiB BIOS boot, LVM `vg0` with 64 GiB ext4 `/`, 4 TiB ext4 `/srv`, 800 GiB ext4 `/srv/garage`, about 1 TiB left free |
+| `hosts/hostdzire/disko.nix` | Disk layout: GPT, 1 MiB BIOS boot, LVM `vg0` with 64 GiB ext4 `/`, 4 TiB ext4 `/srv`, 800 GiB XFS `/srv/garage`, about 1 TiB left free |
 | `hosts/hostdzire/tdarr.nix` | Tdarr server + node as Podman containers, plus `tdarr-configure` |
 | `hosts/hostdzire/tdarr/` | The flow script, `configure.py`, library defaults |
 | `hosts/hostdzire/qbittorrent.nix` | qBittorrent as a Podman container; see `docs/operations/qbittorrent-hostdzire.md` |
@@ -55,7 +55,7 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 - **Garage** is a single node (`replication_factor = 1`) on its own 800 GiB
   logical volume, `/srv/garage`, so S3 cannot fill the NFS media volume. The
   LV was created by hand after the install (`lvcreate -L 800G -n garage vg0`,
-  `mkfs.ext4 -L garage`). Only Traefik is public; Garage's S3 (3900) and RPC
+  `mkfs.xfs -L garage`). Only Traefik is public; Garage's S3 (3900) and RPC
   (3901) ports listen on loopback, and there is no admin API or web UI.
   The cluster layout, buckets and keys are runtime state in Garage's
   metadata, managed on the host with the `garage` CLI, e.g.
