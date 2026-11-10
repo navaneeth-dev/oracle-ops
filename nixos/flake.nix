@@ -22,5 +22,16 @@
           ./hosts/hostdzire
         ];
       };
+
+      checks.${system}.garage =
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            # garage-webui's frontend is built with pnpm 9, which nixpkgs marks
+            # insecure. It runs only at build time and is not in the output.
+            config.permittedInsecurePackages = [ "pnpm-9.15.9" ];
+          };
+        in
+        pkgs.testers.runNixOSTest ./tests/garage;
     };
 }
