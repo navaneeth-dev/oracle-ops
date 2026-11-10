@@ -10,6 +10,7 @@
     ./qbittorrent.nix
     ./arr-proxy.nix
     ./traefik.nix
+    ./garage.nix
   ];
 
   system.stateVersion = "26.05";

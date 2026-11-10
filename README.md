@@ -22,7 +22,7 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
   every route and authentik for single sign-on.
 - **Storage:** TopoLVM local volumes, [HostDZire NFS over Tailscale](docs/operations/storage-benchmark.md)
   on the NixOS VPS `hostdzire6tb`
-  for media, CloudNativePG for databases, and VolSync restic configuration backups.
+  for media, Garage S3 behind Traefik on the same VPS, CloudNativePG for databases, and VolSync restic configuration backups.
 - **Observability:** VictoriaMetrics, Grafana and Fluent Bit. Public Instatus page at
   [status.fossindia.ovh](https://status.fossindia.ovh).
 - **Apps:** Emby, Audiobookshelf, the arr stack, Seerr, [Homepage](https://start.oci.fossindia.ovh) and
