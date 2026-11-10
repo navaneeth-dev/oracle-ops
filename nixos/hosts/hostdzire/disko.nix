@@ -48,12 +48,14 @@
           };
         };
         # Garage S3. Added after the install with
-        # `lvcreate -L 800G -n garage vg0 && mkfs.ext4 -L garage /dev/vg0/garage`.
+        # `lvcreate -L 800G -n garage vg0 && mkfs.xfs -L garage /dev/vg0/garage`.
+        # XFS, as Garage recommends for its data blocks; ext4's fixed inode
+        # count can run out with many small objects.
         garage = {
           size = "800G";
           content = {
             type = "filesystem";
-            format = "ext4";
+            format = "xfs";
             mountpoint = "/srv/garage";
             mountOptions = [ "noatime" ];
             extraArgs = [ "-L" "garage" ];
