@@ -4,10 +4,10 @@
 
 GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 
-[![Status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Frizexor.instatus.com%2Fsummary.json&query=%24.page.status&label=status)](https://rizexor.instatus.com)
-[![Uptime](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Frizexor.instatus.com&search=%28%5B0-9.%5D%2B%25%29%20uptime&replace=%241&label=uptime%20%2830d%29)](https://rizexor.instatus.com)
+[![Status](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fstatus.fossindia.ovh%2Fsummary.json&query=%24.page.status&label=status)](https://status.fossindia.ovh)
+[![Uptime](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fstatus.fossindia.ovh&search=%28%5B0-9.%5D%2B%25%29%20uptime&replace=%241&label=uptime%20%2830d%29)](https://status.fossindia.ovh)
 
-[Start page](https://start.oci.fossindia.ovh) · [Status page](https://rizexor.instatus.com)
+[Start page](https://start.oci.fossindia.ovh) · [Status page](https://status.fossindia.ovh)
 
 </div>
 
@@ -23,8 +23,8 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 - **Storage:** TopoLVM local volumes, [HostDZire NFS over Tailscale](docs/operations/storage-benchmark.md)
   on the NixOS VPS `hostdzire6tb`
   for media, CloudNativePG for databases, and VolSync restic configuration backups.
-- **Observability:** VictoriaMetrics, Grafana and Fluent Bit. Public status at
-  [rizexor.instatus.com](https://rizexor.instatus.com).
+- **Observability:** VictoriaMetrics, Grafana and Fluent Bit. Public Instatus page at
+  [status.fossindia.ovh](https://status.fossindia.ovh).
 - **Apps:** Emby, Audiobookshelf, the arr stack, Seerr, [Homepage](https://start.oci.fossindia.ovh) and
   LibreSpeed.
 
@@ -59,11 +59,11 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 
 ## Repository layout
 
-| Path | Contents |
-|---|---|
+| Path                     | Contents                                                |
+| ------------------------ | ------------------------------------------------------- |
 | [`clusters/`](clusters/) | Talos machine config and OCI infrastructure per cluster |
-| [`k8s/`](k8s/) | Flux manifests: shared `base` and per-cluster overlays |
-| [`docs/`](docs/) | Experiments, previous setups, runbooks and roadmap |
+| [`k8s/`](k8s/)           | Flux manifests: shared `base` and per-cluster overlays  |
+| [`docs/`](docs/)         | Experiments, previous setups, runbooks and roadmap      |
 
 ## Security
 

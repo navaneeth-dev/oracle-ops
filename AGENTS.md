@@ -32,7 +32,9 @@ Right now dev cluster is not active, so forget it.
 
 # Status page and README
 
-The public status page is Instatus at https://rizexor.instatus.com. When a
+The public status page is Instatus at https://fossindia.instatus.com, served at
+https://status.fossindia.ovh by the Cloudflare Worker in
+https://github.com/navaneeth-dev/status. Link to status.fossindia.ovh. When a
 user-facing service is added, renamed or removed, update its Instatus monitor
 and component in the same change, and tell the user if you cannot do it
 yourself. Keep the README's overview and tech stack logos in sync as well.

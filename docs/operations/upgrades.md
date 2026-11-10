@@ -77,7 +77,7 @@ mise defaults.
 8. Verify all active pods, Flux Kustomizations and HelmReleases are Ready;
    verify `speed`, `authentik`, `grafana` and `start` under
    `*.oci.fossindia.ovh` return 200/302. Complete the Instatus maintenance and
-   verify `https://rizexor.instatus.com/summary.json` reports healthy status.
+   verify `https://status.fossindia.ovh/summary.json` reports healthy status.
 
 Do not remove the production `service-account-issuer.yaml` patch when changing
 API endpoints or certificate SANs. The issuer and audiences remain
@@ -113,7 +113,7 @@ Kubernetes version to avoid accidentally downgrading component images.
 - Final checks passed: Talos health, node/control-plane readiness, Cilium
   agent/operator and endpoint reachability, metrics API, all active pods and
   Flux resources, and 200/302 responses from all four service checks above.
-- [Instatus maintenance](https://rizexor.instatus.com/cmvnifuaq08w913o7d3mwrvue)
+- [Instatus maintenance](https://status.fossindia.ovh/cmvnifuaq08w913o7d3mwrvue)
   covered all Production components from **13:05 to 13:29 Asia/Calcutta**,
   finishing early within the planned 45-minute window. The public summary
   reported `UP` with no active maintenance after completion.

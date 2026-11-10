@@ -12,7 +12,7 @@ Times are IST (UTC+5:30).
 | Instance | `controlplane-rizexor-prod1`, VM.Standard.A1.Flex (4 OCPU, 24 GB), Hyderabad AD-1 |
 | Onset | about 00:00 Nov 5 (18:30 UTC Nov 4) |
 | Recovered | 12:50 Nov 5, after moving from FAULT-DOMAIN-1 to FAULT-DOMAIN-2 |
-| Status page | [Instatus incident](https://rizexor.instatus.com/cmw33mr9506br0wn74yesdv65) |
+| Status page | [Instatus incident](https://status.fossindia.ovh/cmw33mr9506br0wn74yesdv65) |
 
 ## Timeline
 
