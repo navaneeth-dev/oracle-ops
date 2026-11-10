@@ -8,21 +8,23 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 
 | Path | What it is |
 | --- | --- |
-| `flake.nix` / `flake.lock` | Pins nixos-26.05 and disko; exposes `nixosConfigurations.hostdzire6tb` |
+| `flake.nix` / `flake.lock` | Pins nixos-26.05, disko and sops-nix; exposes `nixosConfigurations.hostdzire6tb` and the `checks.x86_64-linux.garage` VM test |
 | `hosts/hostdzire/default.nix` | Network, users, SSH, firewall, Tailscale, NFS server, node-exporter |
 | `hosts/hostdzire/disko.nix` | Disk layout: GPT, 1 MiB BIOS boot, LVM `vg0` with 64 GiB ext4 `/`, 4 TiB ext4 `/srv`, about 1.8 TiB left free |
 | `hosts/hostdzire/tdarr.nix` | Tdarr server + node as Podman containers, plus `tdarr-configure` |
 | `hosts/hostdzire/tdarr/` | The flow script, `configure.py`, library defaults |
 | `hosts/hostdzire/qbittorrent.nix` | qBittorrent as a Podman container; see `docs/operations/qbittorrent-hostdzire.md` |
 | `hosts/hostdzire/arr-proxy.nix` | tinyproxy on `tailscale0:8888` for Sonarr and Radarr in oracle-prod |
+| `hosts/hostdzire/traefik.nix` | Traefik on public 80/443, Let's Encrypt certificates over Cloudflare DNS-01 |
+| `tests/garage/` | NixOS VM test: Garage behind Traefik with garage-webui, replaying Ente's S3 traffic |
 
 ## Host configuration
 
 - **Root SSH is refused** and only key logins work. `rize` (1000:1000, the
   owner of the media) has passwordless sudo. Users are immutable
   (`users.mutableUsers = false`).
-- **Firewall:** public TCP is 22 and qBittorrent's 41047 (also UDP), plus
-  Tailscale's UDP 41641. NFS (2049), node-exporter (9100), the Tdarr UI
+- **Firewall:** public TCP is 22, Traefik's 80 and 443, and qBittorrent's
+  41047 (also UDP), plus Tailscale's UDP 41641. NFS (2049), node-exporter (9100), the Tdarr UI
   (8265), qBittorrent's WebUI (8080) and tinyproxy (8888) are open only on
   `tailscale0`.
   Tailscale runs with `--netfilter-mode=nodivert`. Its default mode accepts
@@ -41,6 +43,13 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 - **`/srv` is its own logical volume**, and about 1.8 TiB of `vg0` stays free.
   That space is for a later LUKS-encrypted volume (e.g. Immich photos) or for
   growing `/srv` online with `lvextend -r`.
+- **Traefik has no routers yet.** Port 80 redirects to HTTPS, and every router
+  added on `websecure` gets a Let's Encrypt certificate through a Cloudflare
+  DNS-01 challenge. The API token is cert-manager's
+  (`k8s/infrastructure/configs/base/cert-manager/cloudflare-secret.yaml`):
+  sops-nix decrypts that same file with the host's SSH ed25519 key, which is
+  a second recipient in `.sops.yaml`. A reinstall that changes the host key
+  needs a new recipient and `sops updatekeys`.
 - **Root has a password for the VMware console only** (SSH refuses root). Its
   hash is not in git: it is read from `/var/lib/secrets/root-password.hash`,
   which `nixos-anywhere --extra-files` copied in.
