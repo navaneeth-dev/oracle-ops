@@ -1,8 +1,3 @@
-# Garage: single-node S3 at https://s3.fossindia.ovh, behind Traefik. Data and
-# metadata live on their own logical volume (/srv/garage, see disko.nix) so a
-# full bucket cannot fill /srv and the NFS media. The cluster layout, buckets
-# and keys are runtime state managed with the `garage` CLI; see
-# nixos/README.md.
 { config, pkgs, ... }:
 {
   sops.secrets.garage-rpc-secret = {

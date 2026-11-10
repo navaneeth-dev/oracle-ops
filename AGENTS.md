@@ -3,6 +3,12 @@
 Always use Conventional Commits for commit messages, including amended commits
 (for example, `fix(cpu): right-size workload reservations`).
 
+# Code comments
+
+Don't start files with a header comment describing the file or service. Put
+that overview in the relevant README instead, and keep comments next to the
+specific lines they explain.
+
 # Node tooling
 
 Use `pnx` instead of `npx` to run Node package binaries.
