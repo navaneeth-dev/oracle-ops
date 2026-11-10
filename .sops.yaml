@@ -13,6 +13,11 @@ creation_rules:
     age: >-
       age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252,
       age16w0c7f0t2tttnrxg98a0pvqggc62hcy08ww77qww5ut2jur5gvnsku55z4
+  # NixOS host secrets, decrypted by sops-nix on hostdzire6tb.
+  - path_regex: nixos/.*\.sops\.yaml$
+    age: >-
+      age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252,
+      age16w0c7f0t2tttnrxg98a0pvqggc62hcy08ww77qww5ut2jur5gvnsku55z4
   - path_regex: .*.yaml
     encrypted_regex: ^(data|stringData)$
     age: age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252

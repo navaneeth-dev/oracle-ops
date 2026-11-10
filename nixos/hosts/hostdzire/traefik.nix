@@ -22,6 +22,9 @@
         websecure = {
           address = ":443";
           http.tls.certResolver = "cloudflare";
+          # Traefik 3 cuts request bodies off after 60 s, too short for an
+          # S3 part upload over a slow phone connection.
+          transport.respondingTimeouts.readTimeout = "30m";
         };
       };
       certificatesResolvers.cloudflare.acme = {

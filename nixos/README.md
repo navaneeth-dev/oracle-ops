@@ -10,12 +10,14 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 | --- | --- |
 | `flake.nix` / `flake.lock` | Pins nixos-26.05, disko and sops-nix; exposes `nixosConfigurations.hostdzire6tb` and the `checks.x86_64-linux.garage` VM test |
 | `hosts/hostdzire/default.nix` | Network, users, SSH, firewall, Tailscale, NFS server, node-exporter |
-| `hosts/hostdzire/disko.nix` | Disk layout: GPT, 1 MiB BIOS boot, LVM `vg0` with 64 GiB ext4 `/`, 4 TiB ext4 `/srv`, about 1.8 TiB left free |
+| `hosts/hostdzire/disko.nix` | Disk layout: GPT, 1 MiB BIOS boot, LVM `vg0` with 64 GiB ext4 `/`, 4 TiB ext4 `/srv`, 800 GiB ext4 `/srv/garage`, about 1 TiB left free |
 | `hosts/hostdzire/tdarr.nix` | Tdarr server + node as Podman containers, plus `tdarr-configure` |
 | `hosts/hostdzire/tdarr/` | The flow script, `configure.py`, library defaults |
 | `hosts/hostdzire/qbittorrent.nix` | qBittorrent as a Podman container; see `docs/operations/qbittorrent-hostdzire.md` |
 | `hosts/hostdzire/arr-proxy.nix` | tinyproxy on `tailscale0:8888` for Sonarr and Radarr in oracle-prod |
 | `hosts/hostdzire/traefik.nix` | Traefik on public 80/443, Let's Encrypt certificates over Cloudflare DNS-01 |
+| `hosts/hostdzire/garage.nix` | Garage S3 at `https://s3.fossindia.ovh`, behind Traefik |
+| `hosts/hostdzire/secrets.sops.yaml` | Host secrets for sops-nix (Garage RPC secret) |
 | `tests/garage/` | NixOS VM test: Garage behind Traefik with garage-webui, replaying Ente's S3 traffic |
 
 ## Host configuration
@@ -40,16 +42,26 @@ It was installed with `nixos-anywhere` on 2026-10-29.
 - **Tdarr watches the libraries with inotify** (`useFsEvents: true`) instead
   of polling. The kernel raises inotify events for files written through the
   NFS server, so imports from the cluster show up within about 30 s.
-- **`/srv` is its own logical volume**, and about 1.8 TiB of `vg0` stays free.
+- **`/srv` is its own logical volume**, and about 1 TiB of `vg0` stays free.
   That space is for a later LUKS-encrypted volume (e.g. Immich photos) or for
-  growing `/srv` online with `lvextend -r`.
-- **Traefik has no routers yet.** Port 80 redirects to HTTPS, and every router
-  added on `websecure` gets a Let's Encrypt certificate through a Cloudflare
+  growing `/srv` or `/srv/garage` online with `lvextend -r`.
+- **Traefik** redirects port 80 to HTTPS, and every router added on
+  `websecure` gets a Let's Encrypt certificate through a Cloudflare
   DNS-01 challenge. The API token is cert-manager's
   (`k8s/infrastructure/configs/base/cert-manager/cloudflare-secret.yaml`):
   sops-nix decrypts that same file with the host's SSH ed25519 key, which is
   a second recipient in `.sops.yaml`. A reinstall that changes the host key
   needs a new recipient and `sops updatekeys`.
+- **Garage** is a single node (`replication_factor = 1`) on its own 800 GiB
+  logical volume, `/srv/garage`, so S3 cannot fill the NFS media volume. The
+  LV was created by hand after the install (`lvcreate -L 800G -n garage vg0`,
+  `mkfs.ext4 -L garage`). Only Traefik is public; Garage's S3 (3900) and RPC
+  (3901) ports listen on loopback, and there is no admin API or web UI.
+  The cluster layout, buckets and keys are runtime state in Garage's
+  metadata, managed on the host with the `garage` CLI, e.g.
+  `sudo -u garage garage bucket create ente`. Metadata is snapshotted every
+  6 h under `/srv/garage/meta/snapshots`. There is no redundancy and no
+  off-site copy yet.
 - **Root has a password for the VMware console only** (SSH refuses root). Its
   hash is not in git: it is read from `/var/lib/secrets/root-password.hash`,
   which `nixos-anywhere --extra-files` copied in.

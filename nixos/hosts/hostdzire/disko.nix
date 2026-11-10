@@ -47,6 +47,18 @@
             extraArgs = [ "-L" "srv" ];
           };
         };
+        # Garage S3. Added after the install with
+        # `lvcreate -L 800G -n garage vg0 && mkfs.ext4 -L garage /dev/vg0/garage`.
+        garage = {
+          size = "800G";
+          content = {
+            type = "filesystem";
+            format = "ext4";
+            mountpoint = "/srv/garage";
+            mountOptions = [ "noatime" ];
+            extraArgs = [ "-L" "garage" ];
+          };
+        };
       };
     };
   };
