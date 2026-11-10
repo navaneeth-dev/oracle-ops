@@ -1,9 +1,3 @@
-# Traefik: public HTTPS entry point for services on this host. Certificates
-# come from Let's Encrypt over a Cloudflare DNS-01 challenge, using the same
-# API token as the cluster's cert-manager. sops-nix decrypts that Secret with
-# this host's SSH key, which is a recipient in .sops.yaml.
-# Routers are added by the services that need them; every router on
-# websecure gets a certificate from the cloudflare resolver.
 { config, pkgs, ... }:
 {
   sops.secrets.cloudflare-api-token = {
@@ -31,7 +25,7 @@
         };
       };
       certificatesResolvers.cloudflare.acme = {
-        email = "certs@rize.anonaddy.com";
+        email = "admin@rizexor.com";
         storage = "${config.services.traefik.dataDir}/acme.json";
         dnsChallenge.provider = "cloudflare";
       };
