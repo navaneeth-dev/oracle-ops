@@ -6,6 +6,13 @@ creation_rules:
   # Local agent credentials (dotenv): encrypt every value.
   - path_regex: \.mcp/.*\.sops\.env$
     age: age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252
+  # cert-manager's Cloudflare token, also decrypted by sops-nix on
+  # hostdzire6tb (age key derived from its SSH host key) for Traefik.
+  - path_regex: k8s/infrastructure/configs/base/cert-manager/cloudflare-secret\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    age: >-
+      age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252,
+      age16w0c7f0t2tttnrxg98a0pvqggc62hcy08ww77qww5ut2jur5gvnsku55z4
   - path_regex: .*.yaml
     encrypted_regex: ^(data|stringData)$
     age: age1xcavq2xfqzvr6jr0amr2axjgjrn70v5fd9gs8mpu7yzvc297pucscxd252
