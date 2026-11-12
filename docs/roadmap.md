@@ -4,7 +4,6 @@
 - [ ] Create a github action to update talosctl & kubernetes version
 - [ ] Security, dont allow namespaces to talk to each other
 - [ ] One more backup site / copy to achieve 3-2-1
-- [ ] Import prod oracle into Terraform
 - [ ] grafana perms on restore 10001
 - [ ] Decide Homepage's future: it is public and duplicates Authentik's app
   library. Either strip it to a landing page (Authentik sign-in link and status
