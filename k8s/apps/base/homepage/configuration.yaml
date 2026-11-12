@@ -27,44 +27,42 @@ data:
       showSearchSuggestions: true
       hideVisitURL: true
     layout:
-      Public:
+      Streaming:
         style: row
         columns: 4
-      Media:
+      Media Automation:
         style: row
         columns: 4
-      Monitoring:
+      Tools:
         style: row
-        columns: 2
+        columns: 4
 
-  widgets.yaml: ""
+  widgets.yaml: |
+    - logo:
+        icon: https://cdn.fossindia.ovh/fossindia.png
+    - greeting:
+        text_size: md
+        text: Status Page ↗
+        href: https://status.fossindia.ovh
 
   bookmarks.yaml: ""
 
   services.yaml: |
-    - Public:
-        - Authentik:
-            href: 'https://authentik.${DOMAIN}'
-            icon: authentik
-            description: Account & SSO
+    - Streaming:
         - Emby:
             href: 'https://emby.${DOMAIN}'
             icon: emby
             description: Watch Movies/TV
-        - Seer:
-            href: 'https://requests.${DOMAIN}'
-            icon: jellyseerr
-            description: Download Movies/TV
         - Audiobookshelf:
             href: 'https://audiobookshelf.${DOMAIN}'
             icon: audiobookshelf
             description: Stream Audiobooks
-        - Speedtest:
-            href: 'https://speed.${DOMAIN}'
-            icon: librespeed
-            description: Speedtest
+        - Seer:
+            href: 'https://requests.${DOMAIN}'
+            icon: jellyseerr
+            description: Download Movies/TV
 
-    - 'Arr Stack':
+    - Media Automation:
         - Prowlarr:
             href: 'https://prowlarr.${DOMAIN}'
             icon: prowlarr
@@ -80,8 +78,14 @@ data:
         - Qui:
             href: 'https://qui.${DOMAIN}'
             icon: qbittorrent
-            description: Manage Torrents
-    - Monitoring:
+
+    - Tools:
+        - Authentik:
+            href: 'https://authentik.${DOMAIN}'
+            icon: authentik
+        - Speedtest:
+            href: 'https://speed.${DOMAIN}'
+            icon: librespeed
         - Grafana:
             href: 'https://grafana.${DOMAIN}'
             icon: grafana
