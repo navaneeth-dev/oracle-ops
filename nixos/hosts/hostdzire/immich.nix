@@ -39,8 +39,9 @@ in
       ];
       extraOptions = [
         "--network=host"
-        "--memory=1536m"
-        "--memory-swap=1536m"
+        # About 1.2 GiB idle with its API and microservices workers.
+        "--memory=2g"
+        "--memory-swap=2g"
       ];
     };
 
@@ -64,8 +65,9 @@ in
       extraOptions = [
         "--network=host"
         "--shm-size=128m"
-        "--memory=512m"
-        "--memory-swap=512m"
+        # The image's postgresql.conf sets shared_buffers = 512MB.
+        "--memory=1g"
+        "--memory-swap=1g"
       ];
     };
 
