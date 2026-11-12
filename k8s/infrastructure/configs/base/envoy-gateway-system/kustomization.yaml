@@ -5,7 +5,6 @@ resources:
   - gateway-class.yaml
   - gateway.yaml
   - certificate.yaml
-  - clienttrafficpolicy.yaml
   - securitypolicy.yaml
   - vmpodscrape.yaml
   - grafanadashboard-envoy-gateway-global.yaml

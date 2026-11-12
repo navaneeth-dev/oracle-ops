@@ -24,12 +24,13 @@ installed Envoy API returns HTTP 413 above a configured `maxRequestBytes`, even
 with fail-open enabled. Body inspection therefore needs a separate policy for
 routes with an acceptable upload limit. Bot challenges are not enabled.
 
-The bouncer uses Envoy's `X-Envoy-External-Address` header, resolved by the existing
-ClientTrafficPolicy. It trusts zero X-Forwarded-For hops because the OCI Network
-Load Balancer forwards TCP with the client source IP and adds no header; a higher
-value lets clients choose the IP that CrowdSec checks and bans. Raise it only
-when adding a layer 7 proxy that appends X-Forwarded-For, and then accept traffic
-only from that proxy.
+The bouncer uses Envoy's `X-Envoy-External-Address` header, which Envoy sets to
+the TCP peer address. The OCI Network Load Balancer is layer 4 and preserves the
+client source IP, so the Gateway has no ClientTrafficPolicy client IP detection.
+Any Envoy Gateway `xForwardedFor` setting, including `numTrustedHops: 0`, makes
+Envoy read the client IP from X-Forwarded-For, which clients control; that lets
+them choose the IP CrowdSec checks and bans. Add it only behind a layer 7 proxy
+that appends X-Forwarded-For, and then accept traffic only from that proxy.
 
 LAPI intentionally uses a single replica with persistent SQLite state for the
 current single-node clusters. Move to PostgreSQL before increasing LAPI replicas.
