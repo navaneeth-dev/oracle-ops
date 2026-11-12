@@ -61,6 +61,31 @@
             extraArgs = [ "-L" "garage" ];
           };
         };
+        # Immich and Ente under evaluation, each on its own LV so the loser
+        # can be removed and the winner grown with `lvextend -r`. Added by
+        # hand: `lvcreate -L 100G -n immich vg0 && mkfs.xfs -L immich
+        # /dev/vg0/immich`, and the same with 10G for ente, whose photos
+        # are in Garage.
+        immich = {
+          size = "100G";
+          content = {
+            type = "filesystem";
+            format = "xfs";
+            mountpoint = "/srv/immich";
+            mountOptions = [ "noatime" ];
+            extraArgs = [ "-L" "immich" ];
+          };
+        };
+        ente = {
+          size = "10G";
+          content = {
+            type = "filesystem";
+            format = "xfs";
+            mountpoint = "/srv/ente";
+            mountOptions = [ "noatime" ];
+            extraArgs = [ "-L" "ente" ];
+          };
+        };
       };
     };
   };

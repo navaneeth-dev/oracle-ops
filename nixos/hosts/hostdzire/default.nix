@@ -11,6 +11,8 @@
     ./arr-proxy.nix
     ./traefik.nix
     ./garage.nix
+    ./immich.nix
+    ./ente.nix
   ];
 
   system.stateVersion = "26.05";
