@@ -74,7 +74,7 @@
       minimumGroupSize: 2,
     },
     {
-      description: 'Auto-merge terraform',
+      description: 'Auto-merge OpenTofu providers and modules',
       matchDatasources: [
         'terraform-module',
         'terraform-provider',
@@ -155,7 +155,7 @@
         'mise',
       ],
       matchDepNames: [
-        'terraform',
+        'opentofu',
         'yq',
       ],
       matchUpdateTypes: [
