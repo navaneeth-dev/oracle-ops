@@ -24,6 +24,11 @@ pnx --allow-build=re2 --allow-build=core-js-pure --allow-build=dtrace-provider \
   renovate-config-validator --strict renovate.json5
 ```
 
+# Don't Create Docs or Markdown
+
+Don't create your docs or md files unless asked, this is considered as AI slop.
+But you can update md if information is outdated when you change something.
+
 # Shared cluster application configuration
 
 Oracle and Oracle-dev should run the same applications and normal application
