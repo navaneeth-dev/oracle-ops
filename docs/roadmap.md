@@ -6,6 +6,9 @@
 - [ ] One more backup site / copy to achieve 3-2-1
 - [ ] Import prod oracle into Terraform
 - [ ] grafana perms on restore 10001
+- [ ] Decide Homepage's future: it is public and duplicates Authentik's app
+  library. Either strip it to a landing page (Authentik sign-in link and status
+  badge) or remove it and redirect the apex and `start.` domains to Authentik.
 - [ ] Back up `hostdzire6tb` state to OVH S3 using native Restic, following the
   existing VolSync storage pattern:
   - qBittorrent: `/srv/qbittorrent/config` (torrent resume data). Until this
