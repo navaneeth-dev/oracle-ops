@@ -99,6 +99,23 @@ spec:
             cpu: 100m
             memory: 320Mi
 
+    prometheus-node-exporter:
+      vmScrape:
+        spec:
+          endpoints:
+            # Helm replaces lists, so this repeats the chart's endpoint.
+            - port: metrics
+              metricRelabelConfigs:
+                # Per-pod volume mounts churn series and look full.
+                - action: drop
+                  source_labels: [mountpoint]
+                  regex: "/var/lib/kubelet/pods.+"
+              relabelConfigs:
+                # Set the node name in metrics instead of IP
+                - action: replace
+                  source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+
     kube-state-metrics:
       vmScrape:
         enabled: true
@@ -117,9 +134,9 @@ spec:
       # For kube-prometheus-stacks that are already installed and configured with
       # custom collectors, commenting out the collectors and extraArgs below will
       # retain any existing kube-state-metrics configuration.
-#      collectors: [ ]
-#      extraArgs:
-#        - --custom-resource-state-only=true
+      #      collectors: [ ]
+      #      extraArgs:
+      #        - --custom-resource-state-only=true
       rbac:
         extraRules:
           - apiGroups:
@@ -142,7 +159,7 @@ spec:
               - imagerepositories
               - imagepolicies
               - imageupdateautomations
-            verbs: [ "list", "watch" ]
+            verbs: ["list", "watch"]
       customResourceState:
         enabled: true
         config:
@@ -160,13 +177,13 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      revision: [ status, lastAppliedRevision ]
-                      source_name: [ spec, sourceRef, name ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, lastAppliedRevision]
+                      source_name: [spec, sourceRef, name]
               - groupVersionKind:
                   group: helm.toolkit.fluxcd.io
                   version: v2
@@ -179,16 +196,16 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      revision: [ status, history, "0", chartVersion ]
-                      chart_name: [ status, history, "0", chartName ]
-                      chart_app_version: [ status, history, "0", appVersion ]
-                      chart_ref_name: [ spec, chartRef, name ]
-                      chart_source_name: [ spec, chart, spec, sourceRef, name ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, history, "0", chartVersion]
+                      chart_name: [status, history, "0", chartName]
+                      chart_app_version: [status, history, "0", appVersion]
+                      chart_ref_name: [spec, chartRef, name]
+                      chart_source_name: [spec, chart, spec, sourceRef, name]
               - groupVersionKind:
                   group: source.toolkit.fluxcd.io
                   version: v1
@@ -201,13 +218,13 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      revision: [ status, artifact, revision ]
-                      url: [ spec, url ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      url: [spec, url]
               - groupVersionKind:
                   group: source.toolkit.fluxcd.io
                   version: v1
@@ -220,14 +237,14 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      revision: [ status, artifact, revision ]
-                      endpoint: [ spec, endpoint ]
-                      bucket_name: [ spec, bucketName ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      endpoint: [spec, endpoint]
+                      bucket_name: [spec, bucketName]
               - groupVersionKind:
                   group: source.toolkit.fluxcd.io
                   version: v1
@@ -240,13 +257,13 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      revision: [ status, artifact, revision ]
-                      url: [ spec, url ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      url: [spec, url]
               - groupVersionKind:
                   group: source.toolkit.fluxcd.io
                   version: v1
@@ -259,14 +276,14 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      revision: [ status, artifact, revision ]
-                      chart_name: [ spec, chart ]
-                      chart_version: [ spec, version ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      chart_name: [spec, chart]
+                      chart_version: [spec, version]
               - groupVersionKind:
                   group: source.toolkit.fluxcd.io
                   version: v1
@@ -279,13 +296,13 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      revision: [ status, artifact, revision ]
-                      url: [ spec, url ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      revision: [status, artifact, revision]
+                      url: [spec, url]
               - groupVersionKind:
                   group: notification.toolkit.fluxcd.io
                   version: v1beta3
@@ -298,10 +315,10 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      suspended: [ spec, suspend ]
+                      exported_namespace: [metadata, namespace]
+                      suspended: [spec, suspend]
               - groupVersionKind:
                   group: notification.toolkit.fluxcd.io
                   version: v1beta3
@@ -314,10 +331,10 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      suspended: [ spec, suspend ]
+                      exported_namespace: [metadata, namespace]
+                      suspended: [spec, suspend]
               - groupVersionKind:
                   group: notification.toolkit.fluxcd.io
                   version: v1
@@ -330,12 +347,12 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      webhook_path: [ status, webhookPath ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      webhook_path: [status, webhookPath]
               - groupVersionKind:
                   group: image.toolkit.fluxcd.io
                   version: v1
@@ -348,12 +365,12 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      image: [ spec, image ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      image: [spec, image]
               - groupVersionKind:
                   group: image.toolkit.fluxcd.io
                   version: v1
@@ -366,12 +383,12 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      source_name: [ spec, imageRepositoryRef, name ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      source_name: [spec, imageRepositoryRef, name]
               - groupVersionKind:
                   group: image.toolkit.fluxcd.io
                   version: v1
@@ -384,12 +401,12 @@ spec:
                       type: Info
                       info:
                         labelsFromPath:
-                          name: [ metadata, name ]
+                          name: [metadata, name]
                     labelsFromPath:
-                      exported_namespace: [ metadata, namespace ]
-                      ready: [ status, conditions, "[type=Ready]", status ]
-                      suspended: [ spec, suspend ]
-                      source_name: [ spec, sourceRef, name ]
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+                      source_name: [spec, sourceRef, name]
       enabled: true
 
     kubelet:
@@ -483,7 +500,7 @@ spec:
           {{- if .CommonLabels.alertname }} {{ .CommonLabels.alertname }}{{ if gt $count 1 }} ×{{ $count }}{{ end }}
           {{- else }} {{ $count }} alerts{{ with .CommonLabels.alertgroup }} in {{ . }}{{ end }}
           {{- end }}
-          {{- with .CommonLabels.namespace }} · {{ . }}{{ end }}
+          {{- with or .CommonLabels.node .CommonLabels.namespace }} · {{ . }}{{ end }}
           {{- end }}
 
           {{/* vmalert's Grafana Explore links contain raw JSON; encode it so Discord keeps the link. */}}
@@ -502,7 +519,7 @@ spec:
           {{- end }}
 
           {{ define "discord.alert" -}}
-          {{ if eq .Status "firing" }}{{ template "discord.emoji" .Labels.severity }}{{ else }}✅{{ end }} **{{ .Labels.alertname }}** · {{ if eq .Status "firing" }}since <t:{{ .StartsAt.Unix }}:R>{{ else }}resolved <t:{{ .EndsAt.Unix }}:R>{{ end }}
+          {{ if eq .Status "firing" }}{{ template "discord.emoji" .Labels.severity }}{{ else }}✅{{ end }} **{{ .Labels.alertname }}**{{ with .Labels.node }} on `{{ . }}`{{ end }} · {{ if eq .Status "firing" }}since <t:{{ .StartsAt.Unix }}:R>{{ else }}resolved <t:{{ .EndsAt.Unix }}:R>{{ end }}
           {{ template "discord.text" . }}
           [Graph]({{ template "discord.url" .GeneratorURL }}){{ with .Annotations.runbook_url }} · [Runbook]({{ . }}){{ end }}
           {{- end }}
@@ -538,27 +555,27 @@ spec:
           group_interval: 5m
           repeat_interval: 4h
           routes:
-            - receiver: 'healthchecksio'
+            - receiver: "healthchecksio"
               matchers:
                 - alertname =~ "InfoInhibitor|Watchdog"
 
         receivers:
           - name: "discord-infra"
             discord_configs:
-              - webhook_url: 'replacedfromvalues'
-                username: '${DOMAIN}'
+              - webhook_url: "replacedfromvalues"
+                username: "${DOMAIN}"
                 title: '{{ template "discord.title" . }}'
                 message: '{{ template "discord.message" . }}'
           - name: "null"
           - name: "discord-info"
             discord_configs:
-              - webhook_url: 'replacedfromvalues'
-                username: '${DOMAIN}'
+              - webhook_url: "replacedfromvalues"
+                username: "${DOMAIN}"
                 title: '{{ template "discord.title" . }}'
                 message: '{{ template "discord.message" . }}'
           - name: "healthchecksio"
             webhook_configs:
-              - url: 'replacedfromvalues'
+              - url: "replacedfromvalues"
                 # dont send resolved alerts to healthchecks.io
                 send_resolved: false
   valuesFrom:

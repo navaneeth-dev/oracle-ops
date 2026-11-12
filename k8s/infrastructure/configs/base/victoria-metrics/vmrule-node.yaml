@@ -20,8 +20,9 @@ spec:
           annotations:
             summary: "{{ $labels.mountpoint }} on {{ $labels.instance }} is read-only or failing"
             description: >-
-              The filesystem is mounted read-only or node-exporter cannot stat
-              it. ext4 and xfs go read-only after I/O errors, so writes fail.
+              {{ $labels.mountpoint }} is mounted read-only or node-exporter
+              cannot stat it. ext4 and xfs go read-only after I/O errors, so
+              writes fail.
         - alert: NodeOOMKill
           # 30m window: node-exporter can stall for minutes during an OOM.
           expr: increase(node_vmstat_oom_kill{job="node-exporter"}[30m]) > 0
