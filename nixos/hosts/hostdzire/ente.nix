@@ -60,6 +60,8 @@ in
         hash = ph.ente-key-hash;
       };
       jwt.secret = ph.ente-jwt-secret;
+      # Accounts are created by reopening this, not by self-signup.
+      internal.disable-registration = true;
     };
   };
 
