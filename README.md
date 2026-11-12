@@ -14,7 +14,7 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 ## Overview
 
 - **Cluster:** a single Talos Linux control-plane node (Ampere A1) on Oracle
-  Cloud.
+  Cloud, with its OCI infrastructure managed by OpenTofu.
 - **GitOps:** Flux reconciles everything under [`k8s/`](k8s/), with
   [Flux Operator](https://fluxoperator.dev) managing the controller lifecycle.
   Renovate keeps charts and images up to date.
@@ -33,6 +33,7 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
 <table>
   <tr>
     <td align="center" width="120"><a href="https://www.oracle.com/cloud/free/"><img src="docs/assets/logos/oracle-cloud.svg" alt="Oracle Cloud" height="48"></a><br>Oracle Cloud</td>
+    <td align="center" width="120"><a href="https://opentofu.org"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/logos/opentofu-dark.svg"><img src="docs/assets/logos/opentofu.svg" alt="OpenTofu" height="48"></picture></a><br>OpenTofu</td>
     <td align="center" width="120"><a href="https://www.talos.dev"><img src="docs/assets/logos/talos.svg" alt="Talos" height="48"></a><br>Talos</td>
     <td align="center" width="120"><a href="https://kubernetes.io"><img src="docs/assets/logos/kubernetes.svg" alt="Kubernetes" height="48"></a><br>Kubernetes</td>
     <td align="center" width="120"><a href="https://fluxcd.io"><img src="docs/assets/logos/flux.svg" alt="Flux" height="48"></a><br>Flux</td>
