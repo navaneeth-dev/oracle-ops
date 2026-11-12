@@ -25,8 +25,11 @@ with fail-open enabled. Body inspection therefore needs a separate policy for
 routes with an acceptable upload limit. Bot challenges are not enabled.
 
 The bouncer uses Envoy's `X-Envoy-External-Address` header, resolved by the existing
-ClientTrafficPolicy. Keep its trusted-hop configuration aligned with the actual
-upstream proxy chain and confirm access logs identify the same client IP.
+ClientTrafficPolicy. It trusts zero X-Forwarded-For hops because the OCI Network
+Load Balancer forwards TCP with the client source IP and adds no header; a higher
+value lets clients choose the IP that CrowdSec checks and bans. Raise it only
+when adding a layer 7 proxy that appends X-Forwarded-For, and then accept traffic
+only from that proxy.
 
 LAPI intentionally uses a single replica with persistent SQLite state for the
 current single-node clusters. Move to PostgreSQL before increasing LAPI replicas.

@@ -11,4 +11,6 @@ spec:
       name: reverse-proxy
   clientIPDetection:
     xForwardedFor:
-      numTrustedHops: 2
+      # The OCI Network Load Balancer is layer 4 and preserves the client source
+      # IP, so every X-Forwarded-For entry comes from the client.
+      numTrustedHops: 0
