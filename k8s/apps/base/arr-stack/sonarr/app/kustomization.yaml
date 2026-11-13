@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: homelab
 resources:
   # OVH upload integration disabled; retain sources for re-enabling.
-  # - configmap-script.yaml
   - helmrelease.yaml
   # - secret-ovh-upload.yaml
   - vmprobe.yaml

@@ -115,13 +115,5 @@ spec:
         existingClaim: hostdzire
         globalMounts:
           - path: /hostdzire
-      # scripts:
-      #   type: configMap
-      #   name: sonarr-ovh-upload-script
-      #   defaultMode: 493
-      #   globalMounts:
-      #     - path: /config/scripts/sonarr-ovh-upload.sh
-      #       subPath: sonarr-ovh-upload.sh
-      #       readOnly: true
       tmp:
         type: emptyDir
