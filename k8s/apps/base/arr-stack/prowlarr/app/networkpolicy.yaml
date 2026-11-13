@@ -21,6 +21,10 @@ spec:
             matchLabels:
               app.kubernetes.io/name: sonarr
               app.kubernetes.io/instance: sonarr
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: sonarr-anime
+              app.kubernetes.io/instance: sonarr-anime
         # authentik's embedded proxy outpost serves the Prowlarr web UI.
         - namespaceSelector:
             matchLabels:

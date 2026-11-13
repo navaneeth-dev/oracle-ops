@@ -50,6 +50,18 @@ data:
           - trash_id: d1498e7d189fbe6c7110ceaabb7473e6  # WEB-2160p
             reset_unmatched_scores:
               enabled: true
+
+      sonarr-anime:
+        base_url: !secret sonarr_anime_url
+        api_key: !secret sonarr_anime_apikey
+
+        quality_definition:
+          type: anime
+
+        quality_profiles:
+          - trash_id: 20e0fc959f1f1704bed501f23bdae76f  # [Anime] Remux-1080p
+            reset_unmatched_scores:
+              enabled: true
 kind: ConfigMap
 metadata:
   name: recyclarr-config

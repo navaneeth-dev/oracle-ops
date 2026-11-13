@@ -72,6 +72,9 @@ data:
         - Sonarr:
             href: 'https://sonarr.${DOMAIN}'
             icon: sonarr
+        - Sonarr Anime:
+            href: 'https://sonarr-anime.${DOMAIN}'
+            icon: sonarr
         - qBittorrent:
             href: 'https://qbittorrent.${DOMAIN}'
             icon: qbittorrent

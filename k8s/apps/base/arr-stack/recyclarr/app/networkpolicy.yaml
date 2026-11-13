@@ -29,6 +29,9 @@ spec:
         - matchLabels:
             app.kubernetes.io/name: sonarr
             app.kubernetes.io/instance: sonarr
+        - matchLabels:
+            app.kubernetes.io/name: sonarr-anime
+            app.kubernetes.io/instance: sonarr-anime
       toPorts:
         - ports:
             - port: "8989"

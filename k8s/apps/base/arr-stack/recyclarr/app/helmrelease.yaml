@@ -9,6 +9,7 @@ spec:
   dependsOn:
     - name: radarr
     - name: sonarr
+    - name: sonarr-anime
   chartRef:
     kind: OCIRepository
     name: app-template
