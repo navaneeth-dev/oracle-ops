@@ -36,9 +36,31 @@ spec:
         interval: 1m
       kustomize:
         patches:
+          # Large CRD charts such as prometheus-operator-crds push
+          # helm-controller to about 250Mi during upgrades.
           - target:
               kind: Deployment
-              name: (helm-controller|kustomize-controller)
+              name: helm-controller
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: controller
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: manager
+                        resources:
+                          requests:
+                            cpu: 50m
+                            memory: 512Mi
+                          limits:
+                            cpu: null
+                            memory: 512Mi
+          - target:
+              kind: Deployment
+              name: kustomize-controller
             patch: |-
               apiVersion: apps/v1
               kind: Deployment
