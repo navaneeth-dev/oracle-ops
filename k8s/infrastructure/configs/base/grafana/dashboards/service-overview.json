@@ -333,7 +333,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(max(1 - node_filesystem_avail_bytes{job=\"node-exporter\",node=\"hostdzire\",mountpoint=~\"/|/srv\"} / node_filesystem_size_bytes{job=\"node-exporter\",node=\"hostdzire\",mountpoint=~\"/|/srv\"}) and on() (max(node_filesystem_readonly{job=\"node-exporter\",node=\"hostdzire\",mountpoint=~\"/|/srv\"} + node_filesystem_device_error{job=\"node-exporter\",node=\"hostdzire\",mountpoint=~\"/|/srv\"}) == 0) and on() (max(node_nfsd_server_threads{job=\"node-exporter\",node=\"hostdzire\"}) > 0)) or on() (vector(-3) and on() (max(node_filesystem_readonly{job=\"node-exporter\",node=\"hostdzire\",mountpoint=~\"/|/srv\"} + node_filesystem_device_error{job=\"node-exporter\",node=\"hostdzire\",mountpoint=~\"/|/srv\"}) == 0)) or on() (vector(-2) and on() (max(up{job=\"node-exporter\",node=\"hostdzire\"}) == 1)) or on() vector(-1)",
+          "expr": "(max(1 - node_filesystem_avail_bytes{job=\"node-exporter\",node=\"hostdzire6tb\",mountpoint=~\"/|/srv\"} / node_filesystem_size_bytes{job=\"node-exporter\",node=\"hostdzire6tb\",mountpoint=~\"/|/srv\"}) and on() (max(node_filesystem_readonly{job=\"node-exporter\",node=\"hostdzire6tb\",mountpoint=~\"/|/srv\"} + node_filesystem_device_error{job=\"node-exporter\",node=\"hostdzire6tb\",mountpoint=~\"/|/srv\"}) == 0) and on() (max(node_nfsd_server_threads{job=\"node-exporter\",node=\"hostdzire6tb\"}) > 0)) or on() (vector(-3) and on() (max(node_filesystem_readonly{job=\"node-exporter\",node=\"hostdzire6tb\",mountpoint=~\"/|/srv\"} + node_filesystem_device_error{job=\"node-exporter\",node=\"hostdzire6tb\",mountpoint=~\"/|/srv\"}) == 0)) or on() (vector(-2) and on() (max(up{job=\"node-exporter\",node=\"hostdzire6tb\"}) == 1)) or on() vector(-1)",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -1107,7 +1107,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "1 - avg(rate(node_cpu_seconds_total{node=\"hostdzire\",job=\"node-exporter\",mode=\"idle\"}[$__rate_interval]))",
+          "expr": "1 - avg(rate(node_cpu_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\",mode=\"idle\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1180,7 +1180,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "1 - sum(node_memory_MemAvailable_bytes{node=\"hostdzire\",job=\"node-exporter\"}) / sum(node_memory_MemTotal_bytes{node=\"hostdzire\",job=\"node-exporter\"})",
+          "expr": "1 - sum(node_memory_MemAvailable_bytes{node=\"hostdzire6tb\",job=\"node-exporter\"}) / sum(node_memory_MemTotal_bytes{node=\"hostdzire6tb\",job=\"node-exporter\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1249,7 +1249,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "1 - node_filesystem_avail_bytes{node=\"hostdzire\",job=\"node-exporter\",mountpoint=\"/srv\"} / node_filesystem_size_bytes{node=\"hostdzire\",job=\"node-exporter\",mountpoint=\"/srv\"}",
+          "expr": "1 - node_filesystem_avail_bytes{node=\"hostdzire6tb\",job=\"node-exporter\",mountpoint=\"/srv\"} / node_filesystem_size_bytes{node=\"hostdzire6tb\",job=\"node-exporter\",mountpoint=\"/srv\"}",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -1318,7 +1318,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "(sum(node_filesystem_device_error{node=\"hostdzire\",job=\"node-exporter\",fstype=~\"ext4|xfs|btrfs|zfs\"}) or vector(0)) + (sum(node_filesystem_readonly{node=\"hostdzire\",job=\"node-exporter\",fstype=~\"ext4|xfs|btrfs|zfs\"}) or vector(0)) + (sum(increase(node_vmstat_oom_kill{node=\"hostdzire\",job=\"node-exporter\"}[1h])) or vector(0)) + (sum(increase(node_network_receive_errs_total{node=\"hostdzire\",job=\"node-exporter\",device!=\"lo\"}[1h]) + increase(node_network_transmit_errs_total{node=\"hostdzire\",job=\"node-exporter\",device!=\"lo\"}[1h])) or vector(0))",
+          "expr": "(sum(node_filesystem_device_error{node=\"hostdzire6tb\",job=\"node-exporter\",fstype=~\"ext4|xfs|btrfs|zfs\"}) or vector(0)) + (sum(node_filesystem_readonly{node=\"hostdzire6tb\",job=\"node-exporter\",fstype=~\"ext4|xfs|btrfs|zfs\"}) or vector(0)) + (sum(increase(node_vmstat_oom_kill{node=\"hostdzire6tb\",job=\"node-exporter\"}[1h])) or vector(0)) + (sum(increase(node_network_receive_errs_total{node=\"hostdzire6tb\",job=\"node-exporter\",device!=\"lo\"}[1h]) + increase(node_network_transmit_errs_total{node=\"hostdzire6tb\",job=\"node-exporter\",device!=\"lo\"}[1h])) or vector(0))",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -1569,7 +1569,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(node_pressure_cpu_waiting_seconds_total{node=\"hostdzire\",job=\"node-exporter\"}[$__rate_interval]))",
+          "expr": "sum(rate(node_pressure_cpu_waiting_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "CPU waiting",
           "range": true,
@@ -1580,7 +1580,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(node_pressure_memory_waiting_seconds_total{node=\"hostdzire\",job=\"node-exporter\"}[$__rate_interval]))",
+          "expr": "sum(rate(node_pressure_memory_waiting_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "Memory waiting",
           "range": true,
@@ -1591,7 +1591,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(node_pressure_io_waiting_seconds_total{node=\"hostdzire\",job=\"node-exporter\"}[$__rate_interval]))",
+          "expr": "sum(rate(node_pressure_io_waiting_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "I/O waiting",
           "range": true,
@@ -2267,7 +2267,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(node_nfsd_requests_total{job=\"node-exporter\",node=\"hostdzire\"}[$__rate_interval]))",
+          "expr": "sum(rate(node_nfsd_requests_total{job=\"node-exporter\",node=\"hostdzire6tb\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -2340,7 +2340,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(node_load5{node=\"hostdzire\",job=\"node-exporter\"}) / count(node_cpu_seconds_total{node=\"hostdzire\",job=\"node-exporter\",mode=\"idle\"})",
+          "expr": "sum(node_load5{node=\"hostdzire6tb\",job=\"node-exporter\"}) / count(node_cpu_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\",mode=\"idle\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -2409,7 +2409,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "1 - node_filesystem_avail_bytes{node=\"hostdzire\",job=\"node-exporter\",mountpoint=\"/\"} / node_filesystem_size_bytes{node=\"hostdzire\",job=\"node-exporter\",mountpoint=\"/\"}",
+          "expr": "1 - node_filesystem_avail_bytes{node=\"hostdzire6tb\",job=\"node-exporter\",mountpoint=\"/\"} / node_filesystem_size_bytes{node=\"hostdzire6tb\",job=\"node-exporter\",mountpoint=\"/\"}",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -2495,7 +2495,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "node_filesystem_avail_bytes{node=\"hostdzire\",job=\"node-exporter\",mountpoint=\"/srv\"} / -deriv(node_filesystem_avail_bytes{node=\"hostdzire\",job=\"node-exporter\",mountpoint=\"/srv\"}[7d])",
+          "expr": "node_filesystem_avail_bytes{node=\"hostdzire6tb\",job=\"node-exporter\",mountpoint=\"/srv\"} / -deriv(node_filesystem_avail_bytes{node=\"hostdzire6tb\",job=\"node-exporter\",mountpoint=\"/srv\"}[7d])",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -2553,7 +2553,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "1 - avg(rate(node_cpu_seconds_total{node=\"hostdzire\",job=\"node-exporter\",mode=\"idle\"}[$__rate_interval]))",
+          "expr": "1 - avg(rate(node_cpu_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\",mode=\"idle\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "CPU",
           "range": true,
@@ -2564,7 +2564,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "1 - sum(node_memory_MemAvailable_bytes{node=\"hostdzire\",job=\"node-exporter\"}) / sum(node_memory_MemTotal_bytes{node=\"hostdzire\",job=\"node-exporter\"})",
+          "expr": "1 - sum(node_memory_MemAvailable_bytes{node=\"hostdzire6tb\",job=\"node-exporter\"}) / sum(node_memory_MemTotal_bytes{node=\"hostdzire6tb\",job=\"node-exporter\"})",
           "instant": false,
           "legendFormat": "Memory",
           "range": true,
@@ -2575,7 +2575,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "avg(rate(node_cpu_seconds_total{node=\"hostdzire\",job=\"node-exporter\",mode=\"iowait\"}[$__rate_interval]))",
+          "expr": "avg(rate(node_cpu_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\",mode=\"iowait\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "CPU iowait",
           "range": true,
@@ -2649,7 +2649,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(node_disk_io_time_seconds_total{node=\"hostdzire\",job=\"node-exporter\",device=~\"sd.+|nvme.+|vd.+\"}[$__rate_interval])",
+          "expr": "rate(node_disk_io_time_seconds_total{node=\"hostdzire6tb\",job=\"node-exporter\",device=~\"sd.+|nvme.+|vd.+\"}[$__rate_interval])",
           "instant": false,
           "legendFormat": "{{device}} busy",
           "range": true,
@@ -2660,7 +2660,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(node_disk_read_bytes_total{node=\"hostdzire\",job=\"node-exporter\",device=~\"sd.+|nvme.+|vd.+\"}[$__rate_interval])",
+          "expr": "rate(node_disk_read_bytes_total{node=\"hostdzire6tb\",job=\"node-exporter\",device=~\"sd.+|nvme.+|vd.+\"}[$__rate_interval])",
           "instant": false,
           "legendFormat": "{{device}} read",
           "range": true,
@@ -2671,7 +2671,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(node_disk_written_bytes_total{node=\"hostdzire\",job=\"node-exporter\",device=~\"sd.+|nvme.+|vd.+\"}[$__rate_interval])",
+          "expr": "rate(node_disk_written_bytes_total{node=\"hostdzire6tb\",job=\"node-exporter\",device=~\"sd.+|nvme.+|vd.+\"}[$__rate_interval])",
           "instant": false,
           "legendFormat": "{{device}} write",
           "range": true,
@@ -2728,7 +2728,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(node_network_receive_bytes_total{node=\"hostdzire\",job=\"node-exporter\",device=~\"eth.*|en.*|tailscale.*\"}[$__rate_interval])",
+          "expr": "rate(node_network_receive_bytes_total{node=\"hostdzire6tb\",job=\"node-exporter\",device=~\"eth.*|en.*|tailscale.*\"}[$__rate_interval])",
           "instant": false,
           "legendFormat": "{{device}} rx",
           "range": true,
@@ -2739,7 +2739,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "-rate(node_network_transmit_bytes_total{node=\"hostdzire\",job=\"node-exporter\",device=~\"eth.*|en.*|tailscale.*\"}[$__rate_interval])",
+          "expr": "-rate(node_network_transmit_bytes_total{node=\"hostdzire6tb\",job=\"node-exporter\",device=~\"eth.*|en.*|tailscale.*\"}[$__rate_interval])",
           "instant": false,
           "legendFormat": "{{device}} tx",
           "range": true,
