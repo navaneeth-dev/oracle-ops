@@ -13,5 +13,4 @@ resources:
   - topolvm/ks.yaml
   - snapshot-controller/ks.yaml
   - prometheus-operator-crds/ks.yaml
-  - kro/ks.yaml
   - crowdsec/ks.yaml

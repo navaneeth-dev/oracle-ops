@@ -6,7 +6,5 @@ resources:
   - ../base/homepage
 #  - ./backstage/ocirepository.yaml
 #  - ./backstage/ks.yaml
-  - ./kro
-  - backstage.yaml
   - backstage-secret.yaml
   - image-update/test.yaml
