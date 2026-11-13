@@ -25,7 +25,7 @@ in
     # tailscale0 rule, and the node reaches the server (8266) on loopback.
     # Image digests pin the linux/amd64 manifests.
     tdarr = {
-      image = "ghcr.io/haveagitgat/tdarr:3.06.00@sha256:0880fd036a4ac6ef8a2fef2a7b8ddedf5d0898c9ee1a495580356dc922f54d62";
+      image = "ghcr.io/haveagitgat/tdarr:3.08.00@sha256:84743e5ae433a5b49cb463b2dff2679eb02f0cac24fb88c830f49bf8aa9f1c04";
       environment = env // {
         serverIP = "0.0.0.0";
         serverPort = "8266";
@@ -37,7 +37,7 @@ in
       extraOptions = [ "--network=host" "--memory=768m" "--memory-swap=768m" ];
     };
     tdarr-node = {
-      image = "ghcr.io/haveagitgat/tdarr_node:3.06.00@sha256:37516a2af827cb0b0e39050ee72f474d17645b81228afabd030c02c861dff7ad";
+      image = "ghcr.io/haveagitgat/tdarr_node:3.08.00@sha256:25153299cc9c2fcd99202cc36171c2e42ba7ef11823959c018e5c5bf2733581f";
       dependsOn = [ "tdarr" ];
       environment = env // {
         nodeName = "hostdzire";
