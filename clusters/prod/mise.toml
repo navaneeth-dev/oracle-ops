@@ -6,5 +6,5 @@ TF_VAR_cluster_name = "oracle-hyd-cluster"
 
 [tools]
 cilium-hubble = "1.20.2"
-kubectl = "1.36.5"
+kubectl = "1.37.2"
 talosctl = "v1.13.12"
