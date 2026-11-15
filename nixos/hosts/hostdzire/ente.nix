@@ -67,7 +67,7 @@ in
 
   virtualisation.oci-containers.containers = {
     ente-museum = {
-      image = "ghcr.io/ente/server:latest@sha256:c59a19e16626a4fc3e9231c9a11c6fca0b342ba464c9b879635f549b977369fb";
+      image = "ghcr.io/ente/server:latest@sha256:f8c33e9bc1d5b7079dcda51522dd9f4fb28d93bef8655d95be54a978acc43408";
       volumes = [ "${config.sops.templates."museum.yaml".path}:/museum.yaml:ro" ];
       dependsOn = [ "ente-postgres" ];
       extraOptions = [
