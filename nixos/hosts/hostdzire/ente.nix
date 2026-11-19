@@ -90,7 +90,7 @@ in
     };
 
     ente-postgres = {
-      image = "docker.io/library/postgres:15@sha256:1aac5b49cefd627f02816141ca4ad012d6cc19460dfe02a9b5168a105be3fc53";
+      image = "docker.io/library/postgres:15@sha256:10f9e886f772e9d6484350b043bcf990ead67ae5d9988ddce265d72a299055d5";
       environment = {
         PGPORT = toString pgPort;
         POSTGRES_USER = "pguser";
