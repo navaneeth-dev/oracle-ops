@@ -4,7 +4,7 @@ TALOSCONFIG = "{{config_root}}/bootstrap/talos-new/prod-talos/talosconfig"
 SOPS_AGE_KEY_FILE = "/home/rize/.ssh/key.txt"
 
 [tools]
-flux2 = "2.10.0"
+flux2 = "2.10.1"
 helmfile = "1.8.4"
 kubectl = "1.35.3"
 opentofu = "1.13.9"
