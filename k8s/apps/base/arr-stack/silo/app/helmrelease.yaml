@@ -46,6 +46,8 @@ spec:
             env:
               TZ: "${TZ}"
               HOME: /tmp
+              SILO_PUBLIC_URL: "https://silo.${DOMAIN}"
+              SILO_PLUGINS_FILE: /run/silo-provisioning/plugins.yaml
               DATABASE_URL:
                 valueFrom:
                   secretKeyRef:
@@ -133,7 +135,42 @@ spec:
         hostnames:
           - 'silo.${DOMAIN}'
 
+    configMaps:
+      plugins:
+        data:
+          # The authentik side is the Silo blueprint in authentik's app.
+          plugins.yaml: |
+            apiVersion: 1
+            plugins:
+              silo.auth.oidc:
+                catalog: silo
+                version: "0.1.2"
+                config:
+                  display_name:
+                    value: authentik
+                  connection:
+                    issuer_url: "https://authentik.${DOMAIN}/application/o/silo/"
+                    client_id: silo
+                    client_secret:
+                      fromEnv: SILO_OIDC_CLIENT_SECRET
+                  access:
+                    allowed_groups: |-
+                      Arr Stack
+                      Admins
+                    admin_groups: Admins
+                auth_binding:
+                  capability_id: oidc
+                  enabled: true
+                  auto_provision: true
+                  callback: stable
+
     persistence:
+      plugins:
+        type: configMap
+        identifier: plugins
+        globalMounts:
+          - path: /run/silo-provisioning
+            readOnly: true
       # /var/lib/silo links to /config/silo in the image.
       config:
         existingClaim: silo

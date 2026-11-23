@@ -30,6 +30,10 @@ spec:
         - secretRef:
             name: authentik-secrets
 
+    blueprints:
+      secrets:
+        - authentik-blueprint-silo
+
     server:
       route:
         main:

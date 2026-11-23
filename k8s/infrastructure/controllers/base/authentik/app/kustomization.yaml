@@ -6,6 +6,7 @@ resources:
   - secret.yaml
   - objectstore.yaml
   - secret-authentik.yaml
+  - secret-blueprint-silo.yaml
   - cluster.yaml
   - helmrepository.yaml
   - helmrelease.yaml
