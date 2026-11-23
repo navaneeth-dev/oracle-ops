@@ -55,7 +55,7 @@ data:
             description: Watch Movies/TV
         - Silo:
             href: 'https://silo.${DOMAIN}'
-            icon: https://raw.githubusercontent.com/Silo-Server/silo-server/main/web/public/apple-touch-icon.png
+            icon: https://cdn.jsdelivr.net/gh/Silo-Server/silo-server@dde5ed21c4aaaa20b512247c5ec5b5875e3ceb9c/assets/icon.png
             description: Watch Movies/TV
         - Audiobookshelf:
             href: 'https://audiobookshelf.${DOMAIN}'
