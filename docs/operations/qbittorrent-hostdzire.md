@@ -16,14 +16,14 @@ flowchart LR
   end
   subgraph oci["Oracle cluster"]
     arr["Sonarr · Radarr · Prowlarr · qui"]
-    emby[Emby]
+    silo[Silo]
     ak[authentik outpost]
   end
   arr -- "API :8080 over Tailscale" --> qbit
   ak -- "WebUI :8080 over Tailscale" --> qbit
   arr -- NFS --> nfsd
   arr -- "metadata, updates :8888 over Tailscale" --> tp --> web((Internet))
-  emby -- NFS --> nfsd
+  silo -- NFS --> nfsd
 ```
 
 - **No VPN.** Peers and trackers see 163.61.31.213 (IPv4 only, bound to

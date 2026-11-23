@@ -9,7 +9,6 @@ resources:
   - qbittorrent-vmprobe.yaml
   - qui/ks.yaml
   - recyclarr/ks.yaml
-  - emby/ks.yaml
   - silo/ks.yaml
   - seerr/ks.yaml
   - audiobookshelf/ks.yaml

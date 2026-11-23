@@ -25,7 +25,7 @@ GitOps-managed Kubernetes homelab on the Oracle Cloud Always Free tier.
   for media, Garage S3 behind Traefik on the same VPS, CloudNativePG for databases, and VolSync restic configuration backups.
 - **Observability:** VictoriaMetrics, Grafana and Fluent Bit. Public Instatus page at
   [status.fossindia.ovh](https://status.fossindia.ovh).
-- **Apps:** Emby, Silo, Audiobookshelf, the arr stack, Seerr, [Homepage](https://start.oci.fossindia.ovh) and
+- **Apps:** Silo, Audiobookshelf, the arr stack, Seerr, [Homepage](https://start.oci.fossindia.ovh) and
   LibreSpeed.
 
 ## Tech stack

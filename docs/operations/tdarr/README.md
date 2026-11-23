@@ -1,7 +1,7 @@
 # Tdarr on the HostDZire storage VPS
 
-Tdarr adds a boosted stereo track to every movie and TV file, so the Emby
-Android app direct-plays a loud stereo track instead of downmixing DTS/5.1
+Tdarr adds a boosted stereo track to every movie and TV file, so Android
+players direct-play a loud stereo track instead of downmixing DTS/5.1
 itself. It runs as NixOS-managed Podman containers on `hostdzire6tb`, outside
 Kubernetes, so transcoding uses local storage rather than transferring media
 over NFS.
@@ -77,8 +77,7 @@ pick up the new size and media info on their next rescan.
 - **Requeue a file:** open the Library tab, find the file and choose Requeue.
   Processed files are skipped anyway because they already have a stereo track.
 - **After processing:** rescan in Radarr or Sonarr if the file size matters to
-  you, then refresh the Emby library. Emby also picks up changes on its next
-  scheduled scan.
+  you, then rescan the Silo library.
 
 ## Updates and recovery
 
