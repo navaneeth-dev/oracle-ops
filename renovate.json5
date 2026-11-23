@@ -59,6 +59,16 @@
       automerge: false,
     },
     {
+      description: 'Silo tags each image build-N, so compare the build numbers',
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/silo-server/silo-server',
+      ],
+      versioning: 'regex:^build-(?<major>\\d+)$',
+    },
+    {
       description: 'Flux Operator Group',
       groupName: 'flux-operator',
       matchDatasources: [

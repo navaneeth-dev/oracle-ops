@@ -1,0 +1,155 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/refs/heads/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name silo
+  namespace: homelab
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+    namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      silo:
+        pod:
+          # Silo finishes in-flight requests and streams before it exits.
+          terminationGracePeriodSeconds: 120
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+            # Without NET_ADMIN, Silo relies on this limit for larger send
+            # buffers to remote viewers.
+            sysctls:
+              - name: net.ipv4.tcp_wmem
+                value: "4096 16384 67108864"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/silo-server/silo-server
+              tag: build-2974@sha256:bd8d3a54e1309d031e9369a0690d96e667afe892ec7a0bab70f032dec35a44e8
+            # Skip the image's root-only s6 init and its bundled PostgreSQL
+            # and Redis; Silo runs directly against the CNPG cluster.
+            command: ["silo"]
+            env:
+              TZ: "${TZ}"
+              HOME: /tmp
+              DATABASE_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: silo-postgres-app
+                    key: uri
+            envFrom:
+              - secretRef:
+                  name: silo-secret
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/health
+                    port: &port 8080
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/ready
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/v1/health
+                    port: *port
+                  # Migrations run before the listener starts; Silo allows
+                  # them 20 minutes (SILO_MIGRATE_TIMEOUT).
+                  periodSeconds: 5
+                  failureThreshold: 240
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              limits:
+                memory: 2Gi
+              requests:
+                cpu: 100m
+                memory: 2Gi
+    service:
+      app:
+        primary: true
+        controller: *name
+        ports:
+          http:
+            port: *port
+          jellyfin:
+            port: 8096
+          audiobookshelf:
+            port: 13378
+
+    route:
+      main:
+        enabled: true
+        kind: HTTPRoute
+        parentRefs:
+          - kind: Gateway
+            name: reverse-proxy
+            namespace: envoy-gateway-system
+        rules:
+          - backendRefs:
+              - group: ""
+                kind: Service
+                name: silo
+                namespace: homelab
+                port: *port
+                weight: 1
+            matches:
+              - path:
+                  type: PathPrefix
+                  value: /
+            timeouts:
+              request: 0s
+        hostnames:
+          - 'silo.${DOMAIN}'
+
+    persistence:
+      # /var/lib/silo links to /config/silo in the image.
+      config:
+        existingClaim: silo
+        globalMounts:
+          - path: /config/silo
+      data:
+        existingClaim: data
+        globalMounts:
+          - path: /data
+            readOnly: true
+      hostdzire:
+        existingClaim: hostdzire
+        globalMounts:
+          - path: /hostdzire
+            readOnly: true
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://github.com/datreeio/CRDs-catalog/raw/refs/heads/main/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: silo-postgres
+  namespace: homelab
+spec:
+  instances: 1
+  # disable pod disruption budget for oracle single node
+  enablePDB: false
+  # Silo's migrations need pgvector, which the standard image ships, and its
+  # pre-migration backups use a PostgreSQL 18 pg_dump.
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.7-standard-trixie@sha256:1abcfd1cac6d53cda5185706819aab36d66a4ed88e99fc2ae44ab0826aa99f00
+
+  bootstrap:
+    initdb:
+      database: silo
+      owner: silo
+      # The silo role is not a superuser, so create the extensions its
+      # migrations expect up front.
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public
+        - CREATE EXTENSION IF NOT EXISTS pg_trgm
+        - CREATE EXTENSION IF NOT EXISTS citext
+
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: ovhcloud
+        serverName: silo
+  resources:
+    requests:
+      cpu: 50m
+      memory: 512Mi
+    limits:
+      memory: 512Mi
+  storage:
+    size: 5Gi
+  monitoring:
+    enablePodMonitor: true
