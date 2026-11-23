@@ -35,6 +35,20 @@ spec:
             agents_autodelete:
               login_password: 6h
               cert: 6h
+      parsers:
+        s02-enrich:
+          # Silo's library folder picker browses as the admin types, and each
+          # partial path 404s under /admin, which trips
+          # http-admin-interface-probing after three requests.
+          silo-whitelist.yaml: |
+            name: fossindia/silo-whitelist
+            description: "Ignore Silo's admin folder browser"
+            whitelist:
+              reason: "Silo admin folder browser"
+              expression:
+                - >-
+                  evt.Meta.target_fqdn == 'silo.oci.fossindia.ovh' &&
+                  evt.Meta.http_path startsWith '/api/v2/admin/filesystem/browse'
 
     lapi:
       # One replica with persistent SQLite state for these single-node clusters.
