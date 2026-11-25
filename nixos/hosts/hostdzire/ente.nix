@@ -80,7 +80,7 @@ in
     # Photos on 3000 and public albums on 3002; the image also serves its
     # other apps on 3001-3010, all closed by the firewall.
     ente-web = {
-      image = "ghcr.io/ente/web:latest@sha256:01d8dfb3495d69d7d32ed962866307e4ae05a8d4ea55b4411afdc0d342f12c16";
+      image = "ghcr.io/ente/web:latest@sha256:4346ca1b572bb15de0a814f0682231ce569f78dcf25050d0838de57d0f7a6458";
       environment.ENTE_API_ORIGIN = "https://ente.fossindia.ovh";
       extraOptions = [
         "--network=host"
