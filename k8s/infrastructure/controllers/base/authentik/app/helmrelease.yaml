@@ -29,8 +29,12 @@ spec:
       envFrom:
         - secretRef:
             name: authentik-secrets
+        - secretRef:
+            name: authentik-smtp
 
     blueprints:
+      configMaps:
+        - authentik-blueprint-passkey
       secrets:
         - authentik-blueprint-silo
 

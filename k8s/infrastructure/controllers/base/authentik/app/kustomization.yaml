@@ -6,6 +6,7 @@ resources:
   - secret.yaml
   - objectstore.yaml
   - secret-authentik.yaml
+  - secret-smtp.yaml
   - secret-blueprint-silo.yaml
   - cluster.yaml
   - helmrepository.yaml
@@ -13,3 +14,11 @@ resources:
   - role.yaml
   - rolebinding.yaml
   - scheduledbackup.yaml
+configMapGenerator:
+  - name: authentik-blueprint-passkey
+    namespace: authentik
+    files:
+      - passkey-login.yaml
+      - passkey-enrollment-email.yaml
+generatorOptions:
+  disableNameSuffixHash: true
