@@ -11,6 +11,22 @@ entries:
       title: Sign in with your passkey
       designation: authentication
       authentication: require_unauthenticated
+  # Asking for the username first lets authentik name the user's passkeys in
+  # the WebAuthn request instead of relying on the authenticator to list
+  # discoverable ones.
+  - model: authentik_stages_identification.identificationstage
+    id: passkey-identification
+    identifiers:
+      name: passkey-sign-in-identification
+    attrs:
+      user_fields: [email, username]
+      pretend_user_exists: true
+      show_matched_user: true
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf passkey-flow
+      stage: !KeyOf passkey-identification
+      order: 5
   - model: authentik_stages_authenticator_validate.authenticatorvalidatestage
     id: passkey-validation
     identifiers:
