@@ -39,7 +39,7 @@ spec:
           app:
             image:
               repository: ghcr.io/silo-server/silo-server
-              tag: build-2974@sha256:bd8d3a54e1309d031e9369a0690d96e667afe892ec7a0bab70f032dec35a44e8
+              tag: build-3105@sha256:2f04f2522c983f71d1ee7574f0e3b4b4166acc4f9fd122bf8b65a8f666a4dafc
             # Skip the image's root-only s6 init and its bundled PostgreSQL
             # and Redis; Silo runs directly against the CNPG cluster.
             command: ["silo"]
