@@ -31,6 +31,14 @@ spec:
             name: authentik-secrets
         - secretRef:
             name: authentik-smtp
+      volumes:
+        - name: email-templates
+          configMap:
+            name: authentik-email-templates
+      volumeMounts:
+        - name: email-templates
+          mountPath: /templates
+          readOnly: true
 
     blueprints:
       configMaps:

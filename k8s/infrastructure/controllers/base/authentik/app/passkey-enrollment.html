@@ -1,0 +1,37 @@
+{% extends 'email/base.html' %}
+
+{% load i18n %}
+
+{% block logo_url %}https://cdn.fossindia.ovh/fossindia.png{% endblock %}
+
+{% block content %}
+<tr>
+  <td align="center">
+    <h1>Set up your passkey</h1>
+  </td>
+</tr>
+<tr>
+  <td align="center">
+    <table border="0">
+      <tr>
+        <td align="center" style="max-width: 300px; padding: 20px 0; color: #212124;">
+          Hi {{ user.name }}, press the button below to create the passkey you will use to sign in to FOSS India as <strong>{{ user.username }}</strong>.
+        </td>
+      </tr>
+      <tr>
+        <td align="center" class="btn btn-primary">
+          <a id="confirm" href="{{ url }}" rel="noopener noreferrer" target="_blank">Set up passkey</a>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>
+{% endblock %}
+
+{% block sub_content %}
+<tr>
+  <td style="padding: 20px; font-size: 12px; color: #212124; word-break: break-all; overflow-wrap: break-word;" align="center">
+    This link expires {{ expires|date:"j M Y, H:i e" }}. If the button doesn't work, copy this link into your browser: {{ url }}
+  </td>
+</tr>
+{% endblock %}

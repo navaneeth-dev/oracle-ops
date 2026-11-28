@@ -20,5 +20,9 @@ configMapGenerator:
     files:
       - passkey-login.yaml
       - passkey-enrollment-email.yaml
+  - name: authentik-email-templates
+    namespace: authentik
+    files:
+      - passkey-enrollment.html
 generatorOptions:
   disableNameSuffixHash: true
