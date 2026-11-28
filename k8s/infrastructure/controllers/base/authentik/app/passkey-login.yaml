@@ -38,16 +38,49 @@ entries:
       # Discoverable credentials are what let the passkey flow skip the username.
       resident_key_requirement: required
       user_verification: required
-  # Password logins without a passkey are sent straight into passkey setup.
+  # The bundled password flow stays reachable by URL, so it must never be a
+  # way to enroll a passkey with only a password.
   - model: authentik_stages_authenticator_validate.authenticatorvalidatestage
     identifiers:
       name: default-authentication-mfa-validation
     attrs:
       device_classes: [webauthn]
-      not_configured_action: configure
-      configuration_stages:
-        - !KeyOf passkey-setup
+      not_configured_action: deny
+      configuration_stages: []
       webauthn_user_verification: required
+  # Reached only through a recovery link that an admin emails from the user's
+  # page, which is how new users and users who lost their passkey enroll.
+  - model: authentik_flows.flow
+    id: passkey-enrollment-flow
+    identifiers:
+      slug: passkey-enrollment
+    attrs:
+      name: Passkey enrollment
+      title: Set up your passkey
+      designation: recovery
+      authentication: none
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf passkey-enrollment-flow
+      stage: !KeyOf passkey-setup
+      order: 10
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf passkey-enrollment-flow
+      stage: !Find [authentik_stages_user_login.userloginstage, [name, default-authentication-login]]
+      order: 100
+  - model: authentik_brands.brand
+    identifiers:
+      domain: authentik-default
+    attrs:
+      flow_authentication: !KeyOf passkey-flow
+      flow_recovery: !KeyOf passkey-enrollment-flow
+  - model: authentik_brands.brand
+    identifiers:
+      domain: authentik.oci.fossindia.ovh
+    attrs:
+      flow_authentication: !KeyOf passkey-flow
+      flow_recovery: !KeyOf passkey-enrollment-flow
   # The bundled "Default - TOTP MFA setup flow" and "Default - Static MFA setup
   # flow" blueprints are disabled in authentik itself; a blueprint cannot
   # disable another one, and they would recreate what is removed below.
