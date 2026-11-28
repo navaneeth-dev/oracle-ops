@@ -19,7 +19,6 @@ configMapGenerator:
     namespace: authentik
     files:
       - passkey-login.yaml
-      - passkey-enrollment-email.yaml
       - passkey-invitation.yaml
   - name: authentik-email-templates
     namespace: authentik

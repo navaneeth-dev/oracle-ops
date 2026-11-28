@@ -51,7 +51,7 @@ entries:
       name: default-authenticator-webauthn-setup
     attrs:
       friendly_name: Passkey
-      # Discoverable credentials are what let the passkey flow skip the username.
+      # Discoverable credentials let a passkey be used without typing a username.
       resident_key_requirement: required
       user_verification: required
   # The bundled password flow stays reachable by URL, so it must never be a
@@ -64,8 +64,8 @@ entries:
       not_configured_action: deny
       configuration_stages: []
       webauthn_user_verification: required
-  # Reached only through a recovery link that an admin emails from the user's
-  # page, which is how new users and users who lost their passkey enroll.
+  # Reached through the recovery link an admin emails from a user's page when
+  # they lose their passkey. New users enroll through passkey-invitation.
   - model: authentik_flows.flow
     id: passkey-enrollment-flow
     identifiers:
@@ -76,15 +76,48 @@ entries:
       designation: recovery
       authentication: none
   - model: authentik_flows.flowstagebinding
+    id: passkey-enrollment-setup-binding
     identifiers:
       target: !KeyOf passkey-enrollment-flow
       stage: !KeyOf passkey-setup
       order: 10
   - model: authentik_flows.flowstagebinding
+    id: passkey-enrollment-login-binding
     identifiers:
       target: !KeyOf passkey-enrollment-flow
       stage: !Find [authentik_stages_user_login.userloginstage, [name, default-authentication-login]]
       order: 100
+  # When a flow token is opened, authentik merges the context of any plan
+  # already in the session over the token's plan, so a pending user picked in
+  # another flow would replace the link's user. Both stages therefore require
+  # the pending user to be the user the link was issued for.
+  - model: authentik_policies_expression.expressionpolicy
+    id: passkey-enrollment-token-user
+    identifiers:
+      name: passkey-enrollment-token-user
+    attrs:
+      expression: |
+        token = request.context.get("is_restored")
+        user = request.context.get("pending_user")
+        return bool(token and user and user.pk and token.user_id == user.pk)
+  - model: authentik_policies.policybinding
+    identifiers:
+      target: !KeyOf passkey-enrollment-setup-binding
+      policy: !KeyOf passkey-enrollment-token-user
+      order: 0
+  - model: authentik_policies.policybinding
+    identifiers:
+      target: !KeyOf passkey-enrollment-login-binding
+      policy: !KeyOf passkey-enrollment-token-user
+      order: 0
+  - model: authentik_stages_email.emailstage
+    identifiers:
+      name: passkey-recovery-email
+    attrs:
+      use_global_settings: true
+      subject: Set up your FOSS India passkey
+      template: passkey-enrollment.html
+      activate_user_on_success: false
   - model: authentik_brands.brand
     identifiers:
       domain: authentik-default
@@ -122,3 +155,12 @@ entries:
     attrs:
       user_fields: [email, username]
       passwordless_flow: !KeyOf passkey-flow
+      webauthn_stage: null
+  - model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+    state: absent
+    identifiers:
+      name: default-authentication-passkey-autofill
+  - model: authentik_stages_email.emailstage
+    state: absent
+    identifiers:
+      name: private-passkey-enrollment-email
