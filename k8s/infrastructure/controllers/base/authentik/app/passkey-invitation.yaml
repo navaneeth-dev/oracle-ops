@@ -1,0 +1,138 @@
+version: 1
+metadata:
+  name: Homelab passkey invitation enrollment
+entries:
+  - model: authentik_flows.flow
+    id: flow
+    identifiers:
+      slug: passkey-invitation
+    attrs:
+      name: Passkey invitation enrollment
+      title: Create your FOSS India account
+      designation: enrollment
+      authentication: require_unauthenticated
+  - model: authentik_stages_invitation.invitationstage
+    id: invitation
+    identifiers:
+      name: passkey-invitation-check
+    attrs:
+      continue_flow_without_invitation: false
+  - model: authentik_stages_prompt.prompt
+    id: field-username
+    identifiers:
+      name: passkey-invitation-field-username
+    attrs:
+      field_key: username
+      label: Username
+      type: username
+      required: true
+      placeholder: Username
+      order: 0
+  - model: authentik_stages_prompt.prompt
+    id: field-name
+    identifiers:
+      name: passkey-invitation-field-name
+    attrs:
+      field_key: name
+      label: Name
+      type: text
+      required: true
+      placeholder: Full name
+      order: 1
+  - model: authentik_stages_prompt.prompt
+    id: field-email
+    identifiers:
+      name: passkey-invitation-field-email
+    attrs:
+      field_key: email
+      label: Email
+      type: email
+      required: true
+      placeholder: Email
+      order: 2
+  # Invitation fixed data only pre-fills the form, so this rejects edits to
+  # those values. It also keeps email addresses unique, because enrollment and
+  # recovery links are sent to them.
+  - model: authentik_policies_expression.expressionpolicy
+    id: details-policy
+    identifiers:
+      name: passkey-invitation-details-check
+    attrs:
+      expression: |
+        from authentik.core.models import User
+        from authentik.flows.views.executor import SESSION_KEY_PLAN
+
+        data = request.context.get("prompt_data", {})
+        plan = request.http_request.session.get(SESSION_KEY_PLAN)
+        invite = plan.context.get("invitation") if plan else None
+        fixed = invite.fixed_data if invite else {}
+        for key in ("username", "name", "email"):
+            if key in fixed and data.get(key) != fixed[key]:
+                ak_message(f"The {key} is set by your invitation and cannot be changed.")
+                return False
+        email = (data.get("email") or "").strip()
+        if User.objects.filter(email__iexact=email).exists():
+            ak_message("This email address is already in use.")
+            return False
+        return True
+  - model: authentik_stages_prompt.promptstage
+    id: details
+    identifiers:
+      name: passkey-invitation-details
+    attrs:
+      fields:
+        - !KeyOf field-username
+        - !KeyOf field-name
+        - !KeyOf field-email
+      validation_policies:
+        - !KeyOf details-policy
+  # Accounts stay inactive until the emailed link proves the address works.
+  - model: authentik_stages_user_write.userwritestage
+    id: write
+    identifiers:
+      name: passkey-invitation-write
+    attrs:
+      user_creation_mode: always_create
+      create_users_as_inactive: true
+      user_type: internal
+      user_path_template: users
+  - model: authentik_stages_email.emailstage
+    id: verify
+    identifiers:
+      name: passkey-invitation-email-verification
+    attrs:
+      use_global_settings: true
+      subject: Set up your FOSS India passkey
+      template: passkey-enrollment.html
+      token_expiry: minutes=30
+      activate_user_on_success: true
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf flow
+      stage: !KeyOf invitation
+      order: 5
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf flow
+      stage: !KeyOf details
+      order: 10
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf flow
+      stage: !KeyOf write
+      order: 20
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf flow
+      stage: !KeyOf verify
+      order: 30
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf flow
+      stage: !Find [authentik_stages_authenticator_webauthn.authenticatorwebauthnstage, [name, default-authenticator-webauthn-setup]]
+      order: 40
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      target: !KeyOf flow
+      stage: !Find [authentik_stages_user_login.userloginstage, [name, default-authentication-login]]
+      order: 100
